@@ -1,6 +1,6 @@
 TITLE=gcode++
 CC ?= gcc
-OBJECTS = build/lexer.o
+OBJECTS = build/util.o build/lexer.o
 CLFAGS = -std=c99
 
 .PHONY: dev clean
@@ -8,8 +8,7 @@ CLFAGS = -std=c99
 default: dev
 
 dev: $(OBJECTS)
-	@$(CC) main.c $(OBJECTS) -o build/$(TITLE)
-
+	@$(CC) main.c $(OBJECTS) -I include/ -o build/$(TITLE)
 
 build/%.o: src/%.c
 	@$(CC) $< -I include/ $(CLFAGS) -o $@ -c

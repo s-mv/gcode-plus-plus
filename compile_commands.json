@@ -1,0 +1,17 @@
+[
+  {
+    "arguments": [
+      "/sbin/cc",
+      "-I",
+      "include/",
+      "-std=c99",
+      "-c",
+      "-o",
+      "build/lexer.o",
+      "src/lexer.c"
+    ],
+    "directory": "/home/smv/code/intern/accelus/gcode-smv",
+    "file": "/home/smv/code/intern/accelus/gcode-smv/src/lexer.c",
+    "output": "/home/smv/code/intern/accelus/gcode-smv/build/lexer.o"
+  }
+]
