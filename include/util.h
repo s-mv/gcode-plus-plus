@@ -1,6 +1,7 @@
 #ifndef smv_gcodepp_util_h
 #define smv_gcodepp_util_h
 
+#include <stdbool.h>
 #include <stdint.h>
 
 typedef uint16_t u16;

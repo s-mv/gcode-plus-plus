@@ -58,18 +58,21 @@ typedef struct g_token_position {
   u64 index;
 } g_token_position;
 
+typedef union g_token_data {
+  i64 num;
+  u64 unum;
+  f64 fnum;
+  char symbol;
+  g_dynarr(char) string;
+  void *misc;
+} g_token_data;
+
 typedef struct g_token {
   g_token_position position;
   g_word_type word_type;
-  // the type of the data can be easily determined based on word_type
-  union data {
-    i64 num;
-    u64 unum;
-    f64 fnum;
-    char symbol;
-    g_dynarr(char) string;
-    void *misc;
-  } data;
+  bool is_float;
+  // the type of the data can be easily determined based on word_type and is_float
+  g_token_data data;
 } g_token;
 
 g_dynarr(g_token) lex(const char *code);

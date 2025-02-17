@@ -9,7 +9,7 @@
 int main() {
   char input[max_input_len];
 
-  printf("r247 (g-code) JIT interpreter\n"
+  printf("r274 (g-code) JIT interpreter\n"
          "TODO, everything!\n"
          "Run `exit` to exit.\n");
 
@@ -24,7 +24,15 @@ int main() {
 
     g_dynarr(g_token) tokens;
     tokens = lex(input);
-    printf("Number of tokens: %lu\n", tokens.len);
+    for (int i = 0; i < tokens.len; i++) {
+      g_token token = *(g_token *)g_dynarr_get(&tokens, i);
+      printf("Token:\n");
+      printf("  Token word: %c\n", token.word_type);
+      if (token.is_float)
+        printf("  Token magnitude: %lf\n", token.data.fnum);
+      else
+        printf("  Token magnitude: %li\n", token.data.num);
+    }
     g_dynarr_free(&tokens);
   }
 
