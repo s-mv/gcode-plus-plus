@@ -4,22 +4,26 @@
 #include "util.h"
 
 /*
- * g_word_type
+ * g_token_type
  *
- * "A word is a letter other than N followed by a real value.
- * Words may begin with any of the letters shown in the following Table. The
- * table includes N for completeness, even though, as defined above, line
- * numbers are not words. Several letters (I, J, K, L, P, R) may have different
- * meanings in different contexts. Letters which refer to axis names are not
- * valid on a machine which does not have the corresponding axis."
+ * small foreword - most these start with `g_word` because it's easier to
+ * identify words as opposed to, say, operator tokens, number tokens, etc.
  *
- * REFERENCE: https://linuxcnc.org/docs/stable/html/gcode/overview.html
+ * "A word is a letter other than N followed by a real value. Words may begin
+ * with any of the letters shown in the following Table. The table includes N
+ * for completeness, even though, as defined above, line numbers are not words.
+ * Several letters (I, J, K, L, P, R) may have different meanings in different
+ * contexts. Letters which refer to axis names are not valid on a machine which
+ * does not have the corresponding axis."
+ *
+ * REFERENCE: https://linuxcnc.org/docs/stable/html/gcode/overview.html#_word
  *
  * NOTE: words that have been assigned a character in the enum (like 'g' or 'x')
  * are the ones being implemented (or are already implemented)
  */
 
-typedef enum g_word_type {
+typedef enum g_token_type {
+
   g_word_a,       // A axis of machine
   g_word_b,       // B axis of machine
   g_word_c,       // C axis of machine
@@ -47,10 +51,17 @@ typedef enum g_word_type {
   g_word_z = 'z', // Z axis of machine
 
   // I don't know if these can be considered words
-  // but there's no better way to scan them
+  // but for now let's call them that for the sake of it
   g_word_at,  // @ - polar distance
   g_word_xor, // ^ - polar angle
-} g_word_type;
+
+  g_token_symbol, // +, -, [, ], etc.
+  g_token_number,   // real number or integer
+
+  g_token_function, // https://linuxcnc.org/docs/stable/html/gcode/overview.html#gcode:functions
+
+  g_token_variable, // TODO, what is this? decide or find existing specification
+} g_token_type;
 
 typedef struct g_token_position {
   u64 line;
@@ -69,12 +80,14 @@ typedef union g_token_data {
 
 typedef struct g_token {
   g_token_position position;
-  g_word_type word_type;
+  g_token_type type;
   bool is_float;
-  // the type of the data can be easily determined based on word_type and is_float
+  // the type of the data can be easily determined based on
+  // token_type and is_float
   g_token_data data;
 } g_token;
 
 g_dynarr(g_token) lex(const char *code);
+void print_token(g_token token);
 
 #endif
