@@ -1,9 +1,9 @@
 #include "lexer.h"
 
 #include <ctype.h>
-#include <stdio.h>
 #include <string.h>
 
+#define g_log_current_level g_log_info
 #include "util.h"
 
 void skip(const char *code, g_token_position *pos);
@@ -21,11 +21,13 @@ g_dynarr(g_token) lex(const char *code) {
 
   g_token_position pos = {.index = 0, .line = 1, .column = 1};
   const int len = strlen(code);
-  for (pos.index = 0; pos.index < len; pos.index++) {
-    char current_char = current(code, &pos);
+  for (pos.index = 0; pos.index < len; skip(code, &pos)) {
+    char current_char;
     g_token token = {0};
 
     skip_whitespace(code, &pos);
+
+    current_char = current(code, &pos);
 
     // handle numbers FIRST, I don't want to write 12 cases for this
     if (isdigit(current_char) || current_char == '-' || current_char == '.') {
@@ -36,16 +38,19 @@ g_dynarr(g_token) lex(const char *code) {
 
     skip_whitespace(code, &pos);
 
+    current_char = current(code, &pos);
+
     switch (current_char) {
+    case '\n':
+      token.type = g_token_newline;
+      g_dynarr_push(&tokens, &token);
+      break;
+
     case 'g':
     case 'x':
     case 'y':
     case 'z':
       token.type = current_char;
-      skip(code, &pos);
-      if (!parse_num(code, &pos, &token))
-        ; // TODO, error (some kind of panic mode)
-
       g_dynarr_push(&tokens, &token);
       break;
 
@@ -142,27 +147,26 @@ bool parse_num(const char *code, g_token_position *pos, g_token *token) {
 }
 
 void print_token(g_token token) {
-  printf("Token:\n");
   switch (token.type) {
+  case g_token_newline:
+    g_log(g_log_info, "Token - Newline\n");
+    break;
   case g_token_symbol:
-    printf("  Symbol: `%c`\n", token.data.symbol);
+    g_log(g_log_info, "Token - Symbol: `%c`\n", token.data.symbol);
     break;
   case g_token_number:
     if (token.is_float)
-      printf("  Number: %lf\n", token.data.fnum);
+      g_log(g_log_info, "Token - Number: %lf\n", token.data.fnum);
     else
-      printf("  Number: %ld\n", token.data.num);
+      g_log(g_log_info, "Token - Number: %ld\n", token.data.num);
     break;
-
+  case 'x':
+  case 'y':
+  case 'z':
+  case 'g':
+    g_log(g_log_info, "Token - Word: %c\n", token.type);
+    break;
   default:
-    if (token.is_float)
-      printf("       Word: %c\n"
-             "  Magnitude: %lf\n",
-             token.type, token.data.fnum);
-    else
-      printf("       Word: %c\n"
-             "  Magnitude: %ld\n",
-             token.type, token.data.num);
     break;
   }
 }
@@ -194,6 +198,6 @@ inline char peek2(const char *code, g_token_position *pos) {
 }
 
 inline void skip_whitespace(const char *code, g_token_position *pos) {
-  while (isspace(current(code, pos)))
+  while (current(code, pos) != '\n' && isspace(current(code, pos)))
     skip(code, pos);
 }

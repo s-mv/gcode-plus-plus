@@ -55,8 +55,10 @@ typedef enum g_token_type {
   g_word_at,  // @ - polar distance
   g_word_xor, // ^ - polar angle
 
+  g_token_newline,
+
   g_token_symbol, // +, -, [, ], etc.
-  g_token_number,   // real number or integer
+  g_token_number, // real number or integer
 
   g_token_function, // https://linuxcnc.org/docs/stable/html/gcode/overview.html#gcode:functions
 
