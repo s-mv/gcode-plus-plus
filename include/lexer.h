@@ -28,7 +28,7 @@ typedef enum g_token_type {
   g_word_b,       // B axis of machine
   g_word_c,       // C axis of machine
   g_word_d,       // Tool radius compensation number
-  g_word_f,       // Feed rate
+  g_word_f = 'f', // Feed rate
   g_word_g = 'g', // General function (See table G-code Modal Groups)
   g_word_h,       // Tool length offset index
   g_word_i,       // X offset for arcs and G87 canned cycles
@@ -63,6 +63,8 @@ typedef enum g_token_type {
   g_token_function, // https://linuxcnc.org/docs/stable/html/gcode/overview.html#gcode:functions
 
   g_token_variable, // TODO, what is this? decide or find existing specification
+
+  /* TODO: see how to handle g_token_block and g_token_comment */
 } g_token_type;
 
 typedef struct g_token_position {
@@ -89,7 +91,7 @@ typedef struct g_token {
   g_token_data data;
 } g_token;
 
-g_dynarr(g_token) lex(const char *code);
+g_dynarr(g_token) g_lex(const char *code);
 void print_token(g_token token);
 
 #endif

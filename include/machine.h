@@ -22,10 +22,19 @@ typedef struct g_machine {
                     // (TODO, add some references in comments)
 } g_machine;
 
-void g_machine_init(g_machine *machine) {
-  machine->position = (g_vec3d){0, 0, 0};
-  machine->unit = g_unit_mm;
-  machine->feed_rate = 600; // 600.0 mm per minute => 1 cm per second
-}
 
-#endif
+void g_machine_init(g_machine *machine);
+void g_machine_run(g_dynarr(char) code);
+
+
+/* "canonical operations" as I like to call them
+ *
+ * notice how there's an src/vm.c and no src/machine.c
+ * this is because this header assumes that some machine.c would be linked
+ * instead of vm.c for a specific machine
+ */
+
+
+
+
+ #endif

@@ -1,6 +1,6 @@
 TITLE=gcode++
 CC ?= gcc
-OBJECTS = build/util.o build/lexer.o
+OBJECTS = build/util.o build/lexer.o build/parser.o
 CLFAGS = -std=c99 -g
 
 .PHONY: dev clean

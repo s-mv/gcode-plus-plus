@@ -6,6 +6,7 @@
 
 typedef uint16_t u16;
 typedef uint64_t u64;
+typedef int64_t i8;
 typedef int64_t i64;
 typedef double f64;
 
@@ -43,7 +44,7 @@ typedef struct g_dynarr {
 #define g_dynarr(type) g_dynarr
 
 void g_dynarr_init(g_dynarr *arr, const u64 size);
-void *g_dynarr_get(g_dynarr *arr, const int index);
+void *g_dynarr_get(const g_dynarr *arr, const int index);
 void g_dynarr_set(g_dynarr *arr, const int index, void *data);
 void g_dynarr_push(g_dynarr *arr, void *data);
 void *g_dynarr_pop(g_dynarr *arr);

@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "lexer.h"
+#include "parser.h"
 #include "util.h"
 
 #define max_input_len 256
@@ -25,11 +26,16 @@ int main(int argc, char **argv) {
     }
 
     g_dynarr(g_token) tokens;
-    tokens = lex(input);
+    tokens = g_lex(input);
     for (int i = 0; i < tokens.len; i++) {
       g_token token = *(g_token *)g_dynarr_get(&tokens, i);
       print_token(token);
     }
+    g_parser parser;
+    g_parser_init(&parser, tokens);
+    g_parse_tree tree = g_parse(&parser);
+    g_print_parse_tree(tree);
+    g_parse_tree_free(tree);
     g_dynarr_free(&tokens);
 
     free(input);
@@ -48,11 +54,16 @@ int main(int argc, char **argv) {
       break;
 
     g_dynarr(g_token) tokens;
-    tokens = lex(input);
+    tokens = g_lex(input);
     for (int i = 0; i < tokens.len; i++) {
       g_token token = *(g_token *)g_dynarr_get(&tokens, i);
       print_token(token);
     }
+    g_parser parser;
+    g_parser_init(&parser, tokens);
+    g_parse_tree tree = g_parse(&parser);
+    g_print_parse_tree(tree);
+    g_parse_tree_free(tree);
     g_dynarr_free(&tokens);
   }
 

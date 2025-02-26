@@ -1,7 +1,4 @@
-/ hello world
-/ the .cnc format doesn't exist
-; I made it up :P
-
-g0 x[12 / 13] y11 z11 (this is also a comment)
-
-/ the end
+; just testing stuff
+g21 (use mm)
+g1 z0 (i.e. old x, old y, 0) f800
+/ g0 x1 ; this won't run right now

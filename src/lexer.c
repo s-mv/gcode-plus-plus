@@ -6,16 +6,16 @@
 #define g_log_current_level g_log_info
 #include "util.h"
 
-void skip(const char *code, g_token_position *pos);
-char next(const char *code, g_token_position *pos);
-char current(const char *code, g_token_position *pos);
-char peek(const char *code, g_token_position *pos);
-char peek2(const char *code, g_token_position *pos);
+static void skip(const char *code, g_token_position *pos);
+static char next(const char *code, g_token_position *pos);
+static char current(const char *code, g_token_position *pos);
+static char peek(const char *code, g_token_position *pos);
+static char peek2(const char *code, g_token_position *pos);
 
 bool parse_num(const char *code, g_token_position *pos, g_token *token);
 void skip_whitespace(const char *code, g_token_position *pos);
 
-g_dynarr(g_token) lex(const char *code) {
+g_dynarr(g_token) g_lex(const char *code) {
   g_dynarr(g_token) tokens; // RESPONSIBILITY OF DEALLOCATION TO CALLEE
   g_dynarr_init(&tokens, sizeof(g_token));
 
@@ -46,6 +46,7 @@ g_dynarr(g_token) lex(const char *code) {
       g_dynarr_push(&tokens, &token);
       break;
 
+    case 'f':
     case 'g':
     case 'x':
     case 'y':
@@ -160,6 +161,7 @@ void print_token(g_token token) {
     else
       g_log(g_log_info, "Token - Number: %ld\n", token.data.num);
     break;
+  case 'f':
   case 'x':
   case 'y':
   case 'z':
@@ -171,7 +173,7 @@ void print_token(g_token token) {
   }
 }
 
-void skip(const char *code, g_token_position *pos) {
+static void skip(const char *code, g_token_position *pos) {
   char current = code[pos->index++];
   if (current == '\n') {
     pos->line++;
@@ -180,20 +182,20 @@ void skip(const char *code, g_token_position *pos) {
     pos->column++;
 }
 
-inline char next(const char *code, g_token_position *pos) {
+static inline char next(const char *code, g_token_position *pos) {
   skip(code, pos);
   return code[pos->index];
 }
 
-inline char current(const char *code, g_token_position *pos) {
+static inline char current(const char *code, g_token_position *pos) {
   return code[pos->index];
 }
 
-inline char peek(const char *code, g_token_position *pos) {
+static inline char peek(const char *code, g_token_position *pos) {
   return code[pos->index + 1];
 }
 
-inline char peek2(const char *code, g_token_position *pos) {
+static inline char peek2(const char *code, g_token_position *pos) {
   return code[pos->index + 2];
 }
 
