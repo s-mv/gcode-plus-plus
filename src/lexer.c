@@ -85,7 +85,6 @@ g_dynarr(g_token) g_lex(const char *code) {
     case '(':
       while (next(code, &pos) != ')')
         ;
-      skip(code, &pos);
       // major TODO, logging and debug functionality
       // TODO (?), if it's a comment, add it as a token too
       break;

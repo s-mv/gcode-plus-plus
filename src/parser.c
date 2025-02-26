@@ -76,7 +76,6 @@ g_block parse_command_block(g_parser *parser) {
     g_dynarr_push(&words, &word);
     skip(parser);
   }
-  // skip(parser);
 
   return (g_block){
       .type = g_block_command_block, // TODO other block types
