@@ -7,33 +7,13 @@
 
 typedef u64 token_pointer;
 
-// this is to be extended later
-typedef struct g_expression {
-  union {
-    i64 num;
-    f64 fnum;
-  } data;
-  bool is_float;
-} g_expression;
-
-typedef struct g_word {
-  char letter;
-  g_expression expression;
-} g_word;
-
-typedef struct g_block {
-  g_dynarr(g_word) words;
-  enum g_block_type {
-    g_block_command_block,
-    // TODO: if block, for block, etc.
-  } type;
-} g_block;
-
 static g_token current(g_parser *parser);
 static void skip(g_parser *parser);
 static g_token peek(g_parser *parser);
 static g_token peek2(g_parser *parser);
 static g_token next(g_parser *parser);
+
+g_block parse_block(g_parser *parser);
 
 g_expression parse_expression(g_parser *parser) {
   g_token current_token = current(parser);
@@ -77,13 +57,72 @@ g_block parse_command_block(g_parser *parser) {
     skip(parser);
   }
 
+  /* validate command block */
+  // 1. check modal groups of the words
+
+  for (int i = 0; i < words.len; i++) {
+  }
+
   return (g_block){
       .type = g_block_command_block, // TODO other block types
       .words = words,
   };
 }
 
-g_block parse_block(g_parser *parser) { return parse_command_block(parser); }
+g_block parse_if_block(g_parser *parser) {
+  g_block block = {0};
+  block.type = g_block_if_block;
+
+  skip(parser); // skip `if`
+
+  block.expression = parse_expression(parser);
+  skip(parser);
+
+  if (current(parser).type != g_token_then &&
+      peek(parser).type != g_token_newline) {
+    // TODO, bettererror handling
+    g_log(g_log_error, "Expected `then` keyword followed by newline!\n");
+    return block;
+  }
+
+  skip(parser); // skip `then`
+  skip(parser); // skip newline token
+
+  g_dynarr_init(&block.then_blocks, sizeof(g_block));
+  while (current(parser).type != g_token_else &&
+         current(parser).type != g_token_end) {
+    g_block new_block = parse_block(parser);
+    g_dynarr_push(&block.then_blocks, &new_block);
+    skip(parser);
+  }
+
+  if (current(parser).type == g_token_else) {
+    skip(parser); // skip `else`
+
+    g_dynarr_init(&block.else_blocks, sizeof(g_block));
+    while (current(parser).type != g_token_end) {
+      g_block new_block = parse_block(parser);
+      g_dynarr_push(&block.else_blocks, &new_block);
+      skip(parser);
+    }
+  }
+
+  if (current(parser).type != g_token_end) {
+    g_log(g_log_error,
+          "Expected 'end' keyword!\n"); // TODO, better error handling
+    return block;
+  }
+
+  skip(parser); // skip `end`
+
+  return block;
+}
+
+g_block parse_block(g_parser *parser) {
+  if (current(parser).type == g_token_if)
+    return parse_if_block(parser);
+  return parse_command_block(parser);
+}
 
 void g_parser_init(g_parser *parser, g_token_stream tokens) {
   parser->token_pointer = 0;
@@ -105,7 +144,8 @@ g_parse_tree g_parse(g_parser *parser) {
 void g_parse_tree_free(g_parse_tree tree) {
   for (int i = 0; i < tree.blocks.len; i++) {
     g_block block = *(g_block *)g_dynarr_get(&tree.blocks, i);
-    g_dynarr_free(&block.words);
+    if (block.type == g_block_command_block)
+      g_dynarr_free(&block.words);
   }
   g_dynarr_free(&tree.blocks);
 }
@@ -146,6 +186,8 @@ void print_word(g_word *word, int *indent) {
   g_log(g_log_info, "%*s)\n", *indent, " ");
 }
 
+void print_blocks(g_dynarr blocks, int *indent);
+
 void print_block(g_block block, int *indent) {
   switch (block.type) {
   case g_block_command_block:
@@ -158,9 +200,46 @@ void print_block(g_block block, int *indent) {
     *indent -= 2;
     g_log(g_log_info, "%*s)\n", *indent, " ");
     break;
+  case g_block_if_block:
+    g_log(g_log_info, "%*s(if-block\n", *indent, " ");
+    *indent += 2;
+
+    g_log(g_log_info, "%*s(condition\n", *indent, " ");
+    *indent += 2;
+    print_expression(&block.expression, indent);
+    *indent -= 2;
+    g_log(g_log_info, "%*s)\n", *indent, " ");
+
+    if (block.then_blocks.len > 0) {
+      g_log(g_log_info, "%*s(then\n", *indent, " ");
+      *indent += 2;
+      print_blocks(block.then_blocks, indent);
+      *indent -= 2;
+      g_log(g_log_info, "%*s)\n", *indent, " ");
+    }
+
+    if (block.else_blocks.len > 0) {
+      g_log(g_log_info, "%*s(else\n", *indent, " ");
+      *indent += 2;
+      print_blocks(block.else_blocks, indent);
+      *indent -= 2;
+      g_log(g_log_info, "%*s)\n", *indent, " ");
+    }
+
+    *indent -= 2;
+    g_log(g_log_info, "%*s)\n", *indent, " ");
+    break;
+
   default:
     g_log(g_log_info, "Unknown block type!\n");
     break;
+  }
+}
+
+void print_blocks(g_dynarr blocks, int *indent) {
+  for (int i = 0; i < blocks.len; i++) {
+    g_block *inner_block = (g_block *)g_dynarr_get(&blocks, i);
+    print_block(*inner_block, indent);
   }
 }
 

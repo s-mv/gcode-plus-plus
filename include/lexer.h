@@ -62,6 +62,11 @@ typedef enum g_token_type {
 
   g_token_function, // https://linuxcnc.org/docs/stable/html/gcode/overview.html#gcode:functions
 
+  g_token_if,
+  g_token_else,
+  g_token_then,
+  g_token_end,
+
   g_token_variable, // TODO, what is this? decide or find existing specification
 
   /* TODO: see how to handle g_token_block and g_token_comment */

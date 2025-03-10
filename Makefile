@@ -8,7 +8,7 @@ CLFAGS = -std=c99 -g
 default: dev
 
 dev: $(OBJECTS)
-	@$(CC) main.c $(OBJECTS) -I include/ -o build/$(TITLE)
+	@$(CC) main.c $(OBJECTS) -I include/ -o build/$(TITLE) $(CLFAGS)
 
 build/%.o: src/%.c
 	@$(CC) $< -I include/ $(CLFAGS) -o $@ -c

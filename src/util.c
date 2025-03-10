@@ -74,7 +74,7 @@ void g_dynarr_init(g_dynarr *arr, const u64 size) {
 
 void *g_dynarr_get(const g_dynarr *arr, const int index) {
   if (index >= arr->len || index < 0) {
-    fprintf(stderr, "Invalid index!\n");
+    fprintf(stderr, "Invalid index %d!\n", index);
     return NULL;
   }
   return (char *)arr->data + index * arr->size;
@@ -82,7 +82,7 @@ void *g_dynarr_get(const g_dynarr *arr, const int index) {
 
 void g_dynarr_set(g_dynarr *arr, const int index, void *data) {
   if (index < 0) {
-    fprintf(stderr, "Invalid index!\n");
+    fprintf(stderr, "Invalid index %d!\n", index);
     return;
   }
   if (index >= arr->cap) {

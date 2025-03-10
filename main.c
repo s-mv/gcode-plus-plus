@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
     g_parser_init(&parser, tokens);
     g_parse_tree tree = g_parse(&parser);
     g_print_parse_tree(tree);
-    g_parse_tree_free(tree);
+    // g_parse_tree_free(tree);
     g_dynarr_free(&tokens);
   }
 

@@ -18,8 +18,10 @@
  * TODO: Proper documentation, but for now this comment would suffice.
  *
  * program       -> block* ;
- * block         -> command_block ; // | if_block | for_block (TODO);
+ * block         -> command_block | if_block ; // | for_block (TODO);
  * command_block -> word* '\n' ;
+ * if_block      -> `if` expression `then` block `end` ;
+ * if_block      -> `if` expression `then` block `else` block `end` ;
  * word          -> LETTER expression ;
  *
  * (expressions are parsed separately)
@@ -27,7 +29,38 @@
 
 typedef g_dynarr(g_token) g_token_stream;
 
-struct g_block;
+// this is to be extended later
+typedef struct g_expression {
+  union {
+    i64 num;
+    f64 fnum;
+  } data;
+  bool is_float;
+} g_expression;
+
+typedef struct g_word {
+  char letter;
+  g_expression expression;
+} g_word;
+
+typedef struct g_block g_block;
+struct g_block {
+  union {
+    struct {
+      g_expression expression;
+      g_dynarr(g_block) then_blocks;
+      g_dynarr(g_block) else_blocks;
+    };
+    g_dynarr(g_word) words;
+  };
+
+  enum g_block_type {
+    g_block_command_block,
+    g_block_if_block,
+    g_block_else_block,
+    // TODO: for block
+  } type;
+};
 
 typedef struct g_parse_tree {
   g_dynarr(struct g_block) blocks;

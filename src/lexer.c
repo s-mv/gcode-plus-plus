@@ -46,6 +46,23 @@ g_dynarr(g_token) g_lex(const char *code) {
       g_dynarr_push(&tokens, &token);
       break;
 
+    case 'i': // can either be `if` or `i` (`i` being TODO)
+      if (strncmp(code + pos.index, "if", 2) == 0 && !isalnum(code[pos.index + 2])) {
+        skip(code, &pos);
+        token.type = g_token_if;
+        g_dynarr_push(&tokens, &token);
+        break;
+      }
+
+    case 't': // this can also be tool select word
+      if (strncmp(code + pos.index, "then", 4) == 0 && !isalnum(code[pos.index + 4])) {
+        for (int i = 0; i < 3; i++)
+          skip(code, &pos);
+        token.type = g_token_then;
+        g_dynarr_push(&tokens, &token);
+        break;
+      }
+
     case 'f':
     case 'g':
     case 'x':
@@ -53,6 +70,21 @@ g_dynarr(g_token) g_lex(const char *code) {
     case 'z':
       token.type = current_char;
       g_dynarr_push(&tokens, &token);
+      break;
+
+    case 'e': // NOTE: there's no word for e
+      if (strncmp(code + pos.index, "end", 3) == 0 && !isalnum(code[pos.index + 3])) {
+        skip(code, &pos);
+        skip(code, &pos);
+        token.type = g_token_end;
+        g_dynarr_push(&tokens, &token);
+      }
+      if (strncmp(code + pos.index, "else", 4) == 0 && !isalnum(code[pos.index + 4])) {
+        for (int i = 0; i < 3; i++)
+          skip(code, &pos);
+        token.type = g_token_else;
+        g_dynarr_push(&tokens, &token);
+      }
       break;
 
     /* expression parsing... ahem, lexing */
@@ -160,6 +192,20 @@ void print_token(g_token token) {
     else
       g_log(g_log_info, "Token - Number: %ld\n", token.data.num);
     break;
+
+  case g_token_if:
+    g_log(g_log_info, "Token - if\n");
+    break;
+  case g_token_else:
+    g_log(g_log_info, "Token - else\n");
+    break;
+  case g_token_then:
+    g_log(g_log_info, "Token - then\n");
+    break;
+  case g_token_end:
+    g_log(g_log_info, "Token - end\n");
+    break;
+
   case 'f':
   case 'x':
   case 'y':
