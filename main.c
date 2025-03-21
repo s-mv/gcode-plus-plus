@@ -11,10 +11,6 @@
 int main(int argc, char **argv) {
   char input[max_input_len];
 
-  printf("rs274 (g-code) JIT interpreter\n"
-         "TODO, everything!\n"
-         "Run `exit` to exit.\n");
-
   if (argc > 1) {
     const char *src = argv[1];
 
@@ -44,6 +40,10 @@ int main(int argc, char **argv) {
   }
 
   // ...else REPL
+
+  printf("rs274 (g-code) JIT interpreter\n"
+         "TODO, everything!\n"
+         "Run `exit` to exit.\n");
 
   while (1) {
     printf("> ");

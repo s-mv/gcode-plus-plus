@@ -1,11 +1,36 @@
 #include "parser.h"
 
-#include "ctype.h"
+#include <ctype.h>
+#include <string.h>
 
 #include "lexer.h"
 #include "util.h"
 
 typedef u64 token_pointer;
+
+// helper array for modal groups of g-codes
+// possible TODO: organize/refactor this more properly
+// here, -1 is like the '\0' in strings
+const f64 *g_modal_groups[g_modal_groups_num] = {
+    [0] = (const f64[]){4, 10, 28, 30, 52, 53, 92, 92.1, 92.2, 92.3, -1},
+    [1] = (const f64[]){0, 1, 2, 3, 33, 38, 73, 76, 80, 81, 82, 83, 84, 85, 86,
+                        87, 88, 89, -1},
+    [2] = (const f64[]){17, 18, 19, 17.1, 18.1, 19.1, -1},
+    [3] = (const f64[]){90, 91, -1},
+    [4] = (const f64[]){90.1, 91.1, -1},
+    [5] = (const f64[]){93, 94, 95, -1},
+    [6] = (const f64[]){20, 21, -1},
+    [7] = (const f64[]){40, 41, 42, 41.1, 42.1, -1},
+    [8] = (const f64[]){43, 43.1, 49, -1},
+    [10] = (const f64[]){98, 99, -1},
+    [12] = (const f64[]){54, 55, 56, 57, 58, 59, 59.1, 59.2, 59.3, -1},
+    [13] = (const f64[]){61, 61.1, 64, -1},
+    [14] = (const f64[]){96, 97, -1},
+    [15] = (const f64[]){7, 8, -1},
+
+    [9] = (const f64[]){-1},
+    [11] = (const f64[]){-1},
+};
 
 static g_token current(g_parser *parser);
 static void skip(g_parser *parser);
@@ -13,10 +38,18 @@ static g_token peek(g_parser *parser);
 static g_token peek2(g_parser *parser);
 static g_token next(g_parser *parser);
 
+// help with "semantic" analysis
+int get_modal_group_g(f64 number);
+
 g_block parse_block(g_parser *parser);
 
 g_expression parse_expression(g_parser *parser) {
   g_token current_token = current(parser);
+
+  if (current_token.type == g_token_symbol &&
+      current_token.data.symbol == '[') {
+    // TODO...
+  }
 
   if (current_token.type != g_token_number) {
     return (g_expression){}; // TODO, error handling
@@ -40,8 +73,6 @@ g_word parse_word(g_parser *parser) {
 
   g_expression expression = parse_expression(parser);
 
-  // TODO, analyze modal group, etc.
-
   return (g_word){
       .expression = expression,
       .letter = current_token.type,
@@ -59,8 +90,26 @@ g_block parse_command_block(g_parser *parser) {
 
   /* validate command block */
   // 1. check modal groups of the words
-
+  bool encountered_modal_groups[g_modal_groups_num];
+  memset(encountered_modal_groups, false, g_modal_groups_num);
   for (int i = 0; i < words.len; i++) {
+    g_word word = *(g_word *)g_dynarr_get(&words, i);
+    if ((char)word.letter == 'g') {
+      g_expression expr = word.expression;
+      f64 number = expr.is_float ? expr.data.fnum : (f64)expr.data.num;
+      int group = get_modal_group_g(number);
+      if (group == -1)
+        continue;
+      if (encountered_modal_groups[group]) {
+        g_log(g_log_error,
+              "Multiple g-codes of the same modal group (%d) used in the same "
+              "command block!\n",
+              group);
+        // TODO proper error handling
+        continue;
+      }
+      encountered_modal_groups[group] = true;
+    }
   }
 
   return (g_block){
@@ -126,7 +175,6 @@ g_block parse_block(g_parser *parser) {
 
 void g_parser_init(g_parser *parser, g_token_stream tokens) {
   parser->token_pointer = 0;
-  parser->current_modal_group = -1;
   parser->tokens = tokens;
 }
 
@@ -166,6 +214,17 @@ inline g_token peek2(g_parser *parser) {
 
 inline g_token next(g_parser *parser) {
   return *(g_token *)g_dynarr_get(&parser->tokens, ++parser->token_pointer);
+}
+
+/***  functions that help with "semantic" analysis ***/
+int get_modal_group_g(f64 number) {
+  for (int i = 0; i < g_modal_groups_num; i++) {
+    for (int j = 0; g_modal_groups[i][j] != -1; j++) {
+      if (number == g_modal_groups[i][j])
+        return i;
+    }
+  }
+  return -1;
 }
 
 /*** helper functions for printing the parse tree ***/
