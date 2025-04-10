@@ -1,35 +1,38 @@
-#include "parser.h"
+#include "parser.hpp"
 
+#include <cstring>
 #include <ctype.h>
-#include <string.h>
 
-#include "lexer.h"
-#include "util.h"
+#include "lexer.hpp"
+#include "util.hpp"
 
 typedef u64 token_pointer;
 
 // helper array for modal groups of g-codes
 // possible TODO: organize/refactor this more properly
 // here, -1 is like the '\0' in strings
-const f64 *g_modal_groups[g_modal_groups_num] = {
-    [0] = (const f64[]){4, 10, 28, 30, 52, 53, 92, 92.1, 92.2, 92.3, -1},
-    [1] = (const f64[]){0, 1, 2, 3, 33, 38, 73, 76, 80, 81, 82, 83, 84, 85, 86,
-                        87, 88, 89, -1},
-    [2] = (const f64[]){17, 18, 19, 17.1, 18.1, 19.1, -1},
-    [3] = (const f64[]){90, 91, -1},
-    [4] = (const f64[]){90.1, 91.1, -1},
-    [5] = (const f64[]){93, 94, 95, -1},
-    [6] = (const f64[]){20, 21, -1},
-    [7] = (const f64[]){40, 41, 42, 41.1, 42.1, -1},
-    [8] = (const f64[]){43, 43.1, 49, -1},
-    [10] = (const f64[]){98, 99, -1},
-    [12] = (const f64[]){54, 55, 56, 57, 58, 59, 59.1, 59.2, 59.3, -1},
-    [13] = (const f64[]){61, 61.1, 64, -1},
-    [14] = (const f64[]){96, 97, -1},
-    [15] = (const f64[]){7, 8, -1},
+const f64 *g_modal_groups[16] = {
+    (const f64[]){4, 10, 28, 30, 52, 53, 92, 92.1, 92.2, 92.3, -1},
+    (const f64[]){0, 1, 2, 3, 33, 38, 73, 76, 80, 81, 82, 83, 84, 85, 86, 87,
+                  88, 89, -1},
+    (const f64[]){17, 18, 19, 17.1, 18.1, 19.1, -1},
+    (const f64[]){90, 91, -1},
+    (const f64[]){90.1, 91.1, -1},
+    (const f64[]){93, 94, 95, -1},
+    (const f64[]){20, 21, -1},
+    (const f64[]){40, 41, 42, 41.1, 42.1, -1},
+    (const f64[]){43, 43.1, 49, -1},
 
-    [9] = (const f64[]){-1},
-    [11] = (const f64[]){-1},
+    (const f64[]){-1},
+
+    (const f64[]){98, 99, -1},
+
+    (const f64[]){-1},
+
+    (const f64[]){54, 55, 56, 57, 58, 59, 59.1, 59.2, 59.3, -1},
+    (const f64[]){61, 61.1, 64, -1},
+    (const f64[]){96, 97, -1},
+    (const f64[]){7, 8, -1},
 };
 
 static g_token current(g_parser *parser);
@@ -56,8 +59,8 @@ g_expression parse_expression(g_parser *parser) {
   }
 
   return (g_expression){
+      .data = {.num = current_token.data.num}, // adjusts for fnum
       .is_float = current_token.is_float,
-      .data.num = current_token.data.num, // adjusts for fnum
   };
 }
 
@@ -73,9 +76,9 @@ g_word parse_word(g_parser *parser) {
 
   g_expression expression = parse_expression(parser);
 
-  return (g_word){
+  return {
+      .letter = (char)current_token.type,
       .expression = expression,
-      .letter = current_token.type,
   };
 }
 
@@ -113,14 +116,14 @@ g_block parse_command_block(g_parser *parser) {
   }
 
   return (g_block){
-      .type = g_block_command_block, // TODO other block types
       .words = words,
+      .type = g_block::command_block, // TODO other block types
   };
 }
 
 g_block parse_if_block(g_parser *parser) {
   g_block block = {0};
-  block.type = g_block_if_block;
+  block.type = g_block::if_block;
 
   skip(parser); // skip `if`
 
@@ -192,7 +195,7 @@ g_parse_tree g_parse(g_parser *parser) {
 void g_parse_tree_free(g_parse_tree tree) {
   for (int i = 0; i < tree.blocks.len; i++) {
     g_block block = *(g_block *)g_dynarr_get(&tree.blocks, i);
-    if (block.type == g_block_command_block)
+    if (block.type == g_block::command_block)
       g_dynarr_free(&block.words);
   }
   g_dynarr_free(&tree.blocks);
@@ -249,7 +252,7 @@ void print_blocks(g_dynarr blocks, int *indent);
 
 void print_block(g_block block, int *indent) {
   switch (block.type) {
-  case g_block_command_block:
+  case g_block::command_block:
     g_log(g_log_info, "%*s(block\n", *indent, " ");
     *indent += 2;
     for (int i = 0; i < block.words.len; i++) {
@@ -259,7 +262,7 @@ void print_block(g_block block, int *indent) {
     *indent -= 2;
     g_log(g_log_info, "%*s)\n", *indent, " ");
     break;
-  case g_block_if_block:
+  case g_block::if_block:
     g_log(g_log_info, "%*s(if-block\n", *indent, " ");
     *indent += 2;
 

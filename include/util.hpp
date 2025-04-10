@@ -1,8 +1,8 @@
-#ifndef smv_gcodepp_util_h
-#define smv_gcodepp_util_h
+#ifndef smv_gcodepp_util_hpp
+#define smv_gcodepp_util_hpp
 
-#include <stdbool.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef uint64_t u8;
 typedef uint16_t u16;
@@ -29,7 +29,7 @@ typedef enum g_log_level {
 
 #endif
 
-int g_log(g_log_level level, const char *restrict format, ...);
+int g_log(g_log_level level, const char *format, ...);
 
 /* g_dynarr - dynamic array helper */
 

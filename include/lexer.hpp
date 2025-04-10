@@ -1,7 +1,7 @@
-#ifndef smv_gcodepp_lexer_h
-#define smv_gcodepp_lexer_h
+#ifndef smv_gcodepp_lexer_hpp
+#define smv_gcodepp_lexer_hpp
 
-#include "util.h"
+#include "util.hpp"
 
 /*
  * g_token_type
@@ -72,11 +72,14 @@ typedef enum g_token_type {
   /* TODO: see how to handle g_token_block and g_token_comment */
 } g_token_type;
 
-typedef struct g_token_position {
+struct g_token_position {
   u64 line;
   u64 column;
   u64 index;
-} g_token_position;
+
+  g_token_position(u64 line, u64 column, u64 index)
+      : line(line), column(column), index(index) {}
+};
 
 typedef union g_token_data {
   i64 num;
@@ -94,6 +97,8 @@ typedef struct g_token {
   // the type of the data can be easily determined based on
   // token_type and is_float
   g_token_data data;
+
+  g_token() : position(1, 1, 0), type(g_token_end), is_float(false) {};
 } g_token;
 
 g_dynarr(g_token) g_lex(const char *code);

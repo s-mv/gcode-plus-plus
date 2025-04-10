@@ -1,17 +1,37 @@
 [
   {
     "arguments": [
-      "/sbin/cc",
+      "/sbin/g++",
       "-I",
       "include/",
-      "-std=c99",
+      "-std=c++11",
+      "-g",
       "-c",
       "-o",
-      "build/lexer.o",
-      "src/lexer.c"
+      "build/parser.o",
+      "src/parser.cpp"
     ],
     "directory": "/home/smv/code/intern/accelus/gcode-smv",
-    "file": "/home/smv/code/intern/accelus/gcode-smv/src/lexer.c",
-    "output": "/home/smv/code/intern/accelus/gcode-smv/build/lexer.o"
+    "file": "/home/smv/code/intern/accelus/gcode-smv/src/parser.cpp",
+    "output": "/home/smv/code/intern/accelus/gcode-smv/build/parser.o"
+  },
+  {
+    "arguments": [
+      "/sbin/g++",
+      "-c",
+      "build/util.o",
+      "build/lexer.o",
+      "build/parser.o",
+      "-I",
+      "include/",
+      "-std=c++11",
+      "-g",
+      "-o",
+      "build/gcode++",
+      "main.cpp"
+    ],
+    "directory": "/home/smv/code/intern/accelus/gcode-smv",
+    "file": "/home/smv/code/intern/accelus/gcode-smv/main.cpp",
+    "output": "/home/smv/code/intern/accelus/gcode-smv/build/gcode++"
   }
 ]

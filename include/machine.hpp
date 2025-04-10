@@ -1,7 +1,7 @@
-#ifndef smv_gcodepp_machine_h
-#define smv_gcodepp_machine_h
+#ifndef smv_gcodepp_machine_hpp
+#define smv_gcodepp_machine_hpp
 
-#include "util.h"
+#include "util.hpp"
 
 typedef enum g_unit {
   g_unit_mm,

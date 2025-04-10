@@ -1,10 +1,10 @@
-#include "lexer.h"
+#include "lexer.hpp"
 
 #include <ctype.h>
 #include <string.h>
 
 #define g_log_current_level g_log_info
-#include "util.h"
+#include "util.hpp"
 
 static void skip(const char *code, g_token_position *pos);
 static char next(const char *code, g_token_position *pos);
@@ -19,11 +19,11 @@ g_dynarr(g_token) g_lex(const char *code) {
   g_dynarr(g_token) tokens; // RESPONSIBILITY OF DEALLOCATION TO CALLEE
   g_dynarr_init(&tokens, sizeof(g_token));
 
-  g_token_position pos = {.index = 0, .line = 1, .column = 1};
+  g_token_position pos = g_token_position(1, 1, 0);
   const int len = strlen(code);
   for (pos.index = 0; pos.index < len; skip(code, &pos)) {
     char current_char;
-    g_token token = {0};
+    g_token token = g_token();
 
     skip_whitespace(code, &pos);
 
@@ -47,7 +47,8 @@ g_dynarr(g_token) g_lex(const char *code) {
       break;
 
     case 'i': // can either be `if` or `i` (`i` being TODO)
-      if (strncmp(code + pos.index, "if", 2) == 0 && !isalnum(code[pos.index + 2])) {
+      if (strncmp(code + pos.index, "if", 2) == 0 &&
+          !isalnum(code[pos.index + 2])) {
         skip(code, &pos);
         token.type = g_token_if;
         g_dynarr_push(&tokens, &token);
@@ -55,7 +56,8 @@ g_dynarr(g_token) g_lex(const char *code) {
       }
 
     case 't': // this can also be tool select word
-      if (strncmp(code + pos.index, "then", 4) == 0 && !isalnum(code[pos.index + 4])) {
+      if (strncmp(code + pos.index, "then", 4) == 0 &&
+          !isalnum(code[pos.index + 4])) {
         for (int i = 0; i < 3; i++)
           skip(code, &pos);
         token.type = g_token_then;
@@ -68,18 +70,20 @@ g_dynarr(g_token) g_lex(const char *code) {
     case 'x':
     case 'y':
     case 'z':
-      token.type = current_char;
+      token.type = (g_token_type)current_char;
       g_dynarr_push(&tokens, &token);
       break;
 
     case 'e': // NOTE: there's no word for e
-      if (strncmp(code + pos.index, "end", 3) == 0 && !isalnum(code[pos.index + 3])) {
+      if (strncmp(code + pos.index, "end", 3) == 0 &&
+          !isalnum(code[pos.index + 3])) {
         skip(code, &pos);
         skip(code, &pos);
         token.type = g_token_end;
         g_dynarr_push(&tokens, &token);
       }
-      if (strncmp(code + pos.index, "else", 4) == 0 && !isalnum(code[pos.index + 4])) {
+      if (strncmp(code + pos.index, "else", 4) == 0 &&
+          !isalnum(code[pos.index + 4])) {
         for (int i = 0; i < 3; i++)
           skip(code, &pos);
         token.type = g_token_else;

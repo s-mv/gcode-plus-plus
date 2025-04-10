@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "lexer.h"
-#include "parser.h"
-#include "util.h"
+#include "lexer.hpp"
+#include "parser.hpp"
+#include "util.hpp"
 
 #define max_input_len 256
 

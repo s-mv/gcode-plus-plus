@@ -1,4 +1,4 @@
-#include "machine.h"
+#include "machine.hpp"
 
 void g_machine_init(g_machine *machine) {
   machine->position = (g_vec3d){0, 0, 0};

@@ -1,8 +1,8 @@
-#ifndef smv_gcodepp_parser_h
-#define smv_gcodepp_parser_h
+#ifndef smv_gcodepp_parser_hpp
+#define smv_gcodepp_parser_hpp
 
-// #include "lexer.h"
-#include "util.h"
+// #include "lexer.hpp"
+#include "util.hpp"
 
 /* DISCLAIMER
  *
@@ -55,9 +55,9 @@ struct g_block {
   };
 
   enum g_block_type {
-    g_block_command_block,
-    g_block_if_block,
-    g_block_else_block,
+    command_block,
+    if_block,
+    else_block,
     // TODO: for block
   } type;
 };

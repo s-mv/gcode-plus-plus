@@ -1,4 +1,4 @@
-#include "util.h"
+#include "util.hpp"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -28,7 +28,7 @@ char *read_file(const char *src) {
 
 /* logging utility */
 
-int g_log(g_log_level level, const char *restrict format, ...) {
+int g_log(g_log_level level, const char *format, ...) {
   if (level > g_log_current_level || level == g_log_none)
     return 0;
 
