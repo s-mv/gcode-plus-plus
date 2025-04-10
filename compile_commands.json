@@ -8,6 +8,22 @@
       "-g",
       "-c",
       "-o",
+      "build/lexer.o",
+      "src/lexer.cpp"
+    ],
+    "directory": "/home/smv/code/intern/accelus/gcode-smv",
+    "file": "/home/smv/code/intern/accelus/gcode-smv/src/lexer.cpp",
+    "output": "/home/smv/code/intern/accelus/gcode-smv/build/lexer.o"
+  },
+  {
+    "arguments": [
+      "/sbin/g++",
+      "-I",
+      "include/",
+      "-std=c++11",
+      "-g",
+      "-c",
+      "-o",
       "build/parser.o",
       "src/parser.cpp"
     ],

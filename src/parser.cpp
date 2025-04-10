@@ -49,12 +49,12 @@ g_block parse_block(g_parser *parser);
 g_expression parse_expression(g_parser *parser) {
   g_token current_token = current(parser);
 
-  if (current_token.type == g_token_symbol &&
+  if (current_token.type == g_token_type::symbol &&
       current_token.data.symbol == '[') {
     // TODO...
   }
 
-  if (current_token.type != g_token_number) {
+  if (current_token.type != g_token_type::number) {
     return (g_expression){}; // TODO, error handling
   }
 
@@ -85,7 +85,7 @@ g_word parse_word(g_parser *parser) {
 g_block parse_command_block(g_parser *parser) {
   g_dynarr(g_word) words;
   g_dynarr_init(&words, sizeof(g_word));
-  while (current(parser).type != g_token_newline) {
+  while (current(parser).type != g_token_type::newline) {
     g_word word = parse_word(parser);
     g_dynarr_push(&words, &word);
     skip(parser);
@@ -130,8 +130,8 @@ g_block parse_if_block(g_parser *parser) {
   block.expression = parse_expression(parser);
   skip(parser);
 
-  if (current(parser).type != g_token_then &&
-      peek(parser).type != g_token_newline) {
+  if (current(parser).type != g_token_type::then &&
+      peek(parser).type != g_token_type::newline) {
     // TODO, bettererror handling
     g_log(g_log_error, "Expected `then` keyword followed by newline!\n");
     return block;
@@ -141,25 +141,25 @@ g_block parse_if_block(g_parser *parser) {
   skip(parser); // skip newline token
 
   g_dynarr_init(&block.then_blocks, sizeof(g_block));
-  while (current(parser).type != g_token_else &&
-         current(parser).type != g_token_end) {
+  while (current(parser).type != g_token_type::else_token &&
+         current(parser).type != g_token_type::end) {
     g_block new_block = parse_block(parser);
     g_dynarr_push(&block.then_blocks, &new_block);
     skip(parser);
   }
 
-  if (current(parser).type == g_token_else) {
+  if (current(parser).type == g_token_type::else_token) {
     skip(parser); // skip `else`
 
     g_dynarr_init(&block.else_blocks, sizeof(g_block));
-    while (current(parser).type != g_token_end) {
+    while (current(parser).type != g_token_type::end) {
       g_block new_block = parse_block(parser);
       g_dynarr_push(&block.else_blocks, &new_block);
       skip(parser);
     }
   }
 
-  if (current(parser).type != g_token_end) {
+  if (current(parser).type != g_token_type::end) {
     g_log(g_log_error,
           "Expected 'end' keyword!\n"); // TODO, better error handling
     return block;
@@ -171,7 +171,7 @@ g_block parse_if_block(g_parser *parser) {
 }
 
 g_block parse_block(g_parser *parser) {
-  if (current(parser).type == g_token_if)
+  if (current(parser).type == g_token_type::if_token)
     return parse_if_block(parser);
   return parse_command_block(parser);
 }

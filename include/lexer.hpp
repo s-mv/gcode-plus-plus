@@ -23,51 +23,50 @@
  */
 
 typedef enum g_token_type {
-
-  g_word_a,       // A axis of machine
-  g_word_b,       // B axis of machine
-  g_word_c,       // C axis of machine
-  g_word_d,       // Tool radius compensation number
-  g_word_f = 'f', // Feed rate
-  g_word_g = 'g', // General function (See table G-code Modal Groups)
-  g_word_h,       // Tool length offset index
-  g_word_i,       // X offset for arcs and G87 canned cycles
-  g_word_j,       // Y offset for arcs and G87 canned cycles
-  g_word_k, // Z offset for arcs and G87 canned cycles. Spindle-Motion Ratio for
-            // G33 synchronized movements
-  g_word_l, // Generic parameter word for G10, M66 and others
-  g_word_m, // Miscellaneous function (See table M-code Modal Groups)
-  g_word_n, // Line number
-  g_word_p, // Dwell time in canned cycles and with G4. Key used with G10
-  g_word_q, // Feed increment in G73, G83 canned cycles
-  g_word_r, // Arc radius or canned cycle plane
-  g_word_s, // Spindle speed
-  g_word_t, // Tool selection
-  g_word_u, // U axis of machine
-  g_word_v, // V axis of machine
-  g_word_w, // W axis of machine
-  g_word_x = 'x', // X axis of machine
-  g_word_y = 'y', // Y axis of machine
-  g_word_z = 'z', // Z axis of machine
+  a,       // A axis of machine
+  b,       // B axis of machine
+  c,       // C axis of machine
+  d,       // Tool radius compensation number
+  f = 'f', // Feed rate
+  g = 'g', // General function (See table G-code Modal Groups)
+  h,       // Tool length offset index
+  i,       // X offset for arcs and G87 canned cycles
+  j,       // Y offset for arcs and G87 canned cycles
+  k,       // Z offset for arcs and G87 canned cycles. Spindle-Motion Ratio for
+           // G33 synchronized movements
+  l,       // Generic parameter word for G10, M66 and others
+  m,       // Miscellaneous function (See table M-code Modal Groups)
+  n,       // Line number
+  p,       // Dwell time in canned cycles and with G4. Key used with G10
+  q,       // Feed increment in G73, G83 canned cycles
+  r,       // Arc radius or canned cycle plane
+  s,       // Spindle speed
+  t,       // Tool selection
+  u,       // U axis of machine
+  v,       // V axis of machine
+  w,       // W axis of machine
+  x = 'x', // X axis of machine
+  y = 'y', // Y axis of machine
+  z = 'z', // Z axis of machine
 
   // I don't know if these can be considered words
   // but for now let's call them that for the sake of it
-  g_word_at,  // @ - polar distance
-  g_word_xor, // ^ - polar angle
+  at,        // @ - polar distance
+  xor_angle, // ^ - polar angle, not named `xor` since it's a keyword
 
-  g_token_newline,
+  newline,
 
-  g_token_symbol, // +, -, [, ], etc.
-  g_token_number, // real number or integer
+  symbol, // +, -, [, ], etc.
+  number, // real number or integer
 
-  g_token_function, // https://linuxcnc.org/docs/stable/html/gcode/overview.html#gcode:functions
+  function, // https://linuxcnc.org/docs/stable/html/gcode/overview.html#gcode:functions
 
-  g_token_if,
-  g_token_else,
-  g_token_then,
-  g_token_end,
+  if_token,
+  else_token,
+  then,
+  end,
 
-  g_token_variable, // TODO, what is this? decide or find existing specification
+  variable, // TODO, what is this? decide or find existing specification
 
   /* TODO: see how to handle g_token_block and g_token_comment */
 } g_token_type;
@@ -81,16 +80,16 @@ struct g_token_position {
       : line(line), column(column), index(index) {}
 };
 
-typedef union g_token_data {
+union g_token_data {
   i64 num;
   u64 unum;
   f64 fnum;
   char symbol;
   g_dynarr(char) string;
   void *misc;
-} g_token_data;
+};
 
-typedef struct g_token {
+struct g_token {
   g_token_position position;
   g_token_type type;
   bool is_float;
@@ -98,8 +97,8 @@ typedef struct g_token {
   // token_type and is_float
   g_token_data data;
 
-  g_token() : position(1, 1, 0), type(g_token_end), is_float(false) {};
-} g_token;
+  g_token() : position(1, 1, 0), type(g_token_type::end), is_float(false) {};
+};
 
 g_dynarr(g_token) g_lex(const char *code);
 void print_token(g_token token);

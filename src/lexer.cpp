@@ -32,7 +32,7 @@ g_dynarr(g_token) g_lex(const char *code) {
     // handle numbers FIRST, I don't want to write 12 cases for this
     if (isdigit(current_char) || current_char == '-' || current_char == '.') {
       bool success = parse_num(code, &pos, &token); // TODO, error handling
-      token.type = g_token_number;
+      token.type = g_token_type::number;
       g_dynarr_push(&tokens, &token);
     }
 
@@ -42,7 +42,7 @@ g_dynarr(g_token) g_lex(const char *code) {
 
     switch (current_char) {
     case '\n':
-      token.type = g_token_newline;
+      token.type = g_token_type::newline;
       g_dynarr_push(&tokens, &token);
       break;
 
@@ -50,7 +50,7 @@ g_dynarr(g_token) g_lex(const char *code) {
       if (strncmp(code + pos.index, "if", 2) == 0 &&
           !isalnum(code[pos.index + 2])) {
         skip(code, &pos);
-        token.type = g_token_if;
+        token.type = g_token_type::if_token;
         g_dynarr_push(&tokens, &token);
         break;
       }
@@ -60,7 +60,7 @@ g_dynarr(g_token) g_lex(const char *code) {
           !isalnum(code[pos.index + 4])) {
         for (int i = 0; i < 3; i++)
           skip(code, &pos);
-        token.type = g_token_then;
+        token.type = g_token_type::then;
         g_dynarr_push(&tokens, &token);
         break;
       }
@@ -79,14 +79,14 @@ g_dynarr(g_token) g_lex(const char *code) {
           !isalnum(code[pos.index + 3])) {
         skip(code, &pos);
         skip(code, &pos);
-        token.type = g_token_end;
+        token.type = g_token_type::end;
         g_dynarr_push(&tokens, &token);
       }
       if (strncmp(code + pos.index, "else", 4) == 0 &&
           !isalnum(code[pos.index + 4])) {
         for (int i = 0; i < 3; i++)
           skip(code, &pos);
-        token.type = g_token_else;
+        token.type = g_token_type::else_token;
         g_dynarr_push(&tokens, &token);
       }
       break;
@@ -97,7 +97,7 @@ g_dynarr(g_token) g_lex(const char *code) {
     case '*':
     case '+':
     case '-':
-      token.type = g_token_symbol;
+      token.type = g_token_type::symbol;
       token.data.symbol = current_char;
       token.position = pos;
       g_dynarr_push(&tokens, &token);
@@ -105,7 +105,7 @@ g_dynarr(g_token) g_lex(const char *code) {
 
     case '/':
       if (pos.column != 1) {
-        token.type = g_token_symbol;
+        token.type = g_token_type::symbol;
         token.data.symbol = current_char;
         g_dynarr_push(&tokens, &token);
         break;
@@ -184,29 +184,29 @@ bool parse_num(const char *code, g_token_position *pos, g_token *token) {
 
 void print_token(g_token token) {
   switch (token.type) {
-  case g_token_newline:
+  case g_token_type::newline:
     g_log(g_log_info, "Token - Newline\n");
     break;
-  case g_token_symbol:
+  case g_token_type::symbol:
     g_log(g_log_info, "Token - Symbol: `%c`\n", token.data.symbol);
     break;
-  case g_token_number:
+  case g_token_type::number:
     if (token.is_float)
       g_log(g_log_info, "Token - Number: %lf\n", token.data.fnum);
     else
       g_log(g_log_info, "Token - Number: %ld\n", token.data.num);
     break;
 
-  case g_token_if:
+  case g_token_type::if_token:
     g_log(g_log_info, "Token - if\n");
     break;
-  case g_token_else:
+  case g_token_type::else_token:
     g_log(g_log_info, "Token - else\n");
     break;
-  case g_token_then:
+  case g_token_type::then:
     g_log(g_log_info, "Token - then\n");
     break;
-  case g_token_end:
+  case g_token_type::end:
     g_log(g_log_info, "Token - end\n");
     break;
 
