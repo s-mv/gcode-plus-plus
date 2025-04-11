@@ -2,46 +2,18 @@
   {
     "arguments": [
       "/sbin/g++",
-      "-I",
-      "include/",
-      "-std=c++11",
-      "-g",
-      "-c",
-      "-o",
-      "build/lexer.o",
-      "src/lexer.cpp"
-    ],
-    "directory": "/home/smv/code/intern/accelus/gcode-smv",
-    "file": "/home/smv/code/intern/accelus/gcode-smv/src/lexer.cpp",
-    "output": "/home/smv/code/intern/accelus/gcode-smv/build/lexer.o"
-  },
-  {
-    "arguments": [
-      "/sbin/g++",
-      "-I",
-      "include/",
-      "-std=c++11",
-      "-g",
-      "-c",
-      "-o",
-      "build/parser.o",
-      "src/parser.cpp"
-    ],
-    "directory": "/home/smv/code/intern/accelus/gcode-smv",
-    "file": "/home/smv/code/intern/accelus/gcode-smv/src/parser.cpp",
-    "output": "/home/smv/code/intern/accelus/gcode-smv/build/parser.o"
-  },
-  {
-    "arguments": [
-      "/sbin/g++",
       "-c",
       "build/util.o",
       "build/lexer.o",
       "build/parser.o",
+      "-std=c++17",
+      "-g",
       "-I",
       "include/",
-      "-std=c++11",
-      "-g",
+      "-I",
+      "antlr4/gen/",
+      "-I",
+      "/usr/local/include/antlr4-runtime/",
       "-o",
       "build/gcode++",
       "main.cpp"

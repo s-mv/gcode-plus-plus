@@ -78,7 +78,7 @@ typedef struct g_parser {
 #define g_modal_groups_num 16
 
 void g_parser_init(g_parser *parser, g_token_stream tokens);
-g_parse_tree g_parse(g_parser *parser);
+// g_parse_tree g_parse(g_parser *parser);
 void g_parse_tree_free(g_parse_tree tree);
 
 void g_print_parse_tree(g_parse_tree tree);
