@@ -1,7 +1,9 @@
 #ifndef smv_gcodepp_machine_hpp
 #define smv_gcodepp_machine_hpp
 
+#include "bytecode.hpp"
 #include "util.hpp"
+#include <vector>
 
 typedef enum g_unit {
   g_unit_mm,
@@ -20,12 +22,19 @@ typedef struct g_machine {
   g_unit unit;      // unit could be mm or inch (as per me -- read TODO below)
   f64 feed_rate;    // "speed" of the head in unit/min
                     // (TODO, add some references in comments)
+  std::string code;
+  void init();
+  void run(std::vector<g_inst> bytecode);
+  void print_specs();
+
+  // TODO, decide if we're making functions like this
+  // void rapid_move();
+  // void move_linear();
+  // void set_x();
+  // void set_y();
+  // void set_z();
+  // void set_feedrate();
 } g_machine;
-
-
-void g_machine_init(g_machine *machine);
-void g_machine_run(g_dynarr(char) code);
-
 
 /* "canonical operations" as I like to call them
  *
@@ -34,7 +43,4 @@ void g_machine_run(g_dynarr(char) code);
  * instead of vm.c for a specific machine
  */
 
-
-
-
- #endif
+#endif

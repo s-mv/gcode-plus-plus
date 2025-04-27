@@ -7,13 +7,13 @@ parser grammar parser_antlr4;
 options { tokenVocab=lexer_antlr4; }
 
 // ngcfile
-//    : '%' EOL program '%' EOL .*? EOF
-//    | '%' EOL program EOF
-//    | program EOF
+//    : '%' EOL program '%' EOL .*? EOL
+//    | '%' EOL program EOL
+//    | program EOL
 //    ;
 
 program
-    : line* EOF
+    : line* EOL*
     ;
 
 line

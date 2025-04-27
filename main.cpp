@@ -1,70 +1,69 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstring>
+#include <iostream>
+#include <string>
 
-#include "lexer.hpp"
-#include "parser.hpp"
+#include "ANTLRInputStream.h"
+#include "CommonTokenStream.h"
+#include "bytecode.hpp"
+#include "frontend.hpp"
+#include "lexer_antlr4.h"
+#include "machine.hpp"
+#include "parser_antlr4.h"
 #include "util.hpp"
 
 #define max_input_len 256
 
 int main(int argc, char **argv) {
-  char input[max_input_len];
-
   if (argc > 1) {
     const char *src = argv[1];
 
-    char *input = read_file(src);
-    if (!input) {
-      // TODO, better error handling
-      fprintf(stderr, "Erorr reading file at %s!", src);
+    std::string input(read_file(src));
+    if (input.empty()) {
+      std::cerr << "Error reading file at " << src << "!" << std::endl;
       return 1;
     }
 
-    g_dynarr(g_token) tokens;
-    tokens = g_lex(input);
-    for (int i = 0; i < tokens.len; i++) {
-      g_token token = *(g_token *)g_dynarr_get(&tokens, i);
-      print_token(token);
-    }
-    g_parser parser;
-    g_parser_init(&parser, tokens);
-    g_parse_tree tree = g_parse(&parser);
-    g_print_parse_tree(tree);
-    g_parse_tree_free(tree);
-    g_dynarr_free(&tokens);
-
-    free(input);
+    auto tree = g_frontend_parse(input);
+    // g_print_tree(tree);
 
     return 0;
   }
 
-  // ...else REPL
+  std::cout << "rs274 (g-code) JIT interpreter\n"
+            << "TODO, everything!\n"
+            << "Run `exit` to exit.\n";
 
-  printf("rs274 (g-code) JIT interpreter\n"
-         "TODO, everything!\n"
-         "Run `exit` to exit.\n");
+  g_machine machine;
+  machine.init();
 
-  while (1) {
-    printf("> ");
-    if (fgets(input, sizeof(input), stdin) == NULL)
+  while (true) {
+    std::cout << ">> ";
+    std::string input;
+    if (!std::getline(std::cin, input))
       break;
 
-    if (strncmp(input, "exit", 4) == 0)
+    input += "\n";
+
+    if (input == "exit")
       break;
 
-    g_dynarr(g_token) tokens;
-    tokens = g_lex(input);
-    for (int i = 0; i < tokens.len; i++) {
-      g_token token = *(g_token *)g_dynarr_get(&tokens, i);
-      print_token(token);
-    }
-    g_parser parser;
-    g_parser_init(&parser, tokens);
-    g_parse_tree tree = g_parse(&parser);
-    g_print_parse_tree(tree);
-    // g_parse_tree_free(tree);
-    g_dynarr_free(&tokens);
+    antlr4::ANTLRInputStream ip(input);
+    lexer_antlr4 lexer(&ip);
+    antlr4::CommonTokenStream tokens(&lexer);
+    parser_antlr4 parser(&tokens);
+
+    // antlr4::tree::ParseTree *tree = parser.program();
+    // std::cout << tree->toStringTree(&parser) << std::endl;
+    // g_print_tree(parser);
+
+    g_bytecode_emitter emitter = g_bytecode_emitter();
+    emitter.run(parser.program());
+
+    // std::cout << "Bytecode:\n";
+    // emitter.print();
+    // std::cout << std::endl;
+
+    machine.run(emitter.bytecode);
   }
 
   return 0;
