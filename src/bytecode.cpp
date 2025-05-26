@@ -20,6 +20,7 @@ g_bytecode_emitter::visitLine(parser_antlr4::LineContext *context) {
   for (parser_antlr4::SegmentContext *segment : context->segment()) {
     visit(segment);
   }
+  bytecode.push_back({.code = g_opcode::end_line});
   return nullptr;
 }
 
@@ -48,7 +49,7 @@ antlrcpp::Any g_bytecode_emitter::visitMid_line_word(
       bytecode.push_back({.code = g_opcode::rapid_move});
       break;
     case 1:
-      bytecode.push_back({.code = g_opcode::move_linear});
+      bytecode.push_back({.code = g_opcode::linear_move});
       break;
     default:
       // TODO: Handle other cases
@@ -121,7 +122,7 @@ void g_bytecode_emitter::print() {
 
 std::string get_code_name(g_opcode code) {
   switch (code) {
-  case g_opcode::move_linear:
+  case g_opcode::linear_move:
     return "MOVE LINEAR";
   case g_opcode::rapid_move:
     return "RAPID MOVE";

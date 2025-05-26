@@ -2,7 +2,9 @@
 #define smv_gcodepp_machine_hpp
 
 #include "bytecode.hpp"
+#include "gpp.hpp"
 #include "util.hpp"
+
 #include <vector>
 
 typedef enum g_unit {
@@ -17,7 +19,7 @@ typedef struct g_vec3d {
 // represents the current state of a CNC machine
 // this is EXTREMELY INCOMPLETE, all caps
 // constant work in progress
-typedef struct g_machine {
+typedef struct /* gpp:: */ g_machine {
   g_vec3d position; // CURRENT position
   g_unit unit;      // unit could be mm or inch (as per me -- read TODO below)
   f64 feed_rate;    // "speed" of the head in unit/min

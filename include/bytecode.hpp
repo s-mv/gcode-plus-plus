@@ -6,13 +6,13 @@
 #include "util.hpp"
 
 enum g_opcode : i64 {
-  move_linear,
-  set_parameter,
+  linear_move,
   rapid_move,
   set_x,
   set_y,
   set_z,
   set_feedrate,
+  end_line,
 };
 
 union g_inst {

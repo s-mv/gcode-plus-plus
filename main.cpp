@@ -63,6 +63,9 @@ int main(int argc, char **argv) {
     // emitter.print();
     // std::cout << std::endl;
 
+    for (g_inst x : emitter.bytecode)
+      std::cout << x.code << " " << x.attr << " ";
+    std::cout << std::endl;
     machine.run(emitter.bytecode);
   }
 
