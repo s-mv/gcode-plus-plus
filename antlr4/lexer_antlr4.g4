@@ -4,6 +4,15 @@
 
 lexer grammar lexer_antlr4;
 
+// >>> language extensions
+
+IF : I F ;
+THEN : T H E N ;
+ELSE : E L S E ;
+END : E N D ;
+
+// <<< language extensions
+
 DIGIT : '0' .. '9' ;
 LETTER
     : 'A' .. 'Z'
@@ -20,29 +29,34 @@ RIGHT_BRACKET : ']' ;
 POWER : '**' ;
 SLASH : '/' ;
 
-MODULO : [Mm][Oo][Dd] ;
+MODULO : M O D ;
 
 TIMES : '*' ;
 
-LOGICAL_AND : [Aa][Nn][Dd] ;
+LOGICAL_AND : A N D ;
+EXCLUSIVE_OR : X O R ;
+NON_EXCLUSIVE_OR : O R ;
 
-EXCLUSIVE_OR : [Xx][Oo][Rr] ;
+EQ  : E Q ;
+NE  : N E ;
+LT  : '<' ;
+LE  : '<=' ;
+GT  : '>' ;
+GE  : '>=' ;
 
-NON_EXCLUSIVE_OR : [Oo][Rr] ;
-
-ABSOLUTE_VALUE  : [Aa][Bb][Ss] ;
-ARC_COSINE      : [Aa][Cc][Oo][Ss] ;
-ARC_SINE        : [Aa][Ss][Ii][Nn] ;
-COSINE          : [Cc][Oo][Ss] ;
-E_RAISED_TO     : [Ee][Xx][Pp] ;
-FIX_DOWN        : [Ff][Ii][Xx] ;
-FIX_UP          : [Ff][Uu][Pp] ;
-NATURAL_LOG_OF  : [Ll][Nn] ;
-ROUND_OPERATION : [Rr][Oo][Uu][Nn][Dd] ;
-SINE            : [Ss][Ii][Nn] ;
-SQUARE_ROOT     : [Ss][Qq][Rr][Tt] ;
-TANGENT         : [Tt][Aa][Nn] ;
-ARC_TANGENT     : [Aa][Tt][Aa][Nn] ;
+ABSOLUTE_VALUE  : A B S ;
+ARC_COSINE      : A C O S ;
+ARC_SINE        : A S I N ;
+COSINE          : C O S ;
+E_RAISED_TO     : E X P ;
+FIX_DOWN        : F I X ;
+FIX_UP          : F U P ;
+NATURAL_LOG_OF  : L N ;
+ROUND_OPERATION : R O U N D ;
+SINE            : S I N ;
+SQUARE_ROOT     : S Q R T ;
+TANGENT         : T A N ;
+ARC_TANGENT     : A T A N ;
 
 PARAMETER_SIGN : '#' ;
 EQUAL_SIGN     : '=' ;
@@ -61,3 +75,30 @@ EOL
 WS
     : [ \t]+ -> skip
     ;
+
+fragment A : [Aa] ;
+fragment B : [Bb] ;
+fragment C : [Cc] ;
+fragment D : [Dd] ;
+fragment E : [Ee] ;
+fragment F : [Ff] ;
+fragment G : [Gg] ;
+fragment H : [Hh] ;
+fragment I : [Ii] ;
+fragment J : [Jj] ;
+fragment K : [Kk] ;
+fragment L : [Ll] ;
+fragment M : [Mm] ;
+fragment N : [Nn] ;
+fragment O : [Oo] ;
+fragment P : [Pp] ;
+fragment Q : [Qq] ;
+fragment R : [Rr] ;
+fragment S : [Ss] ;
+fragment T : [Tt] ;
+fragment U : [Uu] ;
+fragment V : [Vv] ;
+fragment W : [Ww] ;
+fragment X : [Xx] ;
+fragment Y : [Yy] ;
+fragment Z : [Zz] ;

@@ -30,6 +30,7 @@ line_number
 
 segment
     : mid_line_word
+    | if_statement
     | parameter_setting
     | comment
     ;
@@ -62,6 +63,7 @@ binary_operation
     : binary_operation1
     | binary_operation2
     | binary_operation3
+    | binary_operation4
     ;
 
 binary_operation1
@@ -80,6 +82,15 @@ binary_operation3
     | MINUS
     | NON_EXCLUSIVE_OR
     | PLUS
+    ;
+
+binary_operation4
+    : EQ
+    | NE
+    | LT
+    | LE
+    | GT
+    | GE
     ;
 
 unary_combo
@@ -125,3 +136,11 @@ parameter_index
 comment
     : COMMENT
     ;
+
+// >>> extended grammar
+
+if_statement
+    : IF expression THEN EOL line* (ELSE EOL line*)? END
+    ;
+
+// <<< extended grammar

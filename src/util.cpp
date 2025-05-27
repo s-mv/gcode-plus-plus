@@ -14,9 +14,9 @@ std::string read_file(const std::string &filename) {
   }
 
   std::stringstream buffer;
-  buffer << file.rdbuf(); // Read the entire file into the stringstream
+  buffer << file.rdbuf();
 
-  return buffer.str(); // Return the file content as a string
+  return buffer.str();
 }
 
 int g_log(g_log_level level, const char *format, ...) {

@@ -19,7 +19,7 @@ TEST_OBJECTS = build/example_test.o
 
 .PHONY: all dev clean new antlr
 
-default: test
+default: dev
 
 test: $(OBJECTS) $(ANTLR_OBJECTS) $(TEST_OBJECTS)
 	@$(CXX) $(TEST_OBJECTS) $(OBJECTS) $(ANTLR_OBJECTS) -o build/test_example $(CXXFLAGS) $(TEST_LDFLAGS)
