@@ -7,6 +7,7 @@
 
 #include "lexer_antlr4.h"
 #include "parser_antlr4.h"
+#include "support/Any.h"
 #include "util.hpp"
 
 #define modal_groups_len (16)
@@ -40,33 +41,24 @@ f64 find_modal_group(f64 code);
 
 g_bytecode_emitter::g_bytecode_emitter(std::string input)
     : inputStream(input), lexer(&inputStream), tokens(&lexer), parser(&tokens) {
-  program = parser.program();
-  line_pointer = 0;
+  execution_stack.push({parser.block(), 0});
 }
 
 g_instruction g_bytecode_emitter::next() {
   while (bytecode.empty()) {
-    if (line_pointer >= program->line().size())
-      return g_instruction{.command = no_command};
+    g_execution_frame &frame = execution_stack.top();
+    std::vector<parser_antlr4::StatementContext *> statements =
+        frame.block->statement();
 
-    visit(program->line().at(line_pointer++));
+    if (frame.line_pointer >= statements.size())
+      return {no_command};
+
+    visit(statements.at(frame.line_pointer++));
   }
 
   g_instruction front = bytecode.front();
   bytecode.pop();
   return front;
-}
-
-void g_bytecode_emitter::run(parser_antlr4::ProgramContext *context) {
-  this->visitProgram(context);
-}
-
-antlrcpp::Any
-g_bytecode_emitter::visitProgram(parser_antlr4::ProgramContext *context) {
-  for (parser_antlr4::LineContext *line : context->line()) {
-    visit(line);
-  }
-  return nullptr;
 }
 
 antlrcpp::Any
@@ -168,6 +160,32 @@ g_bytecode_emitter::visitSegment(parser_antlr4::SegmentContext *context) {
   return nullptr;
 }
 
+antlrcpp::Any
+g_bytecode_emitter::visitBlock(parser_antlr4::BlockContext *context) {
+  execution_stack.push({context, 0});
+  for (parser_antlr4::StatementContext *statement : context->statement()) {
+    visit(statement);
+  }
+  execution_stack.pop();
+  return nullptr;
+}
+
+antlrcpp::Any
+g_bytecode_emitter::visitIf_block(parser_antlr4::If_blockContext *context) {
+  f64 cond = std::any_cast<f64>(visit(context->expression()));
+  if (cond != 0.0) {
+    visit(context->block().at(0));
+  } else if (context->ELSE() != nullptr) {
+    visit(context->block().at(1));
+  }
+  return nullptr;
+}
+
+antlrcpp::Any g_bytecode_emitter::visitWhile_block(
+    parser_antlr4::While_blockContext *context) {
+  return nullptr;
+}
+
 antlrcpp::Any g_bytecode_emitter::visitMid_line_word(
     parser_antlr4::Mid_line_wordContext *context) {
   char letter = std::tolower(context->mid_line_letter()->getText().at(0));
@@ -210,64 +228,6 @@ g_bytecode_emitter::visitReal_value(parser_antlr4::Real_valueContext *context) {
 antlrcpp::Any g_bytecode_emitter::visitReal_number(
     parser_antlr4::Real_numberContext *context) {
   return std::stod(context->getText());
-}
-
-antlrcpp::Any
-g_bytecode_emitter::visitComment(parser_antlr4::CommentContext *context) {
-  std::string text = context->getText();
-  return nullptr;
-}
-
-f64 g_bytecode_emitter::applyOperation(f64 lhs, f64 rhs, i64 token_type) {
-  switch (token_type) {
-  case lexer_antlr4::PLUS:
-    return lhs + rhs;
-  case lexer_antlr4::MINUS:
-    return lhs - rhs;
-  case lexer_antlr4::TIMES:
-    return lhs * rhs;
-  case lexer_antlr4::SLASH:
-    return lhs / rhs;
-  case lexer_antlr4::POWER:
-    return std::pow(lhs, rhs);
-  case lexer_antlr4::MODULO:
-    return std::fmod(lhs, rhs);
-
-  case lexer_antlr4::EQ:
-    return (lhs == rhs) ? 1.0 : 0.0;
-  case lexer_antlr4::NE:
-    return (lhs != rhs) ? 1.0 : 0.0;
-  case lexer_antlr4::LT:
-    return (lhs < rhs) ? 1.0 : 0.0;
-  case lexer_antlr4::LE:
-    return (lhs <= rhs) ? 1.0 : 0.0;
-  case lexer_antlr4::GT:
-    return (lhs > rhs) ? 1.0 : 0.0;
-  case lexer_antlr4::GE:
-    return (lhs >= rhs) ? 1.0 : 0.0;
-
-  case lexer_antlr4::LOGICAL_AND:
-    return (lhs != 0.0 && rhs != 0.0) ? 1.0 : 0.0;
-  case lexer_antlr4::EXCLUSIVE_OR:
-    return (static_cast<int64_t>(lhs) ^ static_cast<int64_t>(rhs));
-  case lexer_antlr4::NON_EXCLUSIVE_OR:
-    return (static_cast<int64_t>(lhs) | static_cast<int64_t>(rhs));
-
-  default:
-    return 0.0;
-  }
-}
-
-std::any g_bytecode_emitter::visitIf_statement(
-    parser_antlr4::If_statementContext *context) {
-  // f64 cond = std::any_cast<f64>(visit(context->expression()));
-  // if (cond == 0.0) {
-  //   for (auto line : context->line()) {
-  //   }
-  // } else if (context->ELSE() != nullptr) {
-  //   // TODO
-  // }
-  return nullptr;
 }
 
 void g_bytecode_emitter::print() {}

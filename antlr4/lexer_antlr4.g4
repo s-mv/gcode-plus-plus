@@ -8,6 +8,8 @@ lexer grammar lexer_antlr4;
 
 IF : I F ;
 THEN : T H E N ;
+DO : D O ;
+WHILE : W H I L E ;
 ELSE : E L S E ;
 END : E N D ;
 

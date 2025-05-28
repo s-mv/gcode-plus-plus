@@ -2,4 +2,6 @@
 
 namespace gpp {
 struct machine;
+struct bytecode_emitter;
+struct instruction;
 }

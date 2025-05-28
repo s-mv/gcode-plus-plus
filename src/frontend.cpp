@@ -17,7 +17,7 @@ void g_print_tree(const std::unique_ptr<parser_antlr4> &parser) {
     return;
   }
 
-  auto tree = parser->program();
+  auto tree = parser->block();
   if (!tree) {
     std::cerr << "Error: Parsing failed. Syntax tree is null." << std::endl;
     return;

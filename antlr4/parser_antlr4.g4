@@ -12,14 +12,31 @@ options { tokenVocab=lexer_antlr4; }
 //    | program EOL
 //    ;
 
-program
-    : line* EOL*
+block
+    : statement*
+    ;
+
+statement
+    : line
+    | if_block
+    | while_block
     ;
 
 line
     : block_delete? line_number? segment* EOL
-    | if_statement
     ;
+
+// >>> extended grammar
+
+if_block
+    : IF expression THEN EOL block (ELSE EOL block)? END
+    ;
+
+while_block
+    : WHILE expression DO EOL block END
+    ;
+
+// <<< extended grammar
 
 block_delete
     : SLASH
@@ -155,11 +172,3 @@ parameter_index
 comment
     : COMMENT
     ;
-
-// >>> extended grammar
-
-if_statement
-    : IF expression THEN EOL line* (ELSE EOL line*)? END
-    ;
-
-// <<< extended grammar
