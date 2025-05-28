@@ -1,6 +1,6 @@
 TITLE    = gcode++
 CXX     ?= g++
-OBJECTS  = build/util.o build/frontend.o build/bytecode.o build/machine.o
+OBJECTS  = build/util.o build/frontend.o build/bytecode.o build/expression.o build/machine.o
 
 ### replace with your path ###
 ANTLR4_LIB     = /usr/local/lib/

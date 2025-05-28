@@ -1,9 +1,12 @@
+#include <any>
 #include <cmath>
+#include <string>
 #include <vector>
 
 #include "bytecode.hpp"
 
 #include "lexer_antlr4.h"
+#include "parser_antlr4.h"
 #include "util.hpp"
 
 #define modal_groups_len (16)
@@ -43,12 +46,10 @@ g_bytecode_emitter::g_bytecode_emitter(std::string input)
 
 g_instruction g_bytecode_emitter::next() {
   while (bytecode.empty()) {
-    // fetch instructions first
-    if (line_pointer < program->line().size())
-      visit(program->line().at(line_pointer++));
-    else
+    if (line_pointer >= program->line().size())
       return g_instruction{.command = no_command};
-    // TODO, if/while
+
+    visit(program->line().at(line_pointer++));
   }
 
   g_instruction front = bytecode.front();
@@ -217,10 +218,55 @@ g_bytecode_emitter::visitComment(parser_antlr4::CommentContext *context) {
   return nullptr;
 }
 
-antlrcpp::Any
-g_bytecode_emitter::visitExpression(parser_antlr4::ExpressionContext *context) {
-  f64 value = std::any_cast<f64>(visit(context->real_value(0)));
-  /* MAJOR TODO */
+f64 g_bytecode_emitter::applyOperation(f64 lhs, f64 rhs, i64 token_type) {
+  switch (token_type) {
+  case lexer_antlr4::PLUS:
+    return lhs + rhs;
+  case lexer_antlr4::MINUS:
+    return lhs - rhs;
+  case lexer_antlr4::TIMES:
+    return lhs * rhs;
+  case lexer_antlr4::SLASH:
+    return lhs / rhs;
+  case lexer_antlr4::POWER:
+    return std::pow(lhs, rhs);
+  case lexer_antlr4::MODULO:
+    return std::fmod(lhs, rhs);
+
+  case lexer_antlr4::EQ:
+    return (lhs == rhs) ? 1.0 : 0.0;
+  case lexer_antlr4::NE:
+    return (lhs != rhs) ? 1.0 : 0.0;
+  case lexer_antlr4::LT:
+    return (lhs < rhs) ? 1.0 : 0.0;
+  case lexer_antlr4::LE:
+    return (lhs <= rhs) ? 1.0 : 0.0;
+  case lexer_antlr4::GT:
+    return (lhs > rhs) ? 1.0 : 0.0;
+  case lexer_antlr4::GE:
+    return (lhs >= rhs) ? 1.0 : 0.0;
+
+  case lexer_antlr4::LOGICAL_AND:
+    return (lhs != 0.0 && rhs != 0.0) ? 1.0 : 0.0;
+  case lexer_antlr4::EXCLUSIVE_OR:
+    return (static_cast<int64_t>(lhs) ^ static_cast<int64_t>(rhs));
+  case lexer_antlr4::NON_EXCLUSIVE_OR:
+    return (static_cast<int64_t>(lhs) | static_cast<int64_t>(rhs));
+
+  default:
+    return 0.0;
+  }
+}
+
+std::any g_bytecode_emitter::visitIf_statement(
+    parser_antlr4::If_statementContext *context) {
+  // f64 cond = std::any_cast<f64>(visit(context->expression()));
+  // if (cond == 0.0) {
+  //   for (auto line : context->line()) {
+  //   }
+  // } else if (context->ELSE() != nullptr) {
+  //   // TODO
+  // }
   return nullptr;
 }
 

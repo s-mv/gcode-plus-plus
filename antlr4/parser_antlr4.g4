@@ -18,6 +18,7 @@ program
 
 line
     : block_delete? line_number? segment* EOL
+    | if_statement
     ;
 
 block_delete
@@ -30,7 +31,6 @@ line_number
 
 segment
     : mid_line_word
-    | if_statement
     | parameter_setting
     | comment
     ;
@@ -56,41 +56,60 @@ real_number
     ;
 
 expression
-    : LEFT_BRACKET real_value (binary_operation real_value)* RIGHT_BRACKET
+    : logical_or_expression
     ;
 
-binary_operation
-    : binary_operation1
-    | binary_operation2
-    | binary_operation3
-    | binary_operation4
+logical_or_expression
+    : logical_or_expression NON_EXCLUSIVE_OR logical_xor_expression
+    | logical_xor_expression
     ;
 
-binary_operation1
-    : POWER
+logical_xor_expression
+    : logical_xor_expression EXCLUSIVE_OR logical_and_expression
+    | logical_and_expression
     ;
 
-binary_operation2
-    : SLASH
-    | MODULO
-    | TIMES
+logical_and_expression
+    : logical_and_expression LOGICAL_AND equality_expression
+    | equality_expression
     ;
 
-binary_operation3
-    : LOGICAL_AND
-    | EXCLUSIVE_OR
-    | MINUS
-    | NON_EXCLUSIVE_OR
-    | PLUS
+equality_expression
+    : equality_expression (EQ | NE) relational_expression
+    | relational_expression
     ;
 
-binary_operation4
-    : EQ
-    | NE
-    | LT
-    | LE
-    | GT
-    | GE
+relational_expression
+    : relational_expression (LT | LE | GT | GE) additive_expression
+    | additive_expression
+    ;
+
+additive_expression
+    : additive_expression (PLUS | MINUS) multiplicative_expression
+    | multiplicative_expression
+    ;
+
+multiplicative_expression
+    : multiplicative_expression (TIMES | SLASH | MODULO) power_expression
+    | power_expression
+    ;
+
+power_expression
+    : unary_expression POWER power_expression
+    | unary_expression
+    ;
+
+unary_expression
+    : PLUS unary_expression
+    | MINUS unary_expression
+    | unary_combo
+    | primary
+    ;
+
+primary
+    : real_number
+    | parameter_value
+    | LEFT_BRACKET expression RIGHT_BRACKET
     ;
 
 unary_combo

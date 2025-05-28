@@ -67,10 +67,32 @@ private:
   antlrcpp::Any
   visitReal_number(parser_antlr4::Real_numberContext *context) override;
   antlrcpp::Any visitComment(parser_antlr4::CommentContext *context) override;
-  antlrcpp::Any
-  visitExpression(parser_antlr4::ExpressionContext *context) override;
 
-  f64 evalBinary(f64 lhs, f64 rhs, const std::string &op);
+  antlrcpp::Any visitExpression(parser_antlr4::ExpressionContext *ctx) override;
+  antlrcpp::Any visitLogical_or_expression(
+      parser_antlr4::Logical_or_expressionContext *ctx) override;
+  antlrcpp::Any visitLogical_xor_expression(
+      parser_antlr4::Logical_xor_expressionContext *ctx) override;
+  antlrcpp::Any visitLogical_and_expression(
+      parser_antlr4::Logical_and_expressionContext *ctx) override;
+  antlrcpp::Any visitEquality_expression(
+      parser_antlr4::Equality_expressionContext *ctx) override;
+  antlrcpp::Any visitRelational_expression(
+      parser_antlr4::Relational_expressionContext *ctx) override;
+  antlrcpp::Any visitAdditive_expression(
+      parser_antlr4::Additive_expressionContext *ctx) override;
+  antlrcpp::Any visitMultiplicative_expression(
+      parser_antlr4::Multiplicative_expressionContext *ctx) override;
+  antlrcpp::Any
+  visitPower_expression(parser_antlr4::Power_expressionContext *ctx) override;
+  antlrcpp::Any
+  visitUnary_expression(parser_antlr4::Unary_expressionContext *ctx) override;
+  antlrcpp::Any visitPrimary(parser_antlr4::PrimaryContext *ctx) override;
+
+  antlrcpp::Any
+  visitIf_statement(parser_antlr4::If_statementContext *context) override;
+
+  f64 applyOperation(f64 lhs, f64 rhs, i64 token_type);
 };
 
 #endif
