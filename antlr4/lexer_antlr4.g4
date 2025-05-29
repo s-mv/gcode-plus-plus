@@ -12,6 +12,8 @@ DO : D O ;
 WHILE : W H I L E ;
 ELSE : E L S E ;
 END : E N D ;
+BREAK : B R E A K ;
+CONTINUE : C O N T I N U E ;
 
 // <<< language extensions
 

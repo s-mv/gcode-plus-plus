@@ -18,25 +18,35 @@ block
 
 statement
     : line
-    | if_block
-    | while_block
+    | if_statement
+    | while_statement
+    | do_while_statement
+    | break_statement
+    | continue_statement
     ;
 
 line
-    : block_delete? line_number? segment* EOL
+    : block_delete? line_number? segment* EOL+
     ;
 
 // >>> extended grammar
 
-if_block
+if_statement
     : IF expression THEN EOL block
       (ELSE IF expression THEN EOL block)*
       (ELSE EOL block)? END
     ;
 
-while_block
-    : WHILE expression DO EOL block END
+while_statement
+    : WHILE expression DO EOL* block END
     ;
+
+do_while_statement
+    : DO EOL* block WHILE expression END
+    ;
+
+break_statement: BREAK;
+continue_statement: CONTINUE;
 
 // <<< extended grammar
 

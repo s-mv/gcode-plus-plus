@@ -6,6 +6,7 @@
 #include "util.hpp"
 
 #include <functional>
+#include <vector>
 
 enum gpp::Unit : u8 {
   g_unit_mm,
@@ -33,7 +34,11 @@ private:
   std::function<void(std::vector<f64>)> handlers[g_command_len];
 
 public:
+  std::vector<f64> memory;
+
   Machine(std::string input);
+  f64 get_memory(i64 address);
+  void set_memory(i64 address, f64 value);
   bool next();
 
 private:

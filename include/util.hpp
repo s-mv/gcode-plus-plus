@@ -1,16 +1,15 @@
 #ifndef smv_gcodepp_util_hpp
 #define smv_gcodepp_util_hpp
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
-typedef uint64_t u8;
-typedef uint16_t u16;
-typedef uint64_t u64;
-typedef int64_t i8;
-typedef int64_t i64;
-typedef double f64;
-
+using u8 = std::uint64_t;
+using u16 = std::uint16_t;
+using u64 = std::uint64_t;
+using i8 = std::int64_t;
+using i64 = std::int64_t;
+using f64 = double;
 
 /* misc. utility functions */
 
