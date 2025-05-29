@@ -1,7 +1,7 @@
 TITLE    = gcode++
 CXX     ?= g++
 OBJECTS  = build/util.o build/frontend.o build/bytecode.o \
-           build/expression.o build/machine.o
+           build/expression.o build/machine.o build/line.o
 
 ### replace with your path ###
 ANTLR4_LIB     = /usr/local/lib/
@@ -25,15 +25,15 @@ default: dev
 
 test:
 	@echo "Running $(TEST_TYPE) tests."
-	@(MAKE) @(TEST_TYPE)
+	@$(MAKE) --no-print-directory $(TEST_TYPE)
 
 unit: $(OBJECTS) $(ANTLR_OBJECTS) tests/unit.cpp
 	@$(CXX) tests/unit.cpp $(OBJECTS) $(ANTLR_OBJECTS) -o build/unit $(CXXFLAGS) $(TEST_LDFLAGS)
-	@./build/unit
+	@./build/unit -s
 
 regression: $(OBJECTS) $(ANTLR_OBJECTS) tests/regression.cpp
 	@$(CXX) tests/regression.cpp $(OBJECTS) $(ANTLR_OBJECTS) -o build/regression $(CXXFLAGS) $(TEST_LDFLAGS)
-	@./build/regression
+	@./build/regression -s
 
 antlr:
 	@cd antlr4 && antlr4 -Dlanguage=Cpp -visitor -o gen lexer_antlr4.g4 parser_antlr4.g4

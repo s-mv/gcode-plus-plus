@@ -1,0 +1,2 @@
+Initialized machine!
+move_rapid(10, 20, 30)
