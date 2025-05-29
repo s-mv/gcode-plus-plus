@@ -19,32 +19,34 @@ std::string read_file(const std::string &filename) {
   return buffer.str();
 }
 
-int g_log(g_log_level level, const char *format, ...) {
-  if (level > g_log_current_level || level == g_log_level::g_log_none)
-    return 0;
+/* todo - maybe remove? */
 
-  std::string prefix;
+// int g_log(g_log_level level, const char *format, ...) {
+//   if (level > g_log_current_level || level == g_log_level::g_log_none)
+//     return 0;
 
-  switch (level) {
-  case g_log_level::g_log_error:
-    prefix = "[ERR]  ";
-    break;
-  case g_log_level::g_log_warning:
-    prefix = "[WARN] ";
-    break;
-  case g_log_level::g_log_info:
-    prefix = "[INFO] ";
-    break;
-  default:
-    break;
-  }
+//   std::string prefix;
 
-  std::cout << prefix;
+//   switch (level) {
+//   case g_log_level::g_log_error:
+//     prefix = "[ERR]  ";
+//     break;
+//   case g_log_level::g_log_warning:
+//     prefix = "[WARN] ";
+//     break;
+//   case g_log_level::g_log_info:
+//     prefix = "[INFO] ";
+//     break;
+//   default:
+//     break;
+//   }
 
-  va_list args;
-  va_start(args, format);
-  int len = vprintf(format, args);
-  va_end(args);
+//   std::cout << prefix;
 
-  return len;
-}
+//   va_list args;
+//   va_start(args, format);
+//   int len = vprintf(format, args);
+//   va_end(args);
+
+//   return len;
+// }

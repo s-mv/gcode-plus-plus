@@ -16,20 +16,20 @@ typedef double f64;
 
 std::string read_file(const std::string &filename);
 
-/* logging utility */
+/* logging utility - todo maybe remove this? */
 
-typedef enum g_log_level {
-  g_log_none = 0,
-  g_log_error = 1,
-  g_log_warning = 2,
-  g_log_info = 3,
-} g_log_level;
+// typedef enum g_log_level {
+//   g_log_none = 0,
+//   g_log_error = 1,
+//   g_log_warning = 2,
+//   g_log_info = 3,
+// } g_log_level;
 
-#ifndef g_log_current_level
-#define g_log_current_level g_log_info
+// #ifndef g_log_current_level
+// #define g_log_current_level g_log_info
 
-#endif
+// #endif
 
-int g_log(g_log_level level, const char *format, ...);
+// int g_log(g_log_level level, const char *format, ...);
 
 #endif

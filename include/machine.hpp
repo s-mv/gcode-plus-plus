@@ -7,32 +7,33 @@
 
 #include <functional>
 
-typedef enum g_unit {
+enum gpp::Unit : u8 {
   g_unit_mm,
   g_unit_inch,
-} g_unit;
+};
 
-typedef struct g_vec3d {
+struct gpp::Vec3D {
   i64 x, y, z;
-} g_vec3d;
+};
 
 // represents the current state of a CNC machine
 // this is EXTREMELY INCOMPLETE, all caps
 // constant work in progress
-struct /* gpp:: */ g_machine {
-
+struct gpp::Machine {
 private:
-  g_vec3d position; // CURRENT position
-  g_vec3d target;   // target position, NOTE is this needed?
-  g_unit unit;      // unit could be mm or inch (as per me -- read TODO below)
-  f64 feed_rate;    // "speed" of the head in unit/min
+  BytecodeEmitter emitter;
+
+  Vec3D position; // CURRENT position
+  Vec3D target;   // target position, NOTE is this needed?
+  Unit unit;      // unit could be mm or inch (as per me -- read TODO below)
+  f64 feed_rate;  // "speed" of the head in unit/min
   // (TODO, add some references in comments)
+
   std::string input;
-  g_bytecode_emitter emitter;
   std::function<void(std::vector<f64>)> handlers[g_command_len];
 
 public:
-  g_machine(std::string input);
+  Machine(std::string input);
   bool next();
 
 private:

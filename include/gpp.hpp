@@ -1,7 +1,20 @@
-/* major TODO, contains gpp namespace declarationsw */
+#ifndef smv_gcodepp_gpp_hpp
+#define smv_gcodepp_gpp_hpp
+
+#include "parser_antlr4.h"
+#include "util.hpp"
+#include <memory>
 
 namespace gpp {
-struct machine;
-struct bytecode_emitter;
-struct instruction;
-}
+std::unique_ptr<parser_antlr4> FrontendParse(const std::string &code);
+
+struct BytecodeEmitter;
+struct ExecutionFrame;
+struct Instruction;
+
+struct Machine;
+struct Vec3D;
+enum Unit : u8;
+} // namespace gpp
+
+#endif

@@ -29,7 +29,9 @@ line
 // >>> extended grammar
 
 if_block
-    : IF expression THEN EOL block (ELSE EOL block)? END
+    : IF expression THEN EOL block
+      (ELSE IF expression THEN EOL block)*
+      (ELSE EOL block)? END
     ;
 
 while_block

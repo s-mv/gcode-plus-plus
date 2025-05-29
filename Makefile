@@ -1,29 +1,39 @@
 TITLE    = gcode++
 CXX     ?= g++
-OBJECTS  = build/util.o build/frontend.o build/bytecode.o build/expression.o build/machine.o
+OBJECTS  = build/util.o build/frontend.o build/bytecode.o \
+           build/expression.o build/machine.o
 
 ### replace with your path ###
 ANTLR4_LIB     = /usr/local/lib/
 ANTLR4_INCLUDE = /usr/local/include/antlr4-runtime/
-
-ANTLR_OBJECTS = build/lexer_antlr4.o build/parser_antlr4.o build/parser_antlr4BaseVisitor.o
+ANTLR_OBJECTS  = build/lexer_antlr4.o build/parser_antlr4.o \
+                 build/parser_antlr4BaseVisitor.o
 
 ### testing with catch2 ###
 TEST_LDFLAGS = $(LDFLAGS) -lCatch2Main -lCatch2
 TEST_OBJECTS = build/example_test.o
+TEST_TYPE    = unit
 
-CXXFLAGS = -std=c++17 -g -I include/ -I antlr4/gen/ -I $(ANTLR4_INCLUDE) -I /usr/include/catch2
 LDFLAGS  = -L $(ANTLR4_LIB) -lantlr4-runtime
+CXXFLAGS = -std=c++17 -g -I include/ -I antlr4/gen/ \
+					 -I $(ANTLR4_INCLUDE) -I /usr/include/catch2
 
-TEST_OBJECTS = build/example_test.o
 
-.PHONY: all dev clean new antlr
+.PHONY: all dev clean new antlr test regression unit
 
 default: dev
 
-test: $(OBJECTS) $(ANTLR_OBJECTS) $(TEST_OBJECTS)
-	@$(CXX) $(TEST_OBJECTS) $(OBJECTS) $(ANTLR_OBJECTS) -o build/test_example $(CXXFLAGS) $(TEST_LDFLAGS)
-	@./build/test_example
+test:
+	@echo "Running $(TEST_TYPE) tests."
+	@(MAKE) @(TEST_TYPE)
+
+unit: $(OBJECTS) $(ANTLR_OBJECTS) tests/unit.cpp
+	@$(CXX) tests/unit.cpp $(OBJECTS) $(ANTLR_OBJECTS) -o build/unit $(CXXFLAGS) $(TEST_LDFLAGS)
+	@./build/unit
+
+regression: $(OBJECTS) $(ANTLR_OBJECTS) tests/regression.cpp
+	@$(CXX) tests/regression.cpp $(OBJECTS) $(ANTLR_OBJECTS) -o build/regression $(CXXFLAGS) $(TEST_LDFLAGS)
+	@./build/regression
 
 antlr:
 	@cd antlr4 && antlr4 -Dlanguage=Cpp -visitor -o gen lexer_antlr4.g4 parser_antlr4.g4
@@ -35,9 +45,6 @@ build/parser_antlr4BaseVisitor.o: antlr4/gen/parser_antlr4BaseVisitor.cpp
 	@$(CXX) -c $< -o $@ $(CXXFLAGS)
 
 build/%_antlr4.o: antlr4/gen/%_antlr4.cpp
-	@$(CXX) -c $< -o $@ $(CXXFLAGS)
-
-build/%_test.o: tests/%.cpp
 	@$(CXX) -c $< -o $@ $(CXXFLAGS)
 
 build/%.o: src/%.cpp

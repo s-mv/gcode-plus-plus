@@ -1,9 +1,11 @@
-#include "frontend.hpp"
 
-#include "parser_antlr4.h"
 #include <iostream>
 
-std::unique_ptr<parser_antlr4> g_frontend_parse(const std::string &code) {
+#include "gpp.hpp"
+#include "lexer_antlr4.h"
+#include "parser_antlr4.h"
+
+std::unique_ptr<parser_antlr4> gpp::FrontendParse(const std::string &code) {
   antlr4::ANTLRInputStream input(code);
   lexer_antlr4 lexer(&input);
 

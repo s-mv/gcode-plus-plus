@@ -1,3 +1,4 @@
+
 #include <cstring>
 #include <iostream>
 #include <string>
@@ -19,7 +20,7 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  g_machine machine(input);
+  gpp::Machine machine(input);
 
   std::cout << "Type `next` to step, `exit` to quit!\n";
 

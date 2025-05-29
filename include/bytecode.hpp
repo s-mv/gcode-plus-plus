@@ -5,6 +5,7 @@
 #include <stack>
 #include <vector>
 
+#include "gpp.hpp"
 #include "lexer_antlr4.h"
 #include "parser_antlr4.h"
 #include "parser_antlr4BaseVisitor.h"
@@ -28,35 +29,35 @@ enum g_command : u8 {
   no_command = 255, // invalid
 };
 
-struct g_instruction {
+struct gpp::Instruction {
   g_command command;
   std::vector<f64> arguments;
   u16 parameterized_args;
 };
 
-struct g_execution_frame {
+struct gpp::ExecutionFrame {
   parser_antlr4::BlockContext *block;
   i64 line_pointer;
 };
 
-class g_bytecode_emitter : public parser_antlr4BaseVisitor {
+class gpp::BytecodeEmitter : public parser_antlr4BaseVisitor {
 private:
   char word;
   std::vector<u8> modes; // TODO
   std::vector<g_word> words;
 
-  std::queue<g_instruction> bytecode;
+  std::queue<Instruction> bytecode;
 
   antlr4::ANTLRInputStream inputStream;
   lexer_antlr4 lexer;
   antlr4::CommonTokenStream tokens;
   parser_antlr4 parser;
 
-  std::stack<g_execution_frame> execution_stack;
+  std::stack<gpp::ExecutionFrame> execution_stack;
 
 public:
-  g_bytecode_emitter(std::string input);
-  g_instruction next();
+  BytecodeEmitter(std::string input);
+  Instruction next();
   void print();
 
 private:

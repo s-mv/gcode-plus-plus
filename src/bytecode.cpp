@@ -39,30 +39,8 @@ const f64 *modal_groups[modal_groups_len] = {
 // helper functions
 f64 find_modal_group(f64 code);
 
-g_bytecode_emitter::g_bytecode_emitter(std::string input)
-    : inputStream(input), lexer(&inputStream), tokens(&lexer), parser(&tokens) {
-  execution_stack.push({parser.block(), 0});
-}
-
-g_instruction g_bytecode_emitter::next() {
-  while (bytecode.empty()) {
-    g_execution_frame &frame = execution_stack.top();
-    std::vector<parser_antlr4::StatementContext *> statements =
-        frame.block->statement();
-
-    if (frame.line_pointer >= statements.size())
-      return {no_command};
-
-    visit(statements.at(frame.line_pointer++));
-  }
-
-  g_instruction front = bytecode.front();
-  bytecode.pop();
-  return front;
-}
-
 antlrcpp::Any
-g_bytecode_emitter::visitLine(parser_antlr4::LineContext *context) {
+gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
   words.clear();
 
   for (parser_antlr4::SegmentContext *segment : context->segment()) {
@@ -130,13 +108,13 @@ g_bytecode_emitter::visitLine(parser_antlr4::LineContext *context) {
         });
 
       } else if (word.arg == 20) {
-        g_instruction instruction = {
+        gpp::Instruction instruction = {
             .command = set_unit_in,
         };
 
         bytecode.push(instruction);
       } else if (word.arg == 20) {
-        g_instruction instruction = {
+        gpp::Instruction instruction = {
             .command = set_unit_mm,
         };
 
@@ -148,8 +126,30 @@ g_bytecode_emitter::visitLine(parser_antlr4::LineContext *context) {
   return nullptr;
 }
 
+gpp::BytecodeEmitter::BytecodeEmitter(std::string input)
+    : inputStream(input), lexer(&inputStream), tokens(&lexer), parser(&tokens) {
+  execution_stack.push({parser.block(), 0});
+}
+
+gpp::Instruction gpp::BytecodeEmitter::next() {
+  while (bytecode.empty()) {
+    ExecutionFrame &frame = execution_stack.top();
+    std::vector<parser_antlr4::StatementContext *> statements =
+        frame.block->statement();
+
+    if (frame.line_pointer >= statements.size())
+      return {no_command};
+
+    visit(statements.at(frame.line_pointer++));
+  }
+
+  Instruction front = bytecode.front();
+  bytecode.pop();
+  return front;
+}
+
 antlrcpp::Any
-g_bytecode_emitter::visitSegment(parser_antlr4::SegmentContext *context) {
+gpp::BytecodeEmitter::visitSegment(parser_antlr4::SegmentContext *context) {
   if (context->mid_line_word()) {
     visit(context->mid_line_word());
   } else if (context->parameter_setting()) {
@@ -161,7 +161,7 @@ g_bytecode_emitter::visitSegment(parser_antlr4::SegmentContext *context) {
 }
 
 antlrcpp::Any
-g_bytecode_emitter::visitBlock(parser_antlr4::BlockContext *context) {
+gpp::BytecodeEmitter::visitBlock(parser_antlr4::BlockContext *context) {
   execution_stack.push({context, 0});
   for (parser_antlr4::StatementContext *statement : context->statement()) {
     visit(statement);
@@ -171,22 +171,34 @@ g_bytecode_emitter::visitBlock(parser_antlr4::BlockContext *context) {
 }
 
 antlrcpp::Any
-g_bytecode_emitter::visitIf_block(parser_antlr4::If_blockContext *context) {
-  f64 cond = std::any_cast<f64>(visit(context->expression()));
-  if (cond != 0.0) {
-    visit(context->block().at(0));
-  } else if (context->ELSE() != nullptr) {
-    visit(context->block().at(1));
+gpp::BytecodeEmitter::visitIf_block(parser_antlr4::If_blockContext *context) {
+  if (std::any_cast<f64>(visit(context->expression(0))) != 0) {
+    visit(context->block(0));
+    return nullptr;
   }
+
+  size_t numElifs = context->IF().size() - 1;
+  for (size_t i = 0; i < numElifs; i++) {
+    auto expr = context->expression(i + 1);
+    if (std::any_cast<f64>(visit(expr)) != 0) {
+      visit(context->block(i + 1));
+      return nullptr;
+    }
+  }
+
+  if (context->ELSE().size() == numElifs + 1) {
+    visit(context->block().back());
+  }
+
   return nullptr;
 }
 
-antlrcpp::Any g_bytecode_emitter::visitWhile_block(
+antlrcpp::Any gpp::BytecodeEmitter::visitWhile_block(
     parser_antlr4::While_blockContext *context) {
   return nullptr;
 }
 
-antlrcpp::Any g_bytecode_emitter::visitMid_line_word(
+antlrcpp::Any gpp::BytecodeEmitter::visitMid_line_word(
     parser_antlr4::Mid_line_wordContext *context) {
   char letter = std::tolower(context->mid_line_letter()->getText().at(0));
   f64 value = std::any_cast<f64>(visit(context->real_value()));
@@ -211,8 +223,8 @@ antlrcpp::Any g_bytecode_emitter::visitMid_line_word(
   return nullptr;
 }
 
-antlrcpp::Any
-g_bytecode_emitter::visitReal_value(parser_antlr4::Real_valueContext *context) {
+antlrcpp::Any gpp::BytecodeEmitter::visitReal_value(
+    parser_antlr4::Real_valueContext *context) {
   if (context->real_number()) {
     return visit(context->real_number());
   } else if (context->expression()) {
@@ -225,12 +237,12 @@ g_bytecode_emitter::visitReal_value(parser_antlr4::Real_valueContext *context) {
   return 0.0;
 }
 
-antlrcpp::Any g_bytecode_emitter::visitReal_number(
+antlrcpp::Any gpp::BytecodeEmitter::visitReal_number(
     parser_antlr4::Real_numberContext *context) {
   return std::stod(context->getText());
 }
 
-void g_bytecode_emitter::print() {}
+void gpp::BytecodeEmitter::print() {}
 
 f64 find_modal_group(f64 code) {
   for (int i = 0; i < modal_groups_len; i++) {
