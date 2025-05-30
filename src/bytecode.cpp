@@ -89,7 +89,6 @@ gpp::BytecodeEmitter::visitSegment(parser_antlr4::SegmentContext *context) {
 antlrcpp::Any
 gpp::BytecodeEmitter::visitBlock(parser_antlr4::BlockContext *context) {
   executionStack.push({context, 0});
-
   for (parser_antlr4::StatementContext *statement : context->statement()) {
     visit(statement);
   }
@@ -124,6 +123,9 @@ antlrcpp::Any gpp::BytecodeEmitter::visitIf_statement(
 
 antlrcpp::Any gpp::BytecodeEmitter::visitWhile_statement(
     parser_antlr4::While_statementContext *context) {
+  if (std::any_cast<f64>(visit(context->expression())) == 0)
+    return nullptr;
+
   executionStack.push({
       .block = context->block(),
       .linePointer = 0,
