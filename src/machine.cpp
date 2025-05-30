@@ -26,7 +26,7 @@ gpp::Machine::Machine(std::string input) : input(input), emitter(input) {
 }
 
 f64 gpp::Machine::get_memory(i64 address) {
-  if (address < 0 || address > memory.size()) {
+  if (address < 0 || address >= memory.size()) {
     return NAN; // TODO replace with error later
   }
 
@@ -34,14 +34,13 @@ f64 gpp::Machine::get_memory(i64 address) {
 }
 
 void gpp::Machine::set_memory(i64 address, f64 value) {
-  if (address > memory.size()) {
+  if (address < 0) return;
+  if (address >= memory.size()) {
     memory.resize(address + 1);
   }
 
   memory.at(address) = value;
 }
-
-void set_memory(int address, f64 value) {}
 
 bool gpp::Machine::next() {
   Instruction inst = emitter.next();
