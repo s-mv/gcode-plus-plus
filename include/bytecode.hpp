@@ -37,8 +37,14 @@ struct gpp::Instruction {
 struct gpp::ExecutionFrame {
   parser_antlr4::BlockContext *block;
   i64 linePointer;
-  parser_antlr4::ExpressionContext *looping = nullptr;
-  bool isDoWhile = false;
+  // TODO maybe turn this into a union
+  // union {
+  parser_antlr4::ExpressionContext *whileLoop = nullptr;
+  int loopCounterAddress = -1;
+  // };
+  f64 start;
+  f64 step = 1;
+  f64 end;
 };
 
 class gpp::BytecodeEmitter : public parser_antlr4BaseVisitor {
@@ -81,6 +87,8 @@ private:
   visitBreak_statement(parser_antlr4::Break_statementContext *context) override;
   antlrcpp::Any visitContinue_statement(
       parser_antlr4::Continue_statementContext *context) override;
+  antlrcpp::Any
+  visitFor_statement(parser_antlr4::For_statementContext *context) override;
 
   antlrcpp::Any visitLine(parser_antlr4::LineContext *context) override;
   antlrcpp::Any visitSegment(parser_antlr4::SegmentContext *context) override;

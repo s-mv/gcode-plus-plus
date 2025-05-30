@@ -21,6 +21,7 @@ statement
     | if_statement
     | while_statement
     | do_while_statement
+    | for_statement
     | break_statement
     | continue_statement
     ;
@@ -44,6 +45,12 @@ while_statement
 do_while_statement
     : DO EOL* block WHILE expression END
     ;
+
+for_statement
+    : FOR parameter_value
+      FROM expression TO expression DO EOL*
+      block END
+    ; 
 
 break_statement: BREAK;
 continue_statement: CONTINUE;
