@@ -34,7 +34,8 @@ f64 gpp::Machine::get_memory(i64 address) {
 }
 
 void gpp::Machine::set_memory(i64 address, f64 value) {
-  if (address < 0) return;
+  if (address < 0)
+    return;
   if (address >= memory.size()) {
     memory.resize(address + 1);
   }

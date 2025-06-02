@@ -102,27 +102,34 @@ private:
   visitReal_value(parser_antlr4::Real_valueContext *context) override;
   antlrcpp::Any
   visitReal_number(parser_antlr4::Real_numberContext *context) override;
+  antlrcpp::Any
+  visitUnary_combo(parser_antlr4::Unary_comboContext *context) override;
+  antlrcpp::Any visitOrdinary_unary_combo(
+      parser_antlr4::Ordinary_unary_comboContext *context) override;
+  antlrcpp::Any visitArc_tangent_combo(
+      parser_antlr4::Arc_tangent_comboContext *context) override;
 
-  antlrcpp::Any visitExpression(parser_antlr4::ExpressionContext *ctx) override;
+  antlrcpp::Any
+  visitExpression(parser_antlr4::ExpressionContext *context) override;
   antlrcpp::Any visitLogical_or_expression(
-      parser_antlr4::Logical_or_expressionContext *ctx) override;
+      parser_antlr4::Logical_or_expressionContext *context) override;
   antlrcpp::Any visitLogical_xor_expression(
-      parser_antlr4::Logical_xor_expressionContext *ctx) override;
+      parser_antlr4::Logical_xor_expressionContext *context) override;
   antlrcpp::Any visitLogical_and_expression(
-      parser_antlr4::Logical_and_expressionContext *ctx) override;
+      parser_antlr4::Logical_and_expressionContext *context) override;
   antlrcpp::Any visitEquality_expression(
-      parser_antlr4::Equality_expressionContext *ctx) override;
+      parser_antlr4::Equality_expressionContext *context) override;
   antlrcpp::Any visitRelational_expression(
-      parser_antlr4::Relational_expressionContext *ctx) override;
+      parser_antlr4::Relational_expressionContext *context) override;
   antlrcpp::Any visitAdditive_expression(
-      parser_antlr4::Additive_expressionContext *ctx) override;
+      parser_antlr4::Additive_expressionContext *context) override;
   antlrcpp::Any visitMultiplicative_expression(
-      parser_antlr4::Multiplicative_expressionContext *ctx) override;
-  antlrcpp::Any
-  visitPower_expression(parser_antlr4::Power_expressionContext *ctx) override;
-  antlrcpp::Any
-  visitUnary_expression(parser_antlr4::Unary_expressionContext *ctx) override;
-  antlrcpp::Any visitPrimary(parser_antlr4::PrimaryContext *ctx) override;
+      parser_antlr4::Multiplicative_expressionContext *context) override;
+  antlrcpp::Any visitPower_expression(
+      parser_antlr4::Power_expressionContext *context) override;
+  antlrcpp::Any visitUnary_expression(
+      parser_antlr4::Unary_expressionContext *context) override;
+  antlrcpp::Any visitPrimary(parser_antlr4::PrimaryContext *context) override;
 };
 
 #endif

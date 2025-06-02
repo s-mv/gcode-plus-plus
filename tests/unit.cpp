@@ -1,11 +1,41 @@
+#include "lexer_antlr4.h"
+#include "parser_antlr4.h"
+
 #include "bytecode.hpp"
 #include "machine.hpp"
 #include "util.hpp"
 
 #define CATCH_CONFIG_MAIN
+#include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("g0, g1, g20, g21", "bytecode") {
+TEST_CASE("basic arithmetic", "[calculation]") {
+  std::vector<std::string> expressions = {
+      "[2 + 3 * [4 - 1]]",
+      "[10 / [5 - 3] + 1]",
+      "[[8 - 3] ** 2 + 1]",
+      "[2 * -3 + 4]",
+  };
+  std::vector<f64> expected_results = {11, 6, 26, -2};
+
+  for (size_t i = 0; i < expressions.size(); i++) {
+    const std::string &input = expressions[i];
+
+    antlr4::ANTLRInputStream inputStream(input);
+    lexer_antlr4 lexer(&inputStream);
+    antlr4::CommonTokenStream tokens(&lexer);
+    parser_antlr4 parser(&tokens);
+
+    parser_antlr4::ExpressionContext *tree = parser.expression();
+
+    gpp::BytecodeEmitter emitter(input);
+    f64 result = std::any_cast<f64>(emitter.visit(tree));
+
+    REQUIRE(result == Catch::Approx(expected_results[i]));
+  }
+}
+
+TEST_CASE("g0, g1, g20, g21", "[bytecode]") {
   std::string code = read_file("examples/basic.cnc");
   gpp::BytecodeEmitter emitter = gpp::BytecodeEmitter(code);
 
@@ -24,7 +54,7 @@ TEST_CASE("g0, g1, g20, g21", "bytecode") {
   REQUIRE(instruction.arguments == std::vector<f64>{1, 2, 50});
 }
 
-TEST_CASE("if-else-if-else-end", "bytecode") {
+TEST_CASE("if-else-if-else-end", "[bytecode]") {
   std::string code = read_file("examples/if.cnc");
   gpp::BytecodeEmitter emitter = gpp::BytecodeEmitter(code);
 
@@ -39,7 +69,7 @@ TEST_CASE("if-else-if-else-end", "bytecode") {
   REQUIRE(instruction.arguments == std::vector<f64>{27, 9, 3});
 }
 
-TEST_CASE("while/do-while", "bytecode") {
+TEST_CASE("while/do-while", "[bytecode]") {
   std::string code = read_file("examples/while.cnc");
 
   gpp::Machine machine(code);
@@ -58,4 +88,46 @@ TEST_CASE("while/do-while", "bytecode") {
   instruction = emitter.next();
   REQUIRE(instruction.command == gpp::Command::move_rapid);
   REQUIRE(instruction.arguments == std::vector<f64>{0, 0, 0});
+}
+
+TEST_CASE("for", "[bytecode]") {
+  std::string code = read_file("examples/for.cnc");
+
+  gpp::Machine machine(code);
+  gpp::BytecodeEmitter emitter = gpp::BytecodeEmitter(code);
+  // unorthodox but for the test case, we have to do this
+  emitter.machine = &machine;
+
+  gpp::Instruction instruction;
+
+  for (f64 i = 0; i < 3; i++) {
+    for (f64 j = 0; j < 3; j++) {
+      instruction = emitter.next();
+      REQUIRE(instruction.command == gpp::Command::move_rapid);
+      REQUIRE(instruction.arguments == std::vector<f64>{1, i, j});
+    }
+  }
+}
+
+TEST_CASE("trigonometric functions", "[calculation]") {
+  std::vector<std::string> expressions = {
+      "[sin 0]", "[cos 0]", "[sqrt 16]", "[abs -5]", "[exp 1]", "[ln 2.71828]",
+  };
+  std::vector<f64> expected_results = {0, 1, 4, 5, 2.71828, 1};
+
+  for (size_t i = 0; i < expressions.size(); i++) {
+    const std::string &input = expressions[i];
+
+    antlr4::ANTLRInputStream inputStream(input);
+    lexer_antlr4 lexer(&inputStream);
+    antlr4::CommonTokenStream tokens(&lexer);
+    parser_antlr4 parser(&tokens);
+
+    parser_antlr4::ExpressionContext *tree = parser.expression();
+
+    gpp::BytecodeEmitter emitter(input);
+    f64 result = std::any_cast<f64>(emitter.visit(tree));
+
+    REQUIRE(result == Catch::Approx(expected_results[i]));
+  }
 }

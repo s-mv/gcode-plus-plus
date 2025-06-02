@@ -80,10 +80,10 @@ mid_line_letter
     ;
 
 real_value
-    : real_number
-    | expression
+    : unary_combo
     | parameter_value
-    | unary_combo
+    | expression
+    | real_number
     ;
 
 real_number

@@ -1,126 +1,175 @@
 #include "bytecode.hpp"
 #include "parser_antlr4.h"
 #include <cmath>
+#include <cstdio>
 
-antlrcpp::Any
-gpp::BytecodeEmitter::visitExpression(parser_antlr4::ExpressionContext *ctx) {
-  return visit(ctx->logical_or_expression());
+antlrcpp::Any gpp::BytecodeEmitter::visitExpression(
+    parser_antlr4::ExpressionContext *context) {
+  return visit(context->logical_or_expression());
 }
 
 antlrcpp::Any gpp::BytecodeEmitter::visitLogical_or_expression(
-    parser_antlr4::Logical_or_expressionContext *ctx) {
-  if (ctx->logical_or_expression()) {
-    f64 left = std::any_cast<f64>(visit(ctx->logical_or_expression()));
-    f64 right = std::any_cast<f64>(visit(ctx->logical_xor_expression()));
+    parser_antlr4::Logical_or_expressionContext *context) {
+  if (context->logical_or_expression()) {
+    f64 left = std::any_cast<f64>(visit(context->logical_or_expression()));
+    f64 right = std::any_cast<f64>(visit(context->logical_xor_expression()));
     return (left != 0 || right != 0) ? 1.0 : 0.0;
   }
-  return visit(ctx->logical_xor_expression());
+  return visit(context->logical_xor_expression());
 }
 
 antlrcpp::Any gpp::BytecodeEmitter::visitLogical_xor_expression(
-    parser_antlr4::Logical_xor_expressionContext *ctx) {
-  if (ctx->logical_xor_expression()) {
-    f64 left = std::any_cast<f64>(visit(ctx->logical_xor_expression()));
-    f64 right = std::any_cast<f64>(visit(ctx->logical_and_expression()));
+    parser_antlr4::Logical_xor_expressionContext *context) {
+  if (context->logical_xor_expression()) {
+    f64 left = std::any_cast<f64>(visit(context->logical_xor_expression()));
+    f64 right = std::any_cast<f64>(visit(context->logical_and_expression()));
     return ((left != 0) != (right != 0)) ? 1.0 : 0.0;
   }
-  return visit(ctx->logical_and_expression());
+  return visit(context->logical_and_expression());
 }
 
 antlrcpp::Any gpp::BytecodeEmitter::visitLogical_and_expression(
-    parser_antlr4::Logical_and_expressionContext *ctx) {
-  if (ctx->logical_and_expression()) {
-    f64 left = std::any_cast<f64>(visit(ctx->logical_and_expression()));
-    f64 right = std::any_cast<f64>(visit(ctx->equality_expression()));
+    parser_antlr4::Logical_and_expressionContext *context) {
+  if (context->logical_and_expression()) {
+    f64 left = std::any_cast<f64>(visit(context->logical_and_expression()));
+    f64 right = std::any_cast<f64>(visit(context->equality_expression()));
     return (left != 0 && right != 0) ? 1.0 : 0.0;
   }
-  return visit(ctx->equality_expression());
+  return visit(context->equality_expression());
 }
 
 antlrcpp::Any gpp::BytecodeEmitter::visitEquality_expression(
-    parser_antlr4::Equality_expressionContext *ctx) {
-  if (ctx->equality_expression()) {
-    f64 left = std::any_cast<f64>(visit(ctx->equality_expression()));
-    f64 right = std::any_cast<f64>(visit(ctx->relational_expression()));
-    if (ctx->EQ())
+    parser_antlr4::Equality_expressionContext *context) {
+  if (context->equality_expression()) {
+    f64 left = std::any_cast<f64>(visit(context->equality_expression()));
+    f64 right = std::any_cast<f64>(visit(context->relational_expression()));
+    if (context->EQ())
       return (left == right) ? 1.0 : 0.0;
-    if (ctx->NE())
+    if (context->NE())
       return (left != right) ? 1.0 : 0.0;
   }
-  return visit(ctx->relational_expression());
+  return visit(context->relational_expression());
 }
 
 antlrcpp::Any gpp::BytecodeEmitter::visitRelational_expression(
-    parser_antlr4::Relational_expressionContext *ctx) {
-  if (ctx->relational_expression()) {
-    f64 left = std::any_cast<f64>(visit(ctx->relational_expression()));
-    f64 right = std::any_cast<f64>(visit(ctx->additive_expression()));
-    if (ctx->LT())
+    parser_antlr4::Relational_expressionContext *context) {
+  if (context->relational_expression()) {
+    f64 left = std::any_cast<f64>(visit(context->relational_expression()));
+    f64 right = std::any_cast<f64>(visit(context->additive_expression()));
+    if (context->LT())
       return (left < right) ? 1.0 : 0.0;
-    if (ctx->LE())
+    if (context->LE())
       return (left <= right) ? 1.0 : 0.0;
-    if (ctx->GT())
+    if (context->GT())
       return (left > right) ? 1.0 : 0.0;
-    if (ctx->GE())
+    if (context->GE())
       return (left >= right) ? 1.0 : 0.0;
   }
-  return visit(ctx->additive_expression());
+  return visit(context->additive_expression());
 }
 
 antlrcpp::Any gpp::BytecodeEmitter::visitAdditive_expression(
-    parser_antlr4::Additive_expressionContext *ctx) {
-  if (ctx->additive_expression()) {
-    f64 left = std::any_cast<f64>(visit(ctx->additive_expression()));
-    f64 right = std::any_cast<f64>(visit(ctx->multiplicative_expression()));
-    if (ctx->PLUS())
+    parser_antlr4::Additive_expressionContext *context) {
+  if (context->additive_expression()) {
+    f64 left = std::any_cast<f64>(visit(context->additive_expression()));
+    f64 right = std::any_cast<f64>(visit(context->multiplicative_expression()));
+    if (context->PLUS())
       return left + right;
-    if (ctx->MINUS())
+    if (context->MINUS())
       return left - right;
   }
-  return visit(ctx->multiplicative_expression());
+  return visit(context->multiplicative_expression());
 }
 
 antlrcpp::Any gpp::BytecodeEmitter::visitMultiplicative_expression(
-    parser_antlr4::Multiplicative_expressionContext *ctx) {
-  if (ctx->multiplicative_expression()) {
-    f64 left = std::any_cast<f64>(visit(ctx->multiplicative_expression()));
-    f64 right = std::any_cast<f64>(visit(ctx->power_expression()));
-    if (ctx->TIMES())
+    parser_antlr4::Multiplicative_expressionContext *context) {
+  if (context->multiplicative_expression()) {
+    f64 left = std::any_cast<f64>(visit(context->multiplicative_expression()));
+    f64 right = std::any_cast<f64>(visit(context->power_expression()));
+    if (context->TIMES())
       return left * right;
-    if (ctx->SLASH())
+    if (context->SLASH())
       return left / right;
-    if (ctx->MODULO())
+    if (context->MODULO())
       return fmod(left, right);
   }
-  return visit(ctx->power_expression());
+  return visit(context->power_expression());
 }
 
 antlrcpp::Any gpp::BytecodeEmitter::visitPower_expression(
-    parser_antlr4::Power_expressionContext *ctx) {
-  if (ctx->POWER()) {
-    f64 base = std::any_cast<f64>(visit(ctx->unary_expression()));
-    f64 exponent = std::any_cast<f64>(visit(ctx->power_expression()));
+    parser_antlr4::Power_expressionContext *context) {
+  if (context->POWER()) {
+    f64 base = std::any_cast<f64>(visit(context->unary_expression()));
+    f64 exponent = std::any_cast<f64>(visit(context->power_expression()));
     return std::pow(base, exponent);
   }
-  return visit(ctx->unary_expression());
+  return visit(context->unary_expression());
 }
 
 antlrcpp::Any gpp::BytecodeEmitter::visitUnary_expression(
-    parser_antlr4::Unary_expressionContext *ctx) {
-  if (ctx->PLUS())
-    return visit(ctx->unary_expression());
-  if (ctx->MINUS())
-    return -1.0 * std::any_cast<f64>(visit(ctx->unary_expression()));
-  if (ctx->unary_combo())
-    return visit(ctx->unary_combo());
-  return visit(ctx->primary());
+    parser_antlr4::Unary_expressionContext *context) {
+  if (context->PLUS())
+    return visit(context->unary_expression());
+  if (context->MINUS())
+    return -1.0 * std::any_cast<f64>(visit(context->unary_expression()));
+  if (context->unary_combo())
+    return visit(context->unary_combo());
+  return visit(context->primary());
 }
 
 antlrcpp::Any
-gpp::BytecodeEmitter::visitPrimary(parser_antlr4::PrimaryContext *ctx) {
-  if (ctx->real_number())
-    return stod(ctx->real_number()->getText());
-  if (ctx->parameter_value())
-    return visit(ctx->parameter_value()); // Implement as needed
-  return visit(ctx->expression());
+gpp::BytecodeEmitter::visitPrimary(parser_antlr4::PrimaryContext *context) {
+  if (context->real_number())
+    return stod(context->real_number()->getText());
+  if (context->parameter_value())
+    return visit(context->parameter_value());
+  return visit(context->expression());
+}
+
+antlrcpp::Any gpp::BytecodeEmitter::visitUnary_combo(
+    parser_antlr4::Unary_comboContext *context) {
+  if (context->ordinary_unary_combo()) {
+    return visit(context->ordinary_unary_combo());
+  }
+  return visit(context->arc_tangent_combo());
+}
+
+antlrcpp::Any gpp::BytecodeEmitter::visitOrdinary_unary_combo(
+    parser_antlr4::Ordinary_unary_comboContext *context) {
+  parser_antlr4::Ordinary_unary_operationContext *operation =
+      context->ordinary_unary_operation();
+  f64 value = std::any_cast<f64>(visit(context->expression()));
+  if (operation->ABSOLUTE_VALUE())
+    return std::abs(value);
+  if (operation->ARC_COSINE())
+    return std::acos(value);
+  if (operation->ARC_SINE())
+    return std::asin(value);
+  if (operation->COSINE())
+    return std::cos(value);
+  if (operation->E_RAISED_TO())
+    return std::exp(value);
+  if (operation->FIX_DOWN())
+    return std::floor(value);
+  if (operation->FIX_UP())
+    return std::ceil(value);
+  if (operation->NATURAL_LOG_OF())
+    return std::log(value);
+  if (operation->ROUND_OPERATION())
+    return std::round(value);
+  if (operation->SINE())
+    return std::sin(value);
+  if (operation->SQUARE_ROOT())
+    return std::sqrt(value);
+  if (operation->TANGENT())
+    return std::tan(value);
+
+  return 0; // TODO error handling
+}
+
+antlrcpp::Any gpp::BytecodeEmitter::visitArc_tangent_combo(
+    parser_antlr4::Arc_tangent_comboContext *context) {
+  f64 x = std::any_cast<f64>(visit(context->expression(0)));
+  f64 y = std::any_cast<f64>(visit(context->expression(1)));
+  return std::atan(x / y);
 }
