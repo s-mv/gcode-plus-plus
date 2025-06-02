@@ -68,7 +68,7 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
         });
 
       } else if (word.arg == 1) {
-        f64 x, y, z, f;
+        f64 x, y, z;
         for (Word operand : words) {
           switch (operand.word) {
           case 'x':
@@ -80,23 +80,12 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
           case 'z':
             z = operand.arg;
             break;
-          case 'f':
-            f = operand.arg;
-            break;
           }
         }
 
-        std::vector<f64> arguments_feed_rate = {f};
-        std::vector<f64> arguments_linear_move = {x, y, z};
-
-        bytecode.push({
-            .command = set_feed_rate,
-            .arguments = arguments_feed_rate,
-        });
-
         bytecode.push({
             .command = move_linear,
-            .arguments = arguments_linear_move,
+            .arguments = {x, y, z},
         });
 
       } else if (word.arg == 20) {
@@ -111,6 +100,21 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
         };
 
         bytecode.push(instruction);
+      }
+    } else if (word.word == 'f') {
+      bytecode.push({
+          .command = set_feed_rate,
+          .arguments = {word.arg},
+      });
+    } else if (word.word == 'm') {
+      /*** this is temporary ***/
+      if (word.arg == 100) {
+        bytecode.push({
+            .command = write_parameters_to_file,
+        });
+      } else if (word.arg > 100) {
+        bytecode.push({.command = write_parameter_to_file,
+                       .arguments = {word.arg - 100}});
       }
     }
   }

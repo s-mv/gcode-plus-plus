@@ -13,7 +13,7 @@ using f64 = double;
 
 /* misc. utility functions */
 
-std::string read_file(const std::string &filename);
+std::string ReadFile(const std::string &filename);
 
 /* logging utility - todo maybe remove this? */
 

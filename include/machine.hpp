@@ -49,6 +49,10 @@ private:
   void set_feed_rate(std::vector<f64> args);
   void set_unit_in(std::vector<f64> args);
   void set_unit_mm(std::vector<f64> args);
+
+  /*** this is temporary ***/
+  void write_parameter_to_file(std::vector<f64> args);
+  void write_parameters_to_file(std::vector<f64> args);
 };
 
 #endif

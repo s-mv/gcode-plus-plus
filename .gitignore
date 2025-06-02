@@ -6,3 +6,4 @@ antlr4/gen/*
 !antlr4/gen
 
 compile_commands.json
+.data.txt

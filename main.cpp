@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
 
   const char *src = argv[1];
 
-  std::string input(read_file(src));
+  std::string input(ReadFile(src));
   if (input.empty()) {
     std::cerr << "Error reading file at " << src << "!" << std::endl;
     return 1;

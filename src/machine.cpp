@@ -1,6 +1,5 @@
 #include "machine.hpp"
 #include "bytecode.hpp"
-#include "util.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -23,6 +22,10 @@ gpp::Machine::Machine(std::string input) : input(input), emitter(input) {
       std::bind(&gpp::Machine::set_unit_in, this, std::placeholders::_1);
   handlers[Command::set_unit_mm] =
       std::bind(&gpp::Machine::set_unit_mm, this, std::placeholders::_1);
+  handlers[Command::write_parameter_to_file] = std::bind(
+      &gpp::Machine::write_parameter_to_file, this, std::placeholders::_1);
+  handlers[Command::write_parameters_to_file] = std::bind(
+      &gpp::Machine::write_parameters_to_file, this, std::placeholders::_1);
 }
 
 f64 gpp::Machine::get_memory(i64 address) {
@@ -77,4 +80,35 @@ void gpp::Machine::set_unit_in(std::vector<f64> args) {
 
 void gpp::Machine::set_unit_mm(std::vector<f64> args) {
   std::cout << "set_unit(mm)\n";
+}
+
+void gpp::Machine::write_parameter_to_file(std::vector<f64> args) {
+  std::cout << "write_parameter_to_file(" << args[0] << ")\n";
+  std::ofstream file(".data.txt");
+  if (!file) {
+    std::cerr << "Failed to open .data.txt for writing\n";
+    return;
+  }
+
+  file << "#" << args[0] << " = " << memory[args[0]] << "\n";
+
+  file.close();
+}
+
+void gpp::Machine::write_parameters_to_file(std::vector<f64> args) {
+  std::cout << "write_parameters_to_file(";
+
+  std::ofstream file(".data.txt");
+  if (!file) {
+    std::cerr << "Failed to open .data.txt for writing\n";
+    return;
+  }
+
+  for (size_t i = 1; i < memory.size(); ++i) {
+    file << "#" << i << " = " << memory[i] << "\n";
+  }
+
+  file.close();
+
+  std::cout << ")\n";
 }
