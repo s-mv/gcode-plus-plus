@@ -6,8 +6,7 @@
 #include "util.hpp"
 
 #define CATCH_CONFIG_MAIN
-#include <catch2/catch_approx.hpp>
-#include <catch2/catch_test_macros.hpp>
+#include "catch_amalgamated.hpp"
 
 TEST_CASE("basic arithmetic", "[calculation]") {
   std::vector<std::string> expressions = {
@@ -35,7 +34,7 @@ TEST_CASE("basic arithmetic", "[calculation]") {
   }
 }
 
-TEST_CASE("g0, g1, g20, g21", "[bytecode]") {
+TEST_CASE("g0, g1, g20, g21, g90, g91", "[bytecode]") {
   std::string code = ReadFile("examples/basic.cnc");
   gpp::BytecodeEmitter emitter = gpp::BytecodeEmitter(code);
 

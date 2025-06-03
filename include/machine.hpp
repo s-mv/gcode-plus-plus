@@ -1,5 +1,5 @@
-#ifndef smv_gcodepp_machine_hpp
-#define smv_gcodepp_machine_hpp
+#ifndef smv_gpp_machine_hpp
+#define smv_gpp_machine_hpp
 
 #include "bytecode.hpp"
 #include "gpp.hpp"

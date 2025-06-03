@@ -1,5 +1,5 @@
-#ifndef smv_gcodepp_util_hpp
-#define smv_gcodepp_util_hpp
+#ifndef smv_gpp_util_hpp
+#define smv_gpp_util_hpp
 
 #include <cstdint>
 #include <string>

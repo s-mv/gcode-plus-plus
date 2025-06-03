@@ -1,5 +1,5 @@
-#ifndef smv_gcodepp_bytecode_hpp
-#define smv_gcodepp_bytecode_hpp
+#ifndef smv_gpp_bytecode_hpp
+#define smv_gpp_bytecode_hpp
 
 #include <queue>
 #include <stack>

@@ -1,5 +1,5 @@
-#ifndef smv_gcodepp_gpp_hpp
-#define smv_gcodepp_gpp_hpp
+#ifndef smv_gpp_gpp_hpp
+#define smv_gpp_gpp_hpp
 
 #include "parser_antlr4.h"
 #include "util.hpp"
