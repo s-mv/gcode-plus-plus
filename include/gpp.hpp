@@ -16,6 +16,7 @@ enum Command : u8;
 struct Machine;
 struct Vec3D;
 enum Unit : u8;
+enum DistanceMode : u8;
 } // namespace gpp
 
 #endif

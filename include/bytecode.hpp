@@ -16,23 +16,6 @@ struct gpp::Word {
   f64 arg;
 };
 
-#define g_command_len (7)
-enum gpp::Command : u8 {
-  move_linear = 0,
-  move_rapid = 1,
-
-  set_feed_rate = 2,
-
-  set_unit_in = 3,
-  set_unit_mm = 4,
-
-  /*** this is temporary ***/
-  write_parameter_to_file = 5,
-  write_parameters_to_file = 6,
-
-  no_command = 255, // invalid
-};
-
 struct gpp::Instruction {
   Command command;
   std::vector<f64> arguments;

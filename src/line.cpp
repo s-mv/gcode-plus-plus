@@ -4,6 +4,7 @@
 
 #include "bytecode.hpp"
 
+#include "machine.hpp"
 #include "parser_antlr4.h"
 #include "support/Any.h"
 #include "util.hpp"
@@ -90,13 +91,30 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
 
       } else if (word.arg == 20) {
         gpp::Instruction instruction = {
-            .command = set_unit_in,
+            .command = use_length_units,
+            .arguments = {Unit::mm},
         };
 
         bytecode.push(instruction);
-      } else if (word.arg == 20) {
+      } else if (word.arg == 21) {
         gpp::Instruction instruction = {
-            .command = set_unit_mm,
+            .command = use_length_units,
+            .arguments = {Unit::inch},
+        };
+
+        bytecode.push(instruction);
+      } else if (word.arg == 90) {
+        gpp::Instruction instruction = {
+            .command = use_distance_mode,
+            .arguments = {DistanceMode::absolute},
+        };
+
+        bytecode.push(instruction);
+
+      } else if (word.arg == 91) {
+        gpp::Instruction instruction = {
+            .command = use_distance_mode,
+            .arguments = {DistanceMode::relative},
         };
 
         bytecode.push(instruction);

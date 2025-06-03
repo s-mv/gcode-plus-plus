@@ -36,18 +36,31 @@ TEST_CASE("basic arithmetic", "[calculation]") {
 }
 
 TEST_CASE("g0, g1, g20, g21", "[bytecode]") {
-  std::string code = read_file("examples/basic.cnc");
+  std::string code = ReadFile("examples/basic.cnc");
   gpp::BytecodeEmitter emitter = gpp::BytecodeEmitter(code);
 
   gpp::Instruction instruction;
+
+  instruction = emitter.next();
+  REQUIRE(instruction.command == gpp::Command::use_length_units);
+  REQUIRE(instruction.arguments == std::vector<f64>{(f64)gpp::Unit::mm});
+
+  instruction = emitter.next();
+  REQUIRE(instruction.command == gpp::Command::move_linear);
+  REQUIRE(instruction.arguments == std::vector<f64>{1, 2, 3});
 
   instruction = emitter.next();
   REQUIRE(instruction.command == gpp::Command::set_feed_rate);
   REQUIRE(instruction.arguments == std::vector<f64>{1200});
 
   instruction = emitter.next();
-  REQUIRE(instruction.command == gpp::Command::move_linear);
-  REQUIRE(instruction.arguments == std::vector<f64>{1, 2, 3});
+  REQUIRE(instruction.command == gpp::Command::use_length_units);
+  REQUIRE(instruction.arguments == std::vector<f64>{(f64)gpp::Unit::inch});
+
+  instruction = emitter.next();
+  REQUIRE(instruction.command == gpp::Command::use_distance_mode);
+  REQUIRE(instruction.arguments ==
+          std::vector<f64>{gpp::DistanceMode::relative});
 
   instruction = emitter.next();
   REQUIRE(instruction.command == gpp::Command::move_rapid);
@@ -55,22 +68,18 @@ TEST_CASE("g0, g1, g20, g21", "[bytecode]") {
 }
 
 TEST_CASE("if-else-if-else-end", "[bytecode]") {
-  std::string code = read_file("examples/if.cnc");
+  std::string code = ReadFile("examples/if.cnc");
   gpp::BytecodeEmitter emitter = gpp::BytecodeEmitter(code);
 
   gpp::Instruction instruction;
 
   instruction = emitter.next();
-  REQUIRE(instruction.command == gpp::Command::set_feed_rate);
-  REQUIRE(instruction.arguments == std::vector<f64>{250});
-
-  instruction = emitter.next();
-  REQUIRE(instruction.command == gpp::Command::move_linear);
+  REQUIRE(instruction.command == gpp::Command::move_rapid);
   REQUIRE(instruction.arguments == std::vector<f64>{27, 9, 3});
 }
 
 TEST_CASE("while/do-while", "[bytecode]") {
-  std::string code = read_file("examples/while.cnc");
+  std::string code = ReadFile("examples/while.cnc");
 
   gpp::Machine machine(code);
   gpp::BytecodeEmitter emitter = gpp::BytecodeEmitter(code);
@@ -91,7 +100,7 @@ TEST_CASE("while/do-while", "[bytecode]") {
 }
 
 TEST_CASE("for", "[bytecode]") {
-  std::string code = read_file("examples/for.cnc");
+  std::string code = ReadFile("examples/for.cnc");
 
   gpp::Machine machine(code);
   gpp::BytecodeEmitter emitter = gpp::BytecodeEmitter(code);
