@@ -1,5 +1,6 @@
 #include "util.hpp"
 
+#include <cmath>
 #include <cstdarg>
 #include <cstdio>
 #include <fstream>

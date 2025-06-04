@@ -45,12 +45,12 @@ TEST_CASE("g0, g1, g20, g21, g90, g91", "[bytecode]") {
   REQUIRE(instruction.arguments == std::vector<f64>{(f64)gpp::Unit::mm});
 
   instruction = emitter.next();
-  REQUIRE(instruction.command == gpp::Command::move_linear);
-  REQUIRE(instruction.arguments == std::vector<f64>{1, 2, 3});
-
-  instruction = emitter.next();
   REQUIRE(instruction.command == gpp::Command::set_feed_rate);
   REQUIRE(instruction.arguments == std::vector<f64>{1200});
+
+  instruction = emitter.next();
+  REQUIRE(instruction.command == gpp::Command::move_linear);
+  REQUIRE(instruction.arguments == std::vector<f64>{1, 2, 3});
 
   instruction = emitter.next();
   REQUIRE(instruction.command == gpp::Command::use_length_units);
@@ -64,6 +64,9 @@ TEST_CASE("g0, g1, g20, g21, g90, g91", "[bytecode]") {
   instruction = emitter.next();
   REQUIRE(instruction.command == gpp::Command::move_rapid);
   REQUIRE(instruction.arguments == std::vector<f64>{1, 2, 50});
+
+  instruction = emitter.next();
+  REQUIRE(instruction.command == gpp::Command::no_command);
 }
 
 TEST_CASE("if-else-if-else-end", "[bytecode]") {
@@ -75,6 +78,9 @@ TEST_CASE("if-else-if-else-end", "[bytecode]") {
   instruction = emitter.next();
   REQUIRE(instruction.command == gpp::Command::move_rapid);
   REQUIRE(instruction.arguments == std::vector<f64>{27, 9, 3});
+
+  instruction = emitter.next();
+  REQUIRE(instruction.command == gpp::Command::no_command);
 }
 
 TEST_CASE("while/do-while", "[bytecode]") {
@@ -95,7 +101,10 @@ TEST_CASE("while/do-while", "[bytecode]") {
 
   instruction = emitter.next();
   REQUIRE(instruction.command == gpp::Command::move_rapid);
-  REQUIRE(instruction.arguments == std::vector<f64>{0, 0, 0});
+  REQUIRE(instruction.arguments == std::vector<f64>{5, 0, 0});
+
+  instruction = emitter.next();
+  REQUIRE(instruction.command == gpp::Command::no_command);
 }
 
 TEST_CASE("for", "[bytecode]") {
@@ -115,6 +124,9 @@ TEST_CASE("for", "[bytecode]") {
       REQUIRE(instruction.arguments == std::vector<f64>{1, i, j});
     }
   }
+
+  instruction = emitter.next();
+  REQUIRE(instruction.command == gpp::Command::no_command);
 }
 
 TEST_CASE("trigonometric functions", "[calculation]") {

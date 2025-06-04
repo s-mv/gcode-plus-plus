@@ -6,7 +6,7 @@ while [#1 > 0] do
 end
 
 do
-  g0 x[#1 + 1] y0 z0 f600
+  g0 x[#1 + 5] y0 z0
   #1 = [#1 + 1]
 while [[#1] > 3] end
 ; this ^ is false by the way

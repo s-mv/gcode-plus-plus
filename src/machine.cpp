@@ -61,13 +61,13 @@ bool gpp::Machine::next() {
 void gpp::Machine::print_specs() {}
 
 void gpp::Machine::move_linear(std::vector<f64> args) {
-  position = ResolvePosition(args.at(0), args.at(1), args.at(1));
+  position = ResolvePosition(args.at(0), args.at(1), args.at(2));
   std::cout << "move_linear(" << position.x << ", " << position.y << ", "
             << position.z << ")\n";
 }
 
 void gpp::Machine::move_rapid(std::vector<f64> args) {
-  position = ResolvePosition(args.at(0), args.at(1), args.at(1));
+  position = ResolvePosition(args.at(0), args.at(1), args.at(2));
   std::cout << "move_rapid(" << position.x << ", " << position.y << ", "
             << position.z << ")\n";
 }
