@@ -39,12 +39,12 @@ gpp::Instruction gpp::BytecodeEmitter::next() {
           executionStack.pop();
           continue;
         }
-      } else if (frame.whileLoop == nullptr) {
+      } else if (frame.whileLoopCondition == nullptr) {
         executionStack.pop();
         continue;
       }
 
-      f64 condition = std::any_cast<f64>(visit(frame.whileLoop));
+      f64 condition = std::any_cast<f64>(visit(frame.whileLoopCondition));
 
       if (condition != 0.0) {
         frame.linePointer = 0;
@@ -55,18 +55,7 @@ gpp::Instruction gpp::BytecodeEmitter::next() {
       }
     }
 
-    continueEncountered = false;
-    breakEncountered = false;
-
     visit(statements.at(frame.linePointer++));
-
-    if (breakEncountered) {
-      executionStack.pop();
-    }
-
-    if (continueEncountered && frame.whileLoop) {
-      frame.linePointer = statements.size();
-    }
   }
 
   Instruction front = bytecode.front();
@@ -129,7 +118,7 @@ antlrcpp::Any gpp::BytecodeEmitter::visitWhile_statement(
   executionStack.push({
       .block = context->block(),
       .linePointer = 0,
-      .whileLoop = context->expression(),
+      .whileLoopCondition = context->expression(),
   });
 
   return nullptr;
@@ -140,7 +129,7 @@ antlrcpp::Any gpp::BytecodeEmitter::visitDo_while_statement(
   executionStack.push({
       .block = context->block(),
       .linePointer = 0,
-      .whileLoop = context->expression(),
+      .whileLoopCondition = context->expression(),
   });
 
   return nullptr;
@@ -148,8 +137,8 @@ antlrcpp::Any gpp::BytecodeEmitter::visitDo_while_statement(
 
 antlrcpp::Any gpp::BytecodeEmitter::visitFor_statement(
     parser_antlr4::For_statementContext *context) {
-  int address = (int)std::any_cast<f64>(
-      visit(context->parameter_value()->parameter_index()->real_value()));
+  int address =
+      (int)std::any_cast<f64>(visit(context->parameter_value()->primary()));
   f64 start = std::any_cast<f64>(visit(context->expression().at(0)));
   f64 end = std::any_cast<f64>(visit(context->expression().at(1)));
 
@@ -216,4 +205,24 @@ void gpp::BytecodeEmitter::set_memory(i64 address, f64 value) {
 
 f64 gpp::BytecodeEmitter::get_memory(i64 address) {
   return machine->get_memory(address);
+}
+
+antlrcpp::Any gpp::BytecodeEmitter::visitParameter_value(
+    parser_antlr4::Parameter_valueContext *context) {
+  f64 index = std::any_cast<f64>(visit(context->primary()));
+  i64 address = static_cast<i64>(index);
+  f64 value = get_memory(address);
+
+  return value;
+}
+
+antlrcpp::Any gpp::BytecodeEmitter::visitParameter_setting(
+    parser_antlr4::Parameter_settingContext *context) {
+  f64 index = std::any_cast<f64>(visit(context->parameter_index()));
+  i64 address = static_cast<i64>(index);
+  f64 value = std::any_cast<f64>(visit(context->real_value()));
+
+  set_memory(address, value);
+
+  return nullptr;
 }

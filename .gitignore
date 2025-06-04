@@ -2,9 +2,7 @@
 
 build/*
 !build/.gitkeep
-antlr4/gen/*
-!antlr4/gen
-external
 
 compile_commands.json
 .data.txt
+examples/test.cnc

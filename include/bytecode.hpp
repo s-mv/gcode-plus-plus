@@ -26,7 +26,7 @@ struct gpp::ExecutionFrame {
   i64 linePointer;
   // TODO maybe turn this into a union
   // union {
-  parser_antlr4::ExpressionContext *whileLoop = nullptr;
+  parser_antlr4::ExpressionContext *whileLoopCondition = nullptr;
   int loopCounterAddress = -1;
   // };
   f64 start;

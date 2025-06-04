@@ -152,23 +152,3 @@ f64 find_modal_group(f64 code) {
 
   return -1;
 }
-
-antlrcpp::Any gpp::BytecodeEmitter::visitParameter_value(
-    parser_antlr4::Parameter_valueContext *context) {
-  f64 index = std::any_cast<f64>(visit(context->parameter_index()));
-  i64 address = static_cast<i64>(index);
-  f64 value = get_memory(address);
-
-  return value;
-}
-
-antlrcpp::Any gpp::BytecodeEmitter::visitParameter_setting(
-    parser_antlr4::Parameter_settingContext *context) {
-  f64 index = std::any_cast<f64>(visit(context->parameter_index()));
-  i64 address = static_cast<i64>(index);
-  f64 value = std::any_cast<f64>(visit(context->real_value()));
-
-  set_memory(address, value);
-
-  return nullptr;
-}

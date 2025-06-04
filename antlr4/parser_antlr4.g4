@@ -181,11 +181,11 @@ parameter_setting
     ;
 
 parameter_value
-    : PARAMETER_SIGN parameter_index
+    : PARAMETER_SIGN primary
     ;
 
 parameter_index
-    : real_value
+    : primary
     ;
 
 comment
