@@ -3,6 +3,7 @@
 
 #include <queue>
 #include <stack>
+#include <string>
 #include <vector>
 
 #include "gpp.hpp"
@@ -45,6 +46,7 @@ private:
   bool breakEncountered;
   bool continueEncountered;
 
+  std::string source;
   antlr4::ANTLRInputStream inputStream;
   lexer_antlr4 lexer;
   antlr4::CommonTokenStream tokens;
@@ -61,6 +63,7 @@ public:
 private:
   void set_memory(i64 address, f64 value);
   f64 get_memory(i64 address);
+  std::string getLineFromSource(int target);
 
   antlrcpp::Any visitBlock(parser_antlr4::BlockContext *context) override;
   antlrcpp::Any

@@ -50,8 +50,8 @@ build/%.o: src/%.cpp
 	@$(CXX) -c $< -o $@ $(CXXFLAGS)
 
 clean:
-	@rm -rf ${OBJECTS} $(ANTLR_OBJECTS) build/test_example.o \
-		build/test_example antlr4/gen/* build/$(TITLE)
+	@rm -rf ${OBJECTS} $(ANTLR_OBJECTS) build/unit.o build/unit \
+		 build/regression build/regression.o $(EXTERN)antlr4/gen/* build/$(TITLE)
 
 # helper to make new source-header pairs
 name ?= newfile

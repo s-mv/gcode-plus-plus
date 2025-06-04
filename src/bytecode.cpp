@@ -12,8 +12,9 @@
 #include "util.hpp"
 
 gpp::BytecodeEmitter::BytecodeEmitter(std::string input)
-    : inputStream(input), lexer(&inputStream), tokens(&lexer), parser(&tokens),
-      looping(false), breakEncountered(false), continueEncountered(false) {
+    : source(input), inputStream(input), lexer(&inputStream), tokens(&lexer),
+      parser(&tokens), looping(false), breakEncountered(false),
+      continueEncountered(false) {
   executionStack.push({.block = parser.block(), .linePointer = 0});
 }
 
@@ -225,4 +226,16 @@ antlrcpp::Any gpp::BytecodeEmitter::visitParameter_setting(
   set_memory(address, value);
 
   return nullptr;
+}
+
+std::string gpp::BytecodeEmitter::getLineFromSource(int target) {
+  std::istringstream stream(source);
+  std::string line;
+  int currentLine = 1;
+  while (std::getline(stream, line)) {
+    if (currentLine == target)
+      return line;
+    currentLine++;
+  }
+  return "(source line not available)";
 }

@@ -35,7 +35,7 @@ TEST_CASE("basic arithmetic", "[calculation]") {
 }
 
 TEST_CASE("g0, g1, g20, g21, g90, g91", "[bytecode]") {
-  std::string code = ReadFile("examples/basic.cnc");
+  std::string code = readFile("examples/basic.cnc");
   gpp::BytecodeEmitter emitter = gpp::BytecodeEmitter(code);
 
   gpp::Instruction instruction;
@@ -70,7 +70,7 @@ TEST_CASE("g0, g1, g20, g21, g90, g91", "[bytecode]") {
 }
 
 TEST_CASE("if-else-if-else-end", "[bytecode]") {
-  std::string code = ReadFile("examples/if.cnc");
+  std::string code = readFile("examples/if.cnc");
   gpp::BytecodeEmitter emitter = gpp::BytecodeEmitter(code);
 
   gpp::Instruction instruction;
@@ -84,7 +84,7 @@ TEST_CASE("if-else-if-else-end", "[bytecode]") {
 }
 
 TEST_CASE("while/do-while", "[bytecode]") {
-  std::string code = ReadFile("examples/while.cnc");
+  std::string code = readFile("examples/while.cnc");
 
   gpp::Machine machine(code);
   gpp::BytecodeEmitter emitter = gpp::BytecodeEmitter(code);
@@ -108,7 +108,7 @@ TEST_CASE("while/do-while", "[bytecode]") {
 }
 
 TEST_CASE("for", "[bytecode]") {
-  std::string code = ReadFile("examples/for.cnc");
+  std::string code = readFile("examples/for.cnc");
 
   gpp::Machine machine(code);
   gpp::BytecodeEmitter emitter = gpp::BytecodeEmitter(code);

@@ -52,6 +52,9 @@ int getInstructionPriority(VerboseInstruction instruction);
 
 antlrcpp::Any
 gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
+  int line = context->getStart()->getLine();
+  int column = context->getStart()->getCharPositionInLine();
+
   for (parser_antlr4::SegmentContext *segment : context->segment()) {
     visit(segment);
   }
@@ -65,10 +68,14 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
       if (group == -1)
         continue;
 
-      if (seenModalGroups.find(group) != seenModalGroups.end())
-        std::cerr << "Warning: Multiple G-codes from modal group " << group
-                  << " found!\n";
+      if (seenModalGroups.find(group) != seenModalGroups.end()) {
+        std::ostringstream error;
+        error << "Multiple G-codes from modal group '" << group << "' found!";
+        std::string message = error.str();
 
+        prettyPrintError(message, getLineFromSource(line), line, column);
+        exit(0);
+      }
       seenModalGroups.insert(group);
     }
   }
@@ -99,18 +106,28 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
           }
         }
 
-        vi.command = {.command = (word.arg == 0) ? move_rapid : move_linear,
-                      .arguments = {x, y, z}};
+        vi.command = {
+            .command = (word.arg == 0) ? move_rapid : move_linear,
+            .arguments = {x, y, z},
+        };
+      } else if (word.arg == 2) {
+
+      } else if (word.arg == 3) {
+
       } else if (word.arg == 20) {
         vi.command = {.command = use_length_units, .arguments = {Unit::mm}};
       } else if (word.arg == 21) {
         vi.command = {.command = use_length_units, .arguments = {Unit::inch}};
       } else if (word.arg == 90) {
-        vi.command = {.command = use_distance_mode,
-                      .arguments = {DistanceMode::absolute}};
+        vi.command = {
+            .command = use_distance_mode,
+            .arguments = {DistanceMode::absolute},
+        };
       } else if (word.arg == 91) {
-        vi.command = {.command = use_distance_mode,
-                      .arguments = {DistanceMode::relative}};
+        vi.command = {
+            .command = use_distance_mode,
+            .arguments = {DistanceMode::relative},
+        };
       } else
         continue;
 
@@ -120,8 +137,10 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
       if (word.arg == 100) {
         vi.command = {.command = write_parameters_to_file};
       } else if (word.arg > 100) {
-        vi.command = {.command = write_parameter_to_file,
-                      .arguments = {word.arg - 100}};
+        vi.command = {
+            .command = write_parameter_to_file,
+            .arguments = {word.arg - 100},
+        };
       } else
         continue;
     } else
