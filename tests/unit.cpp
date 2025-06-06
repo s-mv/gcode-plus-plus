@@ -69,6 +69,33 @@ TEST_CASE("g0, g1, g20, g21, g90, g91", "[bytecode]") {
   REQUIRE(instruction.command == gpp::Command::no_command);
 }
 
+TEST_CASE("g2, g3", "[bytecode]") {
+  std::string code = readFile("examples/g2g3.cnc");
+
+  gpp::Machine machine = gpp::Machine(code);
+
+  std::string expected = "set_feed_rate(600)\n"
+                         "move_rapid(0, 0, 0)\n"
+                         "arc_feed(2, 0, 1, 0, 1, 0)\n"
+                         "arc_feed(0, 0, 1, 0, -1, 0)\n"
+                         "move_rapid(0, 0, 0)\n"
+                         "arc_feed(2, 2, 1, 1, 1, 0)\n"
+                         "arc_feed(0, 0, 1, 1, -1, 0)\n";
+
+  std::ostringstream buffer;
+  std::streambuf *oldBuffer = std::cout.rdbuf();
+  std::cout.rdbuf(buffer.rdbuf());
+
+  while (machine.next())
+    ;
+
+  std::cout.rdbuf(oldBuffer);
+
+  std::string captured = buffer.str();
+
+  REQUIRE(captured == expected);
+}
+
 TEST_CASE("if-else-if-else-end", "[bytecode]") {
   std::string code = readFile("examples/if.cnc");
   gpp::BytecodeEmitter emitter = gpp::BytecodeEmitter(code);
@@ -88,7 +115,6 @@ TEST_CASE("while/do-while", "[bytecode]") {
 
   gpp::Machine machine(code);
   gpp::BytecodeEmitter emitter = gpp::BytecodeEmitter(code);
-  // unorthodox but for the test case, we have to do this
   emitter.machine = &machine;
 
   gpp::Instruction instruction;

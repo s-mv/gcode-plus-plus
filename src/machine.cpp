@@ -1,13 +1,17 @@
 #include "machine.hpp"
 #include "gpp.hpp"
+#include "util.hpp"
 
 #include <cmath>
 #include <iostream>
+#include <vector>
 
 gpp::Machine::Machine(std::string input) : input(input), emitter(input) {
   this->position = (Vec3D){0, 0, 0};
   this->unit = Unit::mm;
-  this->feedRate = 600; // 600.0 mm per minute => 1 cm per second
+  this->distanceMode = absolute;
+  this->plane = plane_xy;
+  this->feedRate = 0;
   std::cout << "Initialized machine!\n";
   gpp::Machine::print_specs();
   this->emitter.machine = this;
@@ -22,6 +26,11 @@ gpp::Machine::Machine(std::string input) : input(input), emitter(input) {
       std::bind(&gpp::Machine::use_length_units, this, std::placeholders::_1);
   handlers[Command::use_distance_mode] =
       std::bind(&gpp::Machine::use_distance_mode, this, std::placeholders::_1);
+  handlers[Command::select_plane] =
+      std::bind(&gpp::Machine::select_plane, this, std::placeholders::_1);
+  handlers[Command::arc_feed] =
+      std::bind(&gpp::Machine::arc_feed, this, std::placeholders::_1);
+
   handlers[Command::write_parameter_to_file] = std::bind(
       &gpp::Machine::write_parameter_to_file, this, std::placeholders::_1);
   handlers[Command::write_parameters_to_file] = std::bind(
@@ -61,26 +70,27 @@ bool gpp::Machine::next() {
 void gpp::Machine::print_specs() {}
 
 void gpp::Machine::move_linear(std::vector<f64> args) {
-  position = ResolvePosition(args.at(0), args.at(1), args.at(2));
+  position = resolvePosition(args.at(0), args.at(1), args.at(2));
   std::cout << "move_linear(" << position.x << ", " << position.y << ", "
             << position.z << ")\n";
 }
 
 void gpp::Machine::move_rapid(std::vector<f64> args) {
-  position = ResolvePosition(args.at(0), args.at(1), args.at(2));
+  position = resolvePosition(args.at(0), args.at(1), args.at(2));
   std::cout << "move_rapid(" << position.x << ", " << position.y << ", "
             << position.z << ")\n";
 }
 
 void gpp::Machine::set_feed_rate(std::vector<f64> args) {
-  std::cout << "set_feed_rate(" << args.at(0) << ")\n";
+  feedRate = args.at(0);
+  std::cout << "set_feed_rate(" << feedRate << ")\n";
 }
 
 void gpp::Machine::use_length_units(std::vector<f64> args) {
   unit = (Unit)args.at(0);
 
   std::cout << "use_length_units(";
-  std::cout << UnitToString(unit);
+  std::cout << unitToString(unit);
   std::cout << ")\n";
 }
 
@@ -91,6 +101,34 @@ void gpp::Machine::use_distance_mode(std::vector<f64> args) {
   std::cout << (distanceMode == absolute ? "absolute" : "relative");
   std::cout << ")\n";
 };
+
+void gpp::Machine::select_plane(std::vector<f64> args) {
+  plane = (Plane)args.at(0);
+
+  std::cout << "use_length_units(";
+  std::cout << plane;
+  std::cout << ")\n";
+}
+
+void gpp::Machine::arc_feed(std::vector<f64> args) {
+  f64 first_end = args.at(0);
+  f64 second_end = args.at(1);
+  f64 first_axis = args.at(2);
+  f64 second_axis = args.at(3);
+  int rotation = args.at(4);
+  f64 axis_end_point = args.at(5);
+
+  if (plane == plane_xy)
+    position = resolvePosition(first_end, second_end, axis_end_point);
+  else if (plane == plane_yz)
+    position = resolvePosition(axis_end_point, first_end, second_end);
+  else
+    position = resolvePosition(first_end, axis_end_point, second_end);
+
+  std::cout << "arc_feed(" << first_end << ", " << second_end << ", "
+            << first_axis << ", " << second_axis << ", " << rotation << ", "
+            << axis_end_point << ")\n";
+}
 
 void gpp::Machine::write_parameter_to_file(std::vector<f64> args) {
   std::cout << "write_parameter_to_file(" << args.at(0) << ")\n";
@@ -123,7 +161,9 @@ void gpp::Machine::write_parameters_to_file(std::vector<f64> args) {
   std::cout << ")\n";
 }
 
-constexpr f64 gpp::Machine::UnitMultiplier(Unit unit) {
+/* helpers */
+
+f64 gpp::Machine::unitMultiplier(Unit unit) {
   switch (unit) {
   case Unit::mm:
     return 1.0;
@@ -135,7 +175,7 @@ constexpr f64 gpp::Machine::UnitMultiplier(Unit unit) {
   return 1.0; // fallback
 }
 
-constexpr const char *gpp::Machine::UnitToString(Unit unit) {
+const char *gpp::Machine::unitToString(Unit unit) {
   switch (unit) {
   case Unit::mm:
     return "mm";
@@ -147,13 +187,14 @@ constexpr const char *gpp::Machine::UnitToString(Unit unit) {
   return "unknown";
 }
 
-gpp::Vec3D gpp::Machine::ResolvePosition(const f64 x, const f64 y,
+const char *gpp::Machine::planeToString(Plane plane) {
+  return plane == plane_xy ? "XY" : (plane == plane_yz ? "YZ" : "XZ");
+}
+
+gpp::Vec3D gpp::Machine::resolvePosition(const f64 x, const f64 y,
                                          const f64 z) {
-  Vec3D delta = {
-      x * UnitMultiplier(unit),
-      y * UnitMultiplier(unit),
-      z * UnitMultiplier(unit),
-  };
+  Vec3D delta = {x, y, z};
+  delta = delta * unitMultiplier(unit);
 
   if (distanceMode == DistanceMode::relative)
     return position + delta;
@@ -161,6 +202,40 @@ gpp::Vec3D gpp::Machine::ResolvePosition(const f64 x, const f64 y,
     return delta;
 }
 
-gpp::Vec3D operator+(const gpp::Vec3D &a, const gpp::Vec3D &b) {
-  return {a.x + b.x, a.y + b.y, a.z + b.z};
+gpp::Vec3D gpp::Vec3D::operator+(const Vec3D &rhs) {
+  return {x + rhs.x, y + rhs.y, z + rhs.z};
+}
+
+gpp::Vec3D gpp::Vec3D::operator-(const Vec3D &rhs) {
+  return {x - rhs.x, y - rhs.y, z - rhs.z};
+}
+
+gpp::Vec3D gpp::Vec3D::operator*(f64 scalar) {
+  return {x * scalar, y * scalar, z * scalar};
+}
+
+f64 gpp::Vec3D::dot(const Vec3D &rhs) {
+  return x * rhs.x + y * rhs.y + z * rhs.z;
+}
+
+gpp::Vec3D gpp::Vec3D::cross(const Vec3D &rhs) {
+  return {y * rhs.z - z * rhs.y, z * rhs.x - x * rhs.z, x * rhs.y - y * rhs.x};
+}
+
+gpp::Vec2D gpp::Vec2D::operator+(const Vec2D &rhs) {
+  return {x + rhs.x, y + rhs.y};
+}
+
+gpp::Vec2D gpp::Vec2D::operator-(const Vec2D &rhs) {
+  return {x - rhs.x, y - rhs.y};
+}
+
+gpp::Vec2D gpp::Vec2D::operator*(f64 scalar) {
+  return {x * scalar, y * scalar};
+}
+
+f64 gpp::Vec2D::dot(const Vec2D &rhs) { return x * rhs.x + y * rhs.y; }
+
+gpp::Vec3D gpp::Vec2D::cross(const Vec2D &rhs) {
+  return {0, 0, x * rhs.y - y * rhs.x};
 }

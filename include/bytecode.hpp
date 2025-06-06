@@ -63,7 +63,6 @@ public:
 private:
   void set_memory(i64 address, f64 value);
   f64 get_memory(i64 address);
-  std::string getLineFromSource(int target);
 
   antlrcpp::Any visitBlock(parser_antlr4::BlockContext *context) override;
   antlrcpp::Any
@@ -120,6 +119,10 @@ private:
   antlrcpp::Any visitUnary_expression(
       parser_antlr4::Unary_expressionContext *context) override;
   antlrcpp::Any visitPrimary(parser_antlr4::PrimaryContext *context) override;
+
+  //   helpers
+  std::string getLineFromSource(int target);
+  bool arcOffetsAligned(const Plane currentPlane, f64 i, f64 j, f64 k);
 };
 
 #endif

@@ -5,8 +5,8 @@
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("regression test with captured output") {
-  std::string code = read_file("examples/learnxiny.cnc");
-  std::string expected = read_file("tests/regression.txt");
+  std::string code = readFile("examples/learnxiny.cnc");
+  std::string expected = readFile("tests/regression.txt");
 
   std::ostringstream buffer;
   std::streambuf *oldBuffer = std::cout.rdbuf();
@@ -14,7 +14,6 @@ TEST_CASE("regression test with captured output") {
 
   gpp::Machine machine = gpp::Machine(code);
 
-  bool done = false;
   while (machine.next())
     ;
 
