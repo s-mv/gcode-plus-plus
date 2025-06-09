@@ -85,8 +85,6 @@ public:
 
     virtual std::any visitParameter_value(parser_antlr4::Parameter_valueContext *context) = 0;
 
-    virtual std::any visitParameter_index(parser_antlr4::Parameter_indexContext *context) = 0;
-
     virtual std::any visitComment(parser_antlr4::CommentContext *context) = 0;
 
 

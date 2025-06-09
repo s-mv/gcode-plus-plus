@@ -113,9 +113,6 @@ public:
   virtual void enterParameter_value(parser_antlr4::Parameter_valueContext *ctx) = 0;
   virtual void exitParameter_value(parser_antlr4::Parameter_valueContext *ctx) = 0;
 
-  virtual void enterParameter_index(parser_antlr4::Parameter_indexContext *ctx) = 0;
-  virtual void exitParameter_index(parser_antlr4::Parameter_indexContext *ctx) = 0;
-
   virtual void enterComment(parser_antlr4::CommentContext *ctx) = 0;
   virtual void exitComment(parser_antlr4::CommentContext *ctx) = 0;
 

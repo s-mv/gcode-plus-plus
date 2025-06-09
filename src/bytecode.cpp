@@ -28,10 +28,10 @@ gpp::Instruction gpp::BytecodeEmitter::next() {
         frame.block->statement();
 
     if (frame.linePointer >= statements.size()) {
-      if (frame.loopCounterAddress != -1) {
-        f64 value = get_memory(frame.loopCounterAddress) + frame.step;
+      if (!frame.loopCounterAddress.empty()) {
+        f64 value = getMemory(frame.loopCounterAddress) + frame.step;
         // TODO make an increment/stepBy function for this
-        set_memory(frame.loopCounterAddress, value);
+        setMemory(frame.loopCounterAddress, value);
 
         if (value < frame.end) {
           frame.linePointer = 0;
@@ -138,8 +138,8 @@ antlrcpp::Any gpp::BytecodeEmitter::visitDo_while_statement(
 
 antlrcpp::Any gpp::BytecodeEmitter::visitFor_statement(
     parser_antlr4::For_statementContext *context) {
-  int address =
-      (int)std::any_cast<f64>(visit(context->parameter_value()->primary()));
+  std::string address =
+      std::any_cast<std::string>(visit(context->parameter_value()));
   f64 start = std::any_cast<f64>(visit(context->expression().at(0)));
   f64 end = std::any_cast<f64>(visit(context->expression().at(1)));
 
@@ -151,7 +151,7 @@ antlrcpp::Any gpp::BytecodeEmitter::visitFor_statement(
       .end = end,
   });
 
-  set_memory(address, start);
+  setMemory(address, start);
 
   return nullptr;
 }
@@ -172,8 +172,6 @@ antlrcpp::Any gpp::BytecodeEmitter::visitMid_line_word(
     parser_antlr4::Mid_line_wordContext *context) {
   char letter = std::tolower(context->mid_line_letter()->getText().at(0));
   f64 value = std::any_cast<f64>(visit(context->real_value()));
-  i64 value_asint = static_cast<i64>(value);
-  int current_mode;
 
   words.push_back({letter, value});
 
@@ -186,10 +184,6 @@ antlrcpp::Any gpp::BytecodeEmitter::visitReal_value(
     return visit(context->real_number());
   } else if (context->expression()) {
     return visit(context->expression());
-  } else if (context->parameter_value()) {
-    // TODO
-  } else if (context->unary_combo()) {
-    // TODO
   }
 
   return 0.0;
@@ -200,30 +194,58 @@ antlrcpp::Any gpp::BytecodeEmitter::visitReal_number(
   return std::stod(context->getText());
 }
 
-void gpp::BytecodeEmitter::set_memory(i64 address, f64 value) {
-  machine->set_memory(address, value);
+void gpp::BytecodeEmitter::setMemory(std::string address, f64 value) {
+  if (address.empty()) {
+    return; // TODO, add an error
+  }
+
+  if (parameterAddresses.find(address) == parameterAddresses.end()) {
+    parameterAddresses[address] = parameterAddresses.size();
+  }
+
+  int index = parameterAddresses.at(address);
+
+  machine->setMemory(index, value);
 }
 
-f64 gpp::BytecodeEmitter::get_memory(i64 address) {
-  return machine->get_memory(address);
+f64 gpp::BytecodeEmitter::getMemory(std::string address) {
+  if (address.empty()) {
+    return NAN; // TODO, add an error
+  }
+
+  int index = parameterAddresses.at(address);
+
+  return machine->getMemory(index);
 }
 
 antlrcpp::Any gpp::BytecodeEmitter::visitParameter_value(
     parser_antlr4::Parameter_valueContext *context) {
-  f64 index = std::any_cast<f64>(visit(context->primary()));
-  i64 address = static_cast<i64>(index);
-  f64 value = get_memory(address);
+  std::string address;
+  if (context->NAMED_PARAMETER()) {
+    address = context->NAMED_PARAMETER()->getText().substr(1);
+  } else {
+    f64 address_value = std::any_cast<f64>(visit(context->primary()));
+    address = std::to_string(address_value);
+  }
+
+  f64 value = getMemory(address);
 
   return value;
 }
 
 antlrcpp::Any gpp::BytecodeEmitter::visitParameter_setting(
     parser_antlr4::Parameter_settingContext *context) {
-  f64 index = std::any_cast<f64>(visit(context->parameter_index()));
-  i64 address = static_cast<i64>(index);
+  std::string address;
+  if (context->NAMED_PARAMETER()) {
+    address = context->NAMED_PARAMETER()->getText().substr(1);
+  } else {
+    f64 address_value = std::any_cast<f64>(visit(context->primary()));
+    address = std::to_string(address_value);
+  }
+
   f64 value = std::any_cast<f64>(visit(context->real_value()));
 
-  set_memory(address, value);
+  setMemory(address, value);
 
   return nullptr;
 }

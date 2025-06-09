@@ -147,10 +147,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitParameter_index(parser_antlr4::Parameter_indexContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitComment(parser_antlr4::CommentContext *ctx) override {
     return visitChildren(ctx);
   }

@@ -4,6 +4,7 @@
 #include <queue>
 #include <stack>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "gpp.hpp"
@@ -25,11 +26,8 @@ struct gpp::Instruction {
 struct gpp::ExecutionFrame {
   parser_antlr4::BlockContext *block;
   i64 linePointer;
-  // TODO maybe turn this into a union
-  // union {
   parser_antlr4::ExpressionContext *whileLoopCondition = nullptr;
-  int loopCounterAddress = -1;
-  // };
+  std::string loopCounterAddress = "";
   f64 start;
   f64 step = 1;
   f64 end;
@@ -54,6 +52,8 @@ private:
 
   std::stack<gpp::ExecutionFrame> executionStack;
 
+  std::unordered_map<std::string, f64> parameterAddresses;
+
 public:
   Machine *machine = nullptr;
 
@@ -61,8 +61,8 @@ public:
   Instruction next();
 
 private:
-  void set_memory(i64 address, f64 value);
-  f64 get_memory(i64 address);
+  void setMemory(std::string address, f64 value);
+  f64 getMemory(std::string address);
 
   antlrcpp::Any visitBlock(parser_antlr4::BlockContext *context) override;
   antlrcpp::Any

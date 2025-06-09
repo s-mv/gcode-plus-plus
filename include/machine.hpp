@@ -83,8 +83,8 @@ public:
   std::vector<f64> memory;
 
   Machine(std::string input);
-  f64 get_memory(i64 address);
-  void set_memory(i64 address, f64 value);
+  f64 getMemory(i64 address);
+  void setMemory(i64 address, f64 value);
   bool next();
 
 private:

@@ -20,7 +20,7 @@ public:
     GE = 31, ABSOLUTE_VALUE = 32, ARC_COSINE = 33, ARC_SINE = 34, COSINE = 35, 
     E_RAISED_TO = 36, FIX_DOWN = 37, FIX_UP = 38, NATURAL_LOG_OF = 39, ROUND_OPERATION = 40, 
     SINE = 41, SQUARE_ROOT = 42, TANGENT = 43, ARC_TANGENT = 44, PARAMETER_SIGN = 45, 
-    EQUAL_SIGN = 46, COMMENT = 47, EOL = 48, WS = 49
+    EQUAL_SIGN = 46, COMMENT = 47, NAMED_PARAMETER = 48, EOL = 49, WS = 50
   };
 
   enum {
@@ -34,7 +34,7 @@ public:
     RulePower_expression = 24, RuleUnary_expression = 25, RulePrimary = 26, 
     RuleUnary_combo = 27, RuleOrdinary_unary_combo = 28, RuleOrdinary_unary_operation = 29, 
     RuleArc_tangent_combo = 30, RuleParameter_setting = 31, RuleParameter_value = 32, 
-    RuleParameter_index = 33, RuleComment = 34
+    RuleComment = 33
   };
 
   explicit parser_antlr4(antlr4::TokenStream *input);
@@ -87,7 +87,6 @@ public:
   class Arc_tangent_comboContext;
   class Parameter_settingContext;
   class Parameter_valueContext;
-  class Parameter_indexContext;
   class CommentContext; 
 
   class  BlockContext : public antlr4::ParserRuleContext {
@@ -663,10 +662,11 @@ public:
   public:
     Parameter_settingContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *PARAMETER_SIGN();
-    Parameter_indexContext *parameter_index();
     antlr4::tree::TerminalNode *EQUAL_SIGN();
     Real_valueContext *real_value();
+    antlr4::tree::TerminalNode *PARAMETER_SIGN();
+    PrimaryContext *primary();
+    antlr4::tree::TerminalNode *NAMED_PARAMETER();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -683,6 +683,7 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *PARAMETER_SIGN();
     PrimaryContext *primary();
+    antlr4::tree::TerminalNode *NAMED_PARAMETER();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -692,21 +693,6 @@ public:
   };
 
   Parameter_valueContext* parameter_value();
-
-  class  Parameter_indexContext : public antlr4::ParserRuleContext {
-  public:
-    Parameter_indexContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    PrimaryContext *primary();
-
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  Parameter_indexContext* parameter_index();
 
   class  CommentContext : public antlr4::ParserRuleContext {
   public:

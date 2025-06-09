@@ -115,9 +115,6 @@ public:
   virtual void enterParameter_value(parser_antlr4::Parameter_valueContext * /*ctx*/) override { }
   virtual void exitParameter_value(parser_antlr4::Parameter_valueContext * /*ctx*/) override { }
 
-  virtual void enterParameter_index(parser_antlr4::Parameter_indexContext * /*ctx*/) override { }
-  virtual void exitParameter_index(parser_antlr4::Parameter_indexContext * /*ctx*/) override { }
-
   virtual void enterComment(parser_antlr4::CommentContext * /*ctx*/) override { }
   virtual void exitComment(parser_antlr4::CommentContext * /*ctx*/) override { }
 

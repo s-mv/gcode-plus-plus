@@ -177,15 +177,11 @@ arc_tangent_combo
     ;
 
 parameter_setting
-    : PARAMETER_SIGN parameter_index EQUAL_SIGN real_value
+    : (PARAMETER_SIGN primary | NAMED_PARAMETER) EQUAL_SIGN real_value
     ;
 
 parameter_value
-    : PARAMETER_SIGN primary
-    ;
-
-parameter_index
-    : primary
+    : PARAMETER_SIGN primary | NAMED_PARAMETER
     ;
 
 comment

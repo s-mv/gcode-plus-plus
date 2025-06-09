@@ -73,6 +73,9 @@ COMMENT
     | ';' ~[\r\n]*
     ;
 
+NAMED_PARAMETER
+    : '#' LETTER (LETTER | DIGIT | '_')*
+    ;
 EOL
     : '\r'
     | '\n'

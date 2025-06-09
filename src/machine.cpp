@@ -33,7 +33,6 @@ gpp::Machine::Machine(std::string input) : input(input), emitter(input) {
       std::bind(&gpp::Machine::arc_feed, this, std::placeholders::_1);
   handlers[Command::dwell] =
       std::bind(&gpp::Machine::dwell, this, std::placeholders::_1);
-
   handlers[Command::set_origin_offsets] =
       std::bind(&gpp::Machine::set_origin_offsets, this, std::placeholders::_1);
 
@@ -43,7 +42,7 @@ gpp::Machine::Machine(std::string input) : input(input), emitter(input) {
       &gpp::Machine::write_parameters_to_file, this, std::placeholders::_1);
 }
 
-f64 gpp::Machine::get_memory(i64 address) {
+f64 gpp::Machine::getMemory(i64 address) {
   if (address < 0 || address >= memory.size()) {
     return NAN; // TODO replace with error later
   }
@@ -51,7 +50,7 @@ f64 gpp::Machine::get_memory(i64 address) {
   return memory.at(address);
 }
 
-void gpp::Machine::set_memory(i64 address, f64 value) {
+void gpp::Machine::setMemory(i64 address, f64 value) {
   if (address < 0)
     return;
   if (address >= memory.size()) {
