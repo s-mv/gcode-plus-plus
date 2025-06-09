@@ -8,6 +8,7 @@
 
 gpp::Machine::Machine(std::string input) : input(input), emitter(input) {
   this->position = (Vec3D){0, 0, 0};
+  this->offset = (Vec3D){0, 0, 0};
   this->unit = Unit::mm;
   this->distanceMode = absolute;
   this->plane = plane_xy;
@@ -30,6 +31,11 @@ gpp::Machine::Machine(std::string input) : input(input), emitter(input) {
       std::bind(&gpp::Machine::select_plane, this, std::placeholders::_1);
   handlers[Command::arc_feed] =
       std::bind(&gpp::Machine::arc_feed, this, std::placeholders::_1);
+  handlers[Command::dwell] =
+      std::bind(&gpp::Machine::dwell, this, std::placeholders::_1);
+
+  handlers[Command::set_origin_offsets] =
+      std::bind(&gpp::Machine::set_origin_offsets, this, std::placeholders::_1);
 
   handlers[Command::write_parameter_to_file] = std::bind(
       &gpp::Machine::write_parameter_to_file, this, std::placeholders::_1);
@@ -130,6 +136,14 @@ void gpp::Machine::arc_feed(std::vector<f64> args) {
             << axis_end_point << ")\n";
 }
 
+void gpp::Machine::dwell(std::vector<f64> args) {
+  std::cout << "dwell(" << args.at(0) << ")\n";
+}
+
+void gpp::Machine::set_origin_offsets(std::vector<f64> args) {
+  std::cout << "TODO!()\n";
+}
+
 void gpp::Machine::write_parameter_to_file(std::vector<f64> args) {
   std::cout << "write_parameter_to_file(" << args.at(0) << ")\n";
   std::ofstream file(".data.txt");
@@ -193,13 +207,18 @@ const char *gpp::Machine::planeToString(Plane plane) {
 
 gpp::Vec3D gpp::Machine::resolvePosition(const f64 x, const f64 y,
                                          const f64 z) {
+  if (std::isnan(x) && std::isnan(y) && std::isnan(z))
+    ; // TODO, error handling and handling individual axes
+
   Vec3D delta = {x, y, z};
   delta = delta * unitMultiplier(unit);
 
   if (distanceMode == DistanceMode::relative)
     return position + delta;
-  else
-    return delta;
+  else {
+    Vec3D logical_target = delta;
+    return logical_target + offset;
+  }
 }
 
 gpp::Vec3D gpp::Vec3D::operator+(const Vec3D &rhs) {

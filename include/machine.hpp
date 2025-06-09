@@ -43,6 +43,9 @@ enum gpp::Command : u8 {
 
   arc_feed = 6,
 
+  dwell = 7,
+  set_origin_offsets = 7,
+
   /*** this is temporary ***/
   write_parameter_to_file = 253,
   write_parameters_to_file = 254,
@@ -57,7 +60,6 @@ enum gpp::Plane : u8 {
 };
 
 // represents the current state of a CNC machine
-// this is EXTREMELY INCOMPLETE, all caps
 // constant work in progress
 struct gpp::Machine {
   friend class BytecodeEmitter;
@@ -65,9 +67,10 @@ struct gpp::Machine {
 private:
   BytecodeEmitter emitter;
 
-  Vec3D position; // CURRENT position
-  Vec3D target;   // target position, NOTE is this needed?
-  Unit unit;      // unit could be mm or inch (as per me -- read TODO below)
+  Vec3D position; // current position relative to (0, 0, 0)
+  Vec3D offset;   // absolute offset
+  // Vec3D target;   // target position, NOTE is this needed?
+  Unit unit; // unit could be mm or inch (as per me -- read TODO below)
   DistanceMode distanceMode; // absolute vs relative
   Plane plane;
   f64 feedRate; // "speed" of the head in unit/min
@@ -94,6 +97,8 @@ private:
   void use_distance_mode(std::vector<f64> args);
   void select_plane(std::vector<f64> args);
   void arc_feed(std::vector<f64> args);
+  void dwell(std::vector<f64> args);
+  void set_origin_offsets(std::vector<f64> args);
 
   /*** this is temporary ***/
   void write_parameter_to_file(std::vector<f64> args);

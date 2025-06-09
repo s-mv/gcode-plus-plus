@@ -90,8 +90,8 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
     };
 
     if (word.word == 'g') {
-      if (word.arg == 0 || word.arg == 1) {
-        f64 x = 0, y = 0, z = 0;
+      if (word.arg == 0 || word.arg == 1 || word.arg == 92) {
+        f64 x = NAN, y = NAN, z = NAN;
         for (Word operand : words) {
           switch (operand.word) {
           case 'x':
@@ -105,6 +105,17 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
             break;
           }
         }
+
+        if (std::isnan(x))
+          x = machine->position.x;
+        if (std::isnan(y))
+          y = machine->position.y;
+        if (std::isnan(z))
+          z = machine->position.z;
+
+        gpp::Command command =
+            word.arg == 0 ? (word.arg == 1 ? move_linear : set_origin_offsets)
+                          : move_rapid;
 
         vi.command = {
             .command = (word.arg == 0) ? move_rapid : move_linear,
@@ -251,6 +262,19 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
                           (f64)rotation, // positive -> counterclockwise
                           z2,            // z2
                       }};
+      } else if (word.arg == 4) {
+        f64 p = 0;
+        for (Word operand : words) {
+          if (operand.word == 'p') {
+            p = operand.arg;
+            break;
+          }
+        }
+
+        vi.command = {
+            .command = dwell,
+            .arguments = {p},
+        };
       } else if (word.arg == 17) {
         vi.command = {.command = select_plane, .arguments = {plane_xy}};
       } else if (word.arg == 18) {
