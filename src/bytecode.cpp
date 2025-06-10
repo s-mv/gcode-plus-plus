@@ -138,8 +138,17 @@ antlrcpp::Any gpp::BytecodeEmitter::visitDo_while_statement(
 
 antlrcpp::Any gpp::BytecodeEmitter::visitFor_statement(
     parser_antlr4::For_statementContext *context) {
-  std::string address =
-      std::any_cast<std::string>(visit(context->parameter_value()));
+  std::string address;
+  // LOOK HERE
+  if (context->parameter_value()->NAMED_PARAMETER()) {
+    address =
+        context->parameter_value()->NAMED_PARAMETER()->getText().substr(1);
+  } else {
+    f64 address_value =
+        std::any_cast<f64>(visit(context->parameter_value()->primary()));
+    address = std::to_string(address_value);
+  }
+
   f64 start = std::any_cast<f64>(visit(context->expression().at(0)));
   f64 end = std::any_cast<f64>(visit(context->expression().at(1)));
 
