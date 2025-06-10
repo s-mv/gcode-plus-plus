@@ -9,9 +9,6 @@
 #include "util.hpp"
 
 /// helper
-static void drawLineOnPlane(Canvas &canvas, gpp::Plane plane, gpp::Vec3D from,
-                            gpp::Vec3D to);
-
 gpp::Machine::Machine(std::string input)
     : input(input), emitter(input), canvasXY(512, 512), canvasYZ(512, 512),
       canvasXZ(512, 512) {
@@ -21,6 +18,7 @@ gpp::Machine::Machine(std::string input)
   this->distanceMode = absolute;
   this->plane = plane_xy;
   this->feedRate = 0;
+  this->spindleDirection = off;
   std::cout << "Initialized machine!\n";
   gpp::Machine::print_specs();
   this->emitter.machine = this;
@@ -39,10 +37,19 @@ gpp::Machine::Machine(std::string input)
       std::bind(&gpp::Machine::select_plane, this, std::placeholders::_1);
   handlers[Command::arc_feed] =
       std::bind(&gpp::Machine::arc_feed, this, std::placeholders::_1);
+
   handlers[Command::dwell] =
       std::bind(&gpp::Machine::dwell, this, std::placeholders::_1);
   handlers[Command::set_origin_offsets] =
       std::bind(&gpp::Machine::set_origin_offsets, this, std::placeholders::_1);
+
+  handlers[Command::start_spindle_clockwise] = std::bind(
+      &gpp::Machine::start_spindle_clockwise, this, std::placeholders::_1);
+  handlers[Command::start_spindle_counterclockwise] =
+      std::bind(&gpp::Machine::start_spindle_counterclockwise, this,
+                std::placeholders::_1);
+  handlers[Command::stop_spindle_turning] = std::bind(
+      &gpp::Machine::stop_spindle_turning, this, std::placeholders::_1);
 
   handlers[Command::write_parameter_to_file] = std::bind(
       &gpp::Machine::write_parameter_to_file, this, std::placeholders::_1);
@@ -70,12 +77,14 @@ void gpp::Machine::setMemory(i64 address, f64 value) {
 
 bool gpp::Machine::next() {
   Instruction inst = emitter.next();
-  // TODO, change machine state
 
   if (inst.command == no_command)
     return false;
 
   handlers[inst.command](inst.arguments);
+
+  if (spindleDirection != off)
+    saveCanvases();
 
   return true;
 }
@@ -88,9 +97,7 @@ void gpp::Machine::move_linear(std::vector<f64> args) {
   std::cout << "move_linear(" << position.x << ", " << position.y << ", "
             << position.z << ")\n";
 
-  drawLineOnPlane(canvasXY, plane_xy, prev, position);
-  drawLineOnPlane(canvasYZ, plane_yz, prev, position);
-  drawLineOnPlane(canvasXZ, plane_xz, prev, position);
+  drawLinesOnPlanes(prev, position);
 }
 
 void gpp::Machine::move_rapid(std::vector<f64> args) {
@@ -99,9 +106,7 @@ void gpp::Machine::move_rapid(std::vector<f64> args) {
   std::cout << "move_rapid(" << position.x << ", " << position.y << ", "
             << position.z << ")\n";
 
-  drawLineOnPlane(canvasXY, plane_xy, prev, position);
-  drawLineOnPlane(canvasYZ, plane_yz, prev, position);
-  drawLineOnPlane(canvasXZ, plane_xz, prev, position);
+  drawLinesOnPlanes(prev, position);
 }
 
 void gpp::Machine::set_feed_rate(std::vector<f64> args) {
@@ -152,6 +157,9 @@ void gpp::Machine::arc_feed(std::vector<f64> args) {
             << first_axis << ", " << second_axis << ", " << rotation << ", "
             << axis_end_point << ")\n";
 
+  if (spindleDirection == off)
+    return;
+
   Vec2D start, center;
   if (plane == plane_xy) {
     start = {prev.x, prev.y};
@@ -180,8 +188,7 @@ void gpp::Machine::arc_feed(std::vector<f64> args) {
   else if (rotation == 1 && end_angle < start_angle)
     end_angle += 2 * M_PI;
 
-  f64 radius = sqrt((start.x - center.x) * (start.x - center.x) +
-                    (start.y - center.y) * (start.y - center.y));
+  f64 radius = sqrt((start - center).dot(start - center));
 
   if (plane == plane_xy)
     canvasXY.drawArc(center.x, center.y, radius, start_angle, end_angle, 0, 0,
@@ -200,6 +207,21 @@ void gpp::Machine::dwell(std::vector<f64> args) {
 
 void gpp::Machine::set_origin_offsets(std::vector<f64> args) {
   std::cout << "TODO!()\n";
+}
+
+void gpp::Machine::start_spindle_clockwise(std::vector<f64> args) {
+  spindleDirection = clockwise;
+  std::cout << "start_spindle_clockwise()\n";
+}
+
+void gpp::Machine::start_spindle_counterclockwise(std::vector<f64> args) {
+  spindleDirection = counterclockwise;
+  std::cout << "start_spindle_counterclockwise()\n";
+}
+
+void gpp::Machine::stop_spindle_turning(std::vector<f64> args) {
+  spindleDirection = off;
+  std::cout << "stop_spindle_turning()\n";
 }
 
 void gpp::Machine::write_parameter_to_file(std::vector<f64> args) {
@@ -234,9 +256,9 @@ void gpp::Machine::write_parameters_to_file(std::vector<f64> args) {
 }
 
 void gpp::Machine::saveCanvases() {
-  canvasXY.save("canvas_xy.png");
-  canvasYZ.save("canvas_yz.png");
-  canvasXZ.save("canvas_xz.png");
+  canvasXY.save("output/canvas_xy.png");
+  canvasYZ.save("output/canvas_yz.png");
+  canvasXZ.save("output/canvas_xz.png");
 }
 
 /* helpers */
@@ -285,6 +307,28 @@ gpp::Vec3D gpp::Machine::resolvePosition(const f64 x, const f64 y,
   }
 }
 
+void gpp::Machine::drawLineOnPlane(Canvas &canvas, Plane plane, Vec3D from,
+                                   Vec3D to) {
+  if (spindleDirection == off)
+    return;
+
+  if (plane == plane_xy)
+    canvas.drawLine(from.x, from.y, to.x, to.y, 0, 0, 0);
+  else if (plane == plane_yz)
+    canvas.drawLine(from.y, from.z, to.y, to.z, 0, 0, 0);
+  else if (plane == plane_xz)
+    canvas.drawLine(from.x, from.z, to.x, to.z, 0, 0, 0);
+}
+
+void gpp::Machine::drawLinesOnPlanes(Vec3D from, Vec3D to) {
+  if (spindleDirection == off)
+    return;
+
+  canvasXY.drawLine(from.x, from.y, to.x, to.y, 0, 0, 0);
+  canvasYZ.drawLine(from.y, from.z, to.y, to.z, 0, 0, 0);
+  canvasYZ.drawLine(from.x, from.z, to.x, to.z, 0, 0, 0);
+}
+
 gpp::Vec3D gpp::Vec3D::operator+(const Vec3D &rhs) {
   return {x + rhs.x, y + rhs.y, z + rhs.z};
 }
@@ -321,15 +365,4 @@ f64 gpp::Vec2D::dot(const Vec2D &rhs) { return x * rhs.x + y * rhs.y; }
 
 gpp::Vec3D gpp::Vec2D::cross(const Vec2D &rhs) {
   return {0, 0, x * rhs.y - y * rhs.x};
-}
-
-/// helper
-static void drawLineOnPlane(Canvas &canvas, gpp::Plane plane, gpp::Vec3D from,
-                            gpp::Vec3D to) {
-  if (plane == gpp::Plane::plane_xy)
-    canvas.drawLine(from.x, from.y, to.x, to.y, 0, 0, 0);
-  else if (plane == gpp::Plane::plane_yz)
-    canvas.drawLine(from.y, from.z, to.y, to.z, 0, 0, 0);
-  else if (plane == gpp::Plane::plane_xz)
-    canvas.drawLine(from.x, from.z, to.x, to.z, 0, 0, 0);
 }

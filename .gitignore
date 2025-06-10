@@ -1,7 +1,9 @@
 .cache
 
 build/*
-!build/.gitkeep
+!build
+output/*
+!output
 
 compile_commands.json
 .data.txt

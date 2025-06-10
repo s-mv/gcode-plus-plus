@@ -43,7 +43,5 @@ int main(int argc, char **argv) {
     }
   }
 
-  machine.saveCanvases();
-
   return 0;
 }

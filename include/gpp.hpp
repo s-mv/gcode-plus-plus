@@ -16,6 +16,7 @@ enum Command : u8;
 struct Machine;
 struct Vec3D;
 struct Vec2D;
+enum SpindleDirection : i8;
 enum Unit : u8;
 enum DistanceMode : u8;
 enum Plane : u8;

@@ -114,8 +114,8 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
           z = machine->position.z;
 
         gpp::Command command =
-            word.arg == 0 ? (word.arg == 1 ? move_linear : set_origin_offsets)
-                          : move_rapid;
+            word.arg == 0 ? move_rapid
+                          : (word.arg == 1 ? move_linear : set_origin_offsets);
 
         vi.command = {
             .command = (word.arg == 0) ? move_rapid : move_linear,
@@ -300,7 +300,13 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
     } else if (word.word == 'f') {
       vi.command = {.command = set_feed_rate, .arguments = {word.arg}};
     } else if (word.word == 'm') {
-      if (word.arg == 100) {
+      if (word.arg == 3) {
+        vi.command = {.command = start_spindle_clockwise};
+      } else if (word.arg == 4) {
+        vi.command = {.command = start_spindle_counterclockwise};
+      } else if (word.arg == 5) {
+        vi.command = {.command = stop_spindle_turning};
+      } else if (word.arg == 100) {
         vi.command = {.command = write_parameters_to_file};
       } else if (word.arg > 100) {
         vi.command = {
@@ -350,8 +356,8 @@ f64 findModalGroup(f64 code) {
 // the comments are referenced from here:
 // https://linuxcnc.org/docs/stable/html/gcode/overview.html#gcode:order-of-execution
 int getInstructionPriority(VerboseInstruction instruction) {
-  //  0: O-word commands (optionally followed by a comment but no other words
-  //  allowed on the same line)
+  //  0: O-word commands (optionally followed by a comment but no other
+  //  words allowed on the same line)
   if (instruction.word == 'o')
     return 0;
 
@@ -460,8 +466,8 @@ int getInstructionPriority(VerboseInstruction instruction) {
       (instruction.arg == 98 || instruction.arg == 99))
     return 21;
 
-  // 22: Go to reference location (G28, G30) or change coordinate system data
-  // (G10) or set axis offsets (G52, G92, G92.1, G92.2, G94).
+  // 22: Go to reference location (G28, G30) or change coordinate system
+  // data (G10) or set axis offsets (G52, G92, G92.1, G92.2, G94).
   if (instruction.word == 'g' &&
       (instruction.arg == 28 || instruction.arg == 30 ||
        instruction.arg == 10 || instruction.arg == 52 ||

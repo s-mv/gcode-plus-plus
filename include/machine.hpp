@@ -11,6 +11,11 @@
 
 enum gpp::Unit : u8 { mm = 0, inch = 1, cm = 2 };
 enum gpp::DistanceMode : u8 { absolute = 0, relative = 1 };
+enum gpp::SpindleDirection : i8 {
+  clockwise = 1,
+  off = 0,
+  counterclockwise = -1,
+};
 
 struct gpp::Vec3D {
   f64 x, y, z;
@@ -45,7 +50,11 @@ enum gpp::Command : u8 {
   arc_feed = 6,
 
   dwell = 7,
-  set_origin_offsets = 7,
+  set_origin_offsets = 8,
+
+  start_spindle_clockwise = 9,
+  start_spindle_counterclockwise = 10,
+  stop_spindle_turning = 11,
 
   /*** this is temporary ***/
   write_parameter_to_file = 253,
@@ -75,6 +84,7 @@ private:
   DistanceMode distanceMode; // absolute vs relative
   Plane plane;
   f64 feedRate; // "speed" of the head in unit/min
+  SpindleDirection spindleDirection;
   // (TODO, add some references in comments)
 
   std::string input;
@@ -96,13 +106,21 @@ private:
 
   void move_linear(std::vector<f64> args);
   void move_rapid(std::vector<f64> args);
+
   void set_feed_rate(std::vector<f64> args);
+
   void use_length_units(std::vector<f64> args);
   void use_distance_mode(std::vector<f64> args);
   void select_plane(std::vector<f64> args);
+
   void arc_feed(std::vector<f64> args);
+
   void dwell(std::vector<f64> args);
   void set_origin_offsets(std::vector<f64> args);
+
+  void start_spindle_clockwise(std::vector<f64> args);
+  void start_spindle_counterclockwise(std::vector<f64> args);
+  void stop_spindle_turning(std::vector<f64> args);
 
   /*** this is temporary ***/
   void write_parameter_to_file(std::vector<f64> args);
@@ -113,6 +131,9 @@ private:
   const char *unitToString(Unit unit);
   const char *planeToString(Plane plane);
   Vec3D resolvePosition(const f64 x, const f64 y, const f64 z);
+  void drawLineOnPlane(Canvas &canvas, gpp::Plane plane, gpp::Vec3D from,
+                       gpp::Vec3D to);
+  void drawLinesOnPlanes(Vec3D from, Vec3D to);
 };
 
 #endif
