@@ -1,7 +1,8 @@
 TITLE    = gcode++
 CXX     ?= g++
 OBJECTS  = build/util.o build/frontend.o build/bytecode.o \
-           build/expression.o build/machine.o build/line.o
+           build/expression.o build/machine.o build/line.o \
+					 build/canvas.o
 EXTERN   = extern/
 
 ### replace with your path ###
@@ -10,13 +11,15 @@ ANTLR4_INCLUDE = -I $(EXTERN)antlr4/gen/ -I $(EXTERN)antlr4/include/
 ANTLR_OBJECTS  = build/lexer_antlr4.o build/parser_antlr4.o \
                  build/parser_antlr4BaseVisitor.o
 
+STB_INCLUDE = -I $(EXTERN)stb/
+
 ### testing with catch2 ###
 TEST_TYPE    = unit
 TEST_INCLUDE = -I $(EXTERN)catch2/
 TEST_TARGETS = unit regression
 
 LDFLAGS  = $(ANTLR4_LIB)libantlr4-runtime.a
-CXXFLAGS = -std=c++17 -g -I include/ $(ANTLR4_INCLUDE)
+CXXFLAGS = -std=c++17 -g -I include/ $(ANTLR4_INCLUDE) $(STB_INCLUDE)
 
 .PHONY: all dev clean new antlr test regression unit
 

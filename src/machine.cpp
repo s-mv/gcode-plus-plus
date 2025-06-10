@@ -1,12 +1,20 @@
 #include "machine.hpp"
-#include "gpp.hpp"
-#include "util.hpp"
 
 #include <cmath>
 #include <iostream>
 #include <vector>
 
-gpp::Machine::Machine(std::string input) : input(input), emitter(input) {
+#include "canvas.hpp"
+#include "gpp.hpp"
+#include "util.hpp"
+
+/// helper
+static void drawLineOnPlane(Canvas &canvas, gpp::Plane plane, gpp::Vec3D from,
+                            gpp::Vec3D to);
+
+gpp::Machine::Machine(std::string input)
+    : input(input), emitter(input), canvasXY(512, 512), canvasYZ(512, 512),
+      canvasXZ(512, 512) {
   this->position = (Vec3D){0, 0, 0};
   this->offset = (Vec3D){0, 0, 0};
   this->unit = Unit::mm;
@@ -75,15 +83,25 @@ bool gpp::Machine::next() {
 void gpp::Machine::print_specs() {}
 
 void gpp::Machine::move_linear(std::vector<f64> args) {
+  Vec3D prev = position;
   position = resolvePosition(args.at(0), args.at(1), args.at(2));
   std::cout << "move_linear(" << position.x << ", " << position.y << ", "
             << position.z << ")\n";
+
+  drawLineOnPlane(canvasXY, plane_xy, prev, position);
+  drawLineOnPlane(canvasYZ, plane_yz, prev, position);
+  drawLineOnPlane(canvasXZ, plane_xz, prev, position);
 }
 
 void gpp::Machine::move_rapid(std::vector<f64> args) {
+  Vec3D prev = position;
   position = resolvePosition(args.at(0), args.at(1), args.at(2));
   std::cout << "move_rapid(" << position.x << ", " << position.y << ", "
             << position.z << ")\n";
+
+  drawLineOnPlane(canvasXY, plane_xy, prev, position);
+  drawLineOnPlane(canvasYZ, plane_yz, prev, position);
+  drawLineOnPlane(canvasXZ, plane_xz, prev, position);
 }
 
 void gpp::Machine::set_feed_rate(std::vector<f64> args) {
@@ -123,16 +141,57 @@ void gpp::Machine::arc_feed(std::vector<f64> args) {
   int rotation = args.at(4);
   f64 axis_end_point = args.at(5);
 
-  if (plane == plane_xy)
-    position = resolvePosition(first_end, second_end, axis_end_point);
-  else if (plane == plane_yz)
-    position = resolvePosition(axis_end_point, first_end, second_end);
-  else
-    position = resolvePosition(first_end, axis_end_point, second_end);
+  Vec3D prev = position;
+  position = plane == plane_xy
+                 ? resolvePosition(first_end, second_end, axis_end_point)
+             : plane == plane_yz
+                 ? resolvePosition(axis_end_point, first_end, second_end)
+                 : resolvePosition(first_end, axis_end_point, second_end);
 
   std::cout << "arc_feed(" << first_end << ", " << second_end << ", "
             << first_axis << ", " << second_axis << ", " << rotation << ", "
             << axis_end_point << ")\n";
+
+  Vec2D start, center;
+  if (plane == plane_xy) {
+    start = {prev.x, prev.y};
+    center = {prev.x + first_axis, prev.y + second_axis};
+  } else if (plane == plane_yz) {
+    start = {prev.y, prev.z};
+    center = {prev.y + first_axis, prev.z + second_axis};
+  } else {
+    start = {prev.x, prev.z};
+    center = {prev.x + first_axis, prev.z + second_axis};
+  }
+
+  Vec2D end;
+  if (plane == plane_xy)
+    end = {position.x, position.y};
+  else if (plane == plane_yz)
+    end = {position.y, position.z};
+  else
+    end = {position.x, position.z};
+
+  f64 start_angle = atan2(start.y - center.y, start.x - center.x);
+  f64 end_angle = atan2(end.y - center.y, end.x - center.x);
+
+  if (rotation == 0 && end_angle > start_angle)
+    end_angle -= 2 * M_PI;
+  else if (rotation == 1 && end_angle < start_angle)
+    end_angle += 2 * M_PI;
+
+  f64 radius = sqrt((start.x - center.x) * (start.x - center.x) +
+                    (start.y - center.y) * (start.y - center.y));
+
+  if (plane == plane_xy)
+    canvasXY.drawArc(center.x, center.y, radius, start_angle, end_angle, 0, 0,
+                     0);
+  else if (plane == plane_yz)
+    canvasYZ.drawArc(center.x, center.y, radius, start_angle, end_angle, 0, 0,
+                     0);
+  else
+    canvasXZ.drawArc(center.x, center.y, radius, start_angle, end_angle, 0, 0,
+                     0);
 }
 
 void gpp::Machine::dwell(std::vector<f64> args) {
@@ -172,6 +231,12 @@ void gpp::Machine::write_parameters_to_file(std::vector<f64> args) {
   file.close();
 
   std::cout << ")\n";
+}
+
+void gpp::Machine::saveCanvases() {
+  canvasXY.save("canvas_xy.png");
+  canvasYZ.save("canvas_yz.png");
+  canvasXZ.save("canvas_xz.png");
 }
 
 /* helpers */
@@ -256,4 +321,15 @@ f64 gpp::Vec2D::dot(const Vec2D &rhs) { return x * rhs.x + y * rhs.y; }
 
 gpp::Vec3D gpp::Vec2D::cross(const Vec2D &rhs) {
   return {0, 0, x * rhs.y - y * rhs.x};
+}
+
+/// helper
+static void drawLineOnPlane(Canvas &canvas, gpp::Plane plane, gpp::Vec3D from,
+                            gpp::Vec3D to) {
+  if (plane == gpp::Plane::plane_xy)
+    canvas.drawLine(from.x, from.y, to.x, to.y, 0, 0, 0);
+  else if (plane == gpp::Plane::plane_yz)
+    canvas.drawLine(from.y, from.z, to.y, to.z, 0, 0, 0);
+  else if (plane == gpp::Plane::plane_xz)
+    canvas.drawLine(from.x, from.z, to.x, to.z, 0, 0, 0);
 }

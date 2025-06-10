@@ -2,6 +2,7 @@
 #define smv_gpp_machine_hpp
 
 #include "bytecode.hpp"
+#include "canvas.hpp"
 #include "gpp.hpp"
 #include "util.hpp"
 
@@ -79,6 +80,8 @@ private:
   std::string input;
   std::function<void(std::vector<f64>)> handlers[g_command_len];
 
+  Canvas canvasXY, canvasYZ, canvasXZ;
+
 public:
   std::vector<f64> memory;
 
@@ -86,6 +89,7 @@ public:
   f64 getMemory(i64 address);
   void setMemory(i64 address, f64 value);
   bool next();
+  void saveCanvases();
 
 private:
   void print_specs();
