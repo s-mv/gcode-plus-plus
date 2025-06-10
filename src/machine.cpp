@@ -19,9 +19,9 @@ gpp::Machine::Machine(std::string input)
   this->plane = plane_xy;
   this->feedRate = 0;
   this->spindleDirection = off;
+  this->emitter.machine = this;
   std::cout << "Initialized machine!\n";
   gpp::Machine::print_specs();
-  this->emitter.machine = this;
 
   handlers[Command::move_linear] =
       std::bind(&gpp::Machine::move_linear, this, std::placeholders::_1);

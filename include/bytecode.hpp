@@ -31,6 +31,8 @@ struct gpp::ExecutionFrame {
   f64 start;
   f64 step = 1;
   f64 end;
+  bool breakEncountered = false;
+  bool continueEncountered = false;
 };
 
 class gpp::BytecodeEmitter : public parser_antlr4BaseVisitor {
@@ -40,9 +42,6 @@ private:
   std::vector<Word> words;
 
   std::queue<Instruction> bytecode;
-  bool looping;
-  bool breakEncountered;
-  bool continueEncountered;
 
   std::string source;
   antlr4::ANTLRInputStream inputStream;
@@ -53,6 +52,8 @@ private:
   std::stack<gpp::ExecutionFrame> executionStack;
 
   std::unordered_map<std::string, f64> parameterAddresses;
+  bool breakEncountered = false;
+  bool continueEncountered = false;
 
 public:
   Machine *machine = nullptr;

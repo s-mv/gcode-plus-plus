@@ -13,8 +13,7 @@
 
 gpp::BytecodeEmitter::BytecodeEmitter(std::string input)
     : source(input), inputStream(input), lexer(&inputStream), tokens(&lexer),
-      parser(&tokens), looping(false), breakEncountered(false),
-      continueEncountered(false) {
+      parser(&tokens) {
   executionStack.push({.block = parser.block(), .linePointer = 0});
 }
 
@@ -26,6 +25,66 @@ gpp::Instruction gpp::BytecodeEmitter::next() {
     ExecutionFrame &frame = executionStack.top();
     std::vector<parser_antlr4::StatementContext *> statements =
         frame.block->statement();
+
+    if (breakEncountered) {
+      breakEncountered = false;
+
+      while (!executionStack.empty()) {
+        ExecutionFrame &currentFrame = executionStack.top();
+
+        executionStack.pop();
+
+        if (!currentFrame.loopCounterAddress.empty() ||
+            currentFrame.whileLoopCondition != nullptr) {
+          break;
+        }
+      }
+      continue;
+    }
+
+    if (continueEncountered) {
+      continueEncountered = false;
+
+      // this is wonky but it works
+      std::stack<ExecutionFrame> tempStack;
+      bool foundLoop = false;
+
+      while (!executionStack.empty()) {
+        ExecutionFrame currentFrame = executionStack.top();
+        executionStack.pop();
+
+        bool isLoop = !currentFrame.loopCounterAddress.empty() ||
+                      currentFrame.whileLoopCondition != nullptr;
+
+        if (isLoop && !foundLoop) {
+          foundLoop = true;
+
+          if (!currentFrame.loopCounterAddress.empty()) {
+            f64 value =
+                getMemory(currentFrame.loopCounterAddress) + currentFrame.step;
+            setMemory(currentFrame.loopCounterAddress, value);
+
+            if (value < currentFrame.end) {
+              currentFrame.linePointer = 0;
+              executionStack.push(currentFrame);
+            }
+          } else if (currentFrame.whileLoopCondition != nullptr) {
+            currentFrame.linePointer = 0;
+            executionStack.push(currentFrame);
+          }
+          break;
+        } else {
+          tempStack.push(currentFrame);
+        }
+      }
+
+      while (!tempStack.empty()) {
+        executionStack.push(tempStack.top());
+        tempStack.pop();
+      }
+
+      continue;
+    }
 
     if (frame.linePointer >= statements.size()) {
       if (!frame.loopCounterAddress.empty()) {
@@ -139,18 +198,19 @@ antlrcpp::Any gpp::BytecodeEmitter::visitDo_while_statement(
 antlrcpp::Any gpp::BytecodeEmitter::visitFor_statement(
     parser_antlr4::For_statementContext *context) {
   std::string address;
-  // LOOK HERE
   if (context->parameter_value()->NAMED_PARAMETER()) {
     address =
         context->parameter_value()->NAMED_PARAMETER()->getText().substr(1);
   } else {
     f64 address_value =
         std::any_cast<f64>(visit(context->parameter_value()->primary()));
-    address = std::to_string(address_value);
+    address = std::to_string((int)address_value);
   }
 
   f64 start = std::any_cast<f64>(visit(context->expression().at(0)));
   f64 end = std::any_cast<f64>(visit(context->expression().at(1)));
+
+  setMemory(address, start);
 
   executionStack.push({
       .block = context->block(),
@@ -249,7 +309,7 @@ antlrcpp::Any gpp::BytecodeEmitter::visitParameter_setting(
     address = context->NAMED_PARAMETER()->getText().substr(1);
   } else {
     f64 address_value = std::any_cast<f64>(visit(context->primary()));
-    address = std::to_string(address_value);
+    address = std::to_string((int)address_value);
   }
 
   f64 value = std::any_cast<f64>(visit(context->real_value()));
