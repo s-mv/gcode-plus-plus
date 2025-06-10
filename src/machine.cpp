@@ -13,7 +13,7 @@ gpp::Machine::Machine(std::string input)
     : input(input), emitter(input), canvasXY(512, 512), canvasYZ(512, 512),
       canvasXZ(512, 512) {
   this->position = (Vec3D){0, 0, 0};
-  this->offset = (Vec3D){0, 0, 0};
+  this->origin = (Vec3D){0, 0, 0};
   this->unit = Unit::mm;
   this->distanceMode = absolute;
   this->plane = plane_xy;
@@ -75,18 +75,18 @@ void gpp::Machine::setMemory(i64 address, f64 value) {
   memory.at(address) = value;
 }
 
-bool gpp::Machine::next() {
-  Instruction inst = emitter.next();
+gpp::Instruction gpp::Machine::next() {
+  Instruction instruction = emitter.next();
 
-  if (inst.command == no_command)
-    return false;
+  if (instruction.command == no_command)
+    return instruction;
 
-  handlers[inst.command](inst.arguments);
+  handlers[instruction.command](instruction.arguments);
 
   if (spindleDirection != off)
     saveCanvases();
 
-  return true;
+  return instruction;
 }
 
 void gpp::Machine::print_specs() {}
@@ -206,7 +206,12 @@ void gpp::Machine::dwell(std::vector<f64> args) {
 }
 
 void gpp::Machine::set_origin_offsets(std::vector<f64> args) {
-  std::cout << "TODO!()\n";
+  Vec3D logical_position = {args.at(0), args.at(1), args.at(2)};
+  logical_position = logical_position * unitMultiplier(unit);
+  origin = position - logical_position;
+
+  std::cout << "set_origin_offsets(" << origin.x << ", " << origin.y << ", "
+            << origin.z << ")\n";
 }
 
 void gpp::Machine::start_spindle_clockwise(std::vector<f64> args) {
@@ -302,8 +307,7 @@ gpp::Vec3D gpp::Machine::resolvePosition(const f64 x, const f64 y,
   if (distanceMode == DistanceMode::relative)
     return position + delta;
   else {
-    Vec3D logical_target = delta;
-    return logical_target + offset;
+    return origin + delta;
   }
 }
 

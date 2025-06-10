@@ -282,6 +282,10 @@ f64 gpp::BytecodeEmitter::getMemory(std::string address) {
     return NAN; // TODO, add an error
   }
 
+  if (parameterAddresses.find(address) == parameterAddresses.end()) {
+    return NAN;
+  }
+
   int index = parameterAddresses.at(address);
 
   return machine->getMemory(index);
@@ -294,7 +298,7 @@ antlrcpp::Any gpp::BytecodeEmitter::visitParameter_value(
     address = context->NAMED_PARAMETER()->getText().substr(1);
   } else {
     f64 address_value = std::any_cast<f64>(visit(context->primary()));
-    address = std::to_string(address_value);
+    address = std::to_string((int)address_value);
   }
 
   f64 value = getMemory(address);

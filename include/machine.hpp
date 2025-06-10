@@ -77,8 +77,8 @@ struct gpp::Machine {
 private:
   BytecodeEmitter emitter;
 
-  Vec3D position; // current position relative to (0, 0, 0)
-  Vec3D offset;   // absolute offset
+  Vec3D position; // current position relative to (0, 0, 0), not origin
+  Vec3D origin;   // absolute offset
   // Vec3D target;   // target position, NOTE is this needed?
   Unit unit; // unit could be mm or inch (as per me -- read TODO below)
   DistanceMode distanceMode; // absolute vs relative
@@ -96,9 +96,10 @@ public:
   std::vector<f64> memory;
 
   Machine(std::string input);
-  f64 getMemory(i64 address);
+
   void setMemory(i64 address, f64 value);
-  bool next();
+  f64 getMemory(i64 address);
+  Instruction next();
   void saveCanvases();
 
 private:

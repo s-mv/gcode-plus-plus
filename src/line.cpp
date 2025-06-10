@@ -118,7 +118,7 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
                           : (word.arg == 1 ? move_linear : set_origin_offsets);
 
         vi.command = {
-            .command = (word.arg == 0) ? move_rapid : move_linear,
+            .command = command,
             .arguments = {x, y, z},
         };
       } else if (word.arg == 2 || word.arg == 3) {
@@ -282,9 +282,9 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
       } else if (word.arg == 19) {
         vi.command = {.command = select_plane, .arguments = {plane_xz}};
       } else if (word.arg == 20) {
-        vi.command = {.command = use_length_units, .arguments = {Unit::mm}};
-      } else if (word.arg == 21) {
         vi.command = {.command = use_length_units, .arguments = {Unit::inch}};
+      } else if (word.arg == 21) {
+        vi.command = {.command = use_length_units, .arguments = {Unit::mm}};
       } else if (word.arg == 90) {
         vi.command = {
             .command = use_distance_mode,

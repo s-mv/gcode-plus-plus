@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
       break;
     } else if (command == "next" || next_used) {
       next_used = true;
-      if (!machine.next()) {
+      if (machine.next().command == gpp::no_command) {
         std::cout << "No more instructions left!\n";
         break;
       }
