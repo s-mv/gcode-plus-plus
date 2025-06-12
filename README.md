@@ -1,7 +1,42 @@
 # g-code++ - an extension of g-code (might rename later)
-A lightweight G-code interpreter written in C++. This tool helps CNC developers and hobbyists verify, debug, and better understand the behavior of their G-code programs.
+
+A lightweight G-code interpreter written in C++ inspired by the
+[NIST rs274ngc interpreter](https://github.com/QGCoder/rs274ngc).
+
+The output of the interpreter may be used to drive 3-axis machines.
+
+## Documentation
+- Architecture - [docs/ARCHITECTURE.md](/docs/ARCHITECTURE.md)
+- Instructions - [docs/INSTRUCTIONS.md](/docs/INSTRUCTIONS.md)
 
 ## Build and Install
-Required tools:
-- C++17 or later
-- Make
+
+### Required tools:
+
+- Any compiler for C++17 or later
+- `make`
+
+### Build
+
+```
+make antlr
+make dev
+./build/gcode++ <filename>
+```
+
+### Testing 
+```
+make test unit       # runs all unit tests
+make test regression # regression tests
+```
+
+## Supported codes:
+
+- **Motion**: `G0`, `G1`, `G2`, `G3`
+- **Plane Select**: `G17`, `G18`, `G19`
+- **Units**: `G20` (inches), `G21` (millimeters)
+- **Positioning Modes**: `G90` (absolute), `G91` (relative)
+- **Coordinate Offset**: `G92`
+- **Spindle Control**: `M3`, `M4`, `M5`, `s<speed>`
+- **Feedrate**: `F<feedrate>`
+- More TODO...

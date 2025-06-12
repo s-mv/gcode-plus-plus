@@ -215,4 +215,3 @@ gpp::Instruction gpp::BytecodeEmitter::handle_g(f64 arg,
 
   return {};
 }
-
