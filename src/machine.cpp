@@ -19,6 +19,7 @@ gpp::Machine::Machine(std::string input)
   this->plane = plane_xy;
   this->feedRate = 0;
   this->spindleDirection = off;
+  this->spindleSpeed = 0;
   this->emitter.machine = this;
   std::cout << "Initialized machine!\n";
   gpp::Machine::print_specs();
@@ -50,7 +51,10 @@ gpp::Machine::Machine(std::string input)
                 std::placeholders::_1);
   handlers[Command::stop_spindle_turning] = std::bind(
       &gpp::Machine::stop_spindle_turning, this, std::placeholders::_1);
+  handlers[Command::set_spindle_speed] =
+      std::bind(&gpp::Machine::set_spindle_speed, this, std::placeholders::_1);
 
+  /* these are probably temporary */
   handlers[Command::write_parameter_to_file] = std::bind(
       &gpp::Machine::write_parameter_to_file, this, std::placeholders::_1);
   handlers[Command::write_parameters_to_file] = std::bind(
@@ -216,18 +220,31 @@ void gpp::Machine::set_origin_offsets(std::vector<f64> args) {
 
 void gpp::Machine::start_spindle_clockwise(std::vector<f64> args) {
   spindleDirection = clockwise;
-  std::cout << "start_spindle_clockwise()\n";
+  std::cout << "start_spindle_clockwise()";
+  if (spindleSpeed == 0)
+    std::cout << " -- !spindle speed is zero! --";
+  std::cout << "\n";
 }
 
 void gpp::Machine::start_spindle_counterclockwise(std::vector<f64> args) {
   spindleDirection = counterclockwise;
-  std::cout << "start_spindle_counterclockwise()\n";
+  std::cout << "start_spindle_counterclockwise()";
+  if (spindleSpeed == 0)
+    std::cout << " -- !spindle speed is zero! --";
+  std::cout << "\n";
 }
 
 void gpp::Machine::stop_spindle_turning(std::vector<f64> args) {
   spindleDirection = off;
   std::cout << "stop_spindle_turning()\n";
 }
+
+void gpp::Machine::set_spindle_speed(std::vector<f64> args) {
+  spindleSpeed = args.at(0);
+  std::cout << "set_spindle_speed(" << spindleSpeed << ")\n";
+}
+
+void set_spindle_speed(std::vector<f64> args) {}
 
 void gpp::Machine::write_parameter_to_file(std::vector<f64> args) {
   std::cout << "write_parameter_to_file(" << args.at(0) << ")\n";

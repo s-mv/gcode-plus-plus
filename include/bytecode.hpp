@@ -124,6 +124,10 @@ private:
   //   helpers
   std::string getLineFromSource(int target);
   bool arcOffetsAligned(const Plane currentPlane, f64 i, f64 j, f64 k);
+  Instruction handle_g(f64 arg, const std::vector<Word> &words, int line,
+                       int column);
+  //   Instruction handle_m(f64 arg, const std::vector<Word> &words, int line,
+  //                        int column); /// TODO ///
 };
 
 #endif

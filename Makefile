@@ -2,7 +2,7 @@ TITLE    = gcode++
 CXX     ?= g++
 OBJECTS  = build/util.o build/frontend.o build/bytecode.o \
            build/expression.o build/machine.o build/line.o \
-					 build/canvas.o
+					 build/instructions.o build/canvas.o
 EXTERN   = extern/
 
 ### replace with your path ###

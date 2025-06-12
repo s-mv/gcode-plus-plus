@@ -55,6 +55,7 @@ enum gpp::Command : u8 {
   start_spindle_clockwise = 9,
   start_spindle_counterclockwise = 10,
   stop_spindle_turning = 11,
+  set_spindle_speed = 12,
 
   /*** this is temporary ***/
   write_parameter_to_file = 253,
@@ -85,6 +86,7 @@ private:
   Plane plane;
   f64 feedRate; // "speed" of the head in unit/min
   SpindleDirection spindleDirection;
+  f64 spindleSpeed;
   // (TODO, add some references in comments)
 
   std::string input;
@@ -122,6 +124,7 @@ private:
   void start_spindle_clockwise(std::vector<f64> args);
   void start_spindle_counterclockwise(std::vector<f64> args);
   void stop_spindle_turning(std::vector<f64> args);
+  void set_spindle_speed(std::vector<f64> args);
 
   /*** this is temporary ***/
   void write_parameter_to_file(std::vector<f64> args);
