@@ -13,7 +13,7 @@ gpp::Machine::Machine(std::string input)
     : input(input), emitter(input), canvasXY(512, 512), canvasYZ(512, 512),
       canvasXZ(512, 512) {
   this->position = (Vec3D){0, 0, 0};
-  this->origin = (Vec3D){0, 0, 0};
+  this->g92offset = (Vec3D){0, 0, 0};
   this->unit = Unit::mm;
   this->distanceMode = absolute;
   this->plane = plane_xy;
@@ -53,6 +53,11 @@ gpp::Machine::Machine(std::string input)
       &gpp::Machine::stop_spindle_turning, this, std::placeholders::_1);
   handlers[Command::set_spindle_speed] =
       std::bind(&gpp::Machine::set_spindle_speed, this, std::placeholders::_1);
+
+  handlers[Command::select_tool] =
+      std::bind(&gpp::Machine::select_tool, this, std::placeholders::_1);
+  handlers[Command::change_tool] =
+      std::bind(&gpp::Machine::change_tool, this, std::placeholders::_1);
 
   /* these are probably temporary */
   handlers[Command::write_parameter_to_file] = std::bind(
@@ -212,10 +217,10 @@ void gpp::Machine::dwell(std::vector<f64> args) {
 void gpp::Machine::set_origin_offsets(std::vector<f64> args) {
   Vec3D logical_position = {args.at(0), args.at(1), args.at(2)};
   logical_position = logical_position * unitMultiplier(unit);
-  origin = position - logical_position;
+  g92offset = position - logical_position;
 
-  std::cout << "set_origin_offsets(" << origin.x << ", " << origin.y << ", "
-            << origin.z << ")\n";
+  std::cout << "set_origin_offsets(" << g92offset.x << ", " << g92offset.y
+            << ", " << g92offset.z << ")\n";
 }
 
 void gpp::Machine::start_spindle_clockwise(std::vector<f64> args) {
@@ -244,7 +249,15 @@ void gpp::Machine::set_spindle_speed(std::vector<f64> args) {
   std::cout << "set_spindle_speed(" << spindleSpeed << ")\n";
 }
 
-void set_spindle_speed(std::vector<f64> args) {}
+void gpp::Machine::select_tool(std::vector<f64> args) {
+  selectedTool = args.at(0);
+  std::cout << "select_tool(" << selectedTool << ")\n";
+}
+
+void gpp::Machine::change_tool(std::vector<f64> args) {
+  currentTool = selectedTool;
+  std::cout << "change_tool(" << currentTool << ")\n";
+}
 
 void gpp::Machine::write_parameter_to_file(std::vector<f64> args) {
   std::cout << "write_parameter_to_file(" << args.at(0) << ")\n";
@@ -324,7 +337,7 @@ gpp::Vec3D gpp::Machine::resolvePosition(const f64 x, const f64 y,
   if (distanceMode == DistanceMode::relative)
     return position + delta;
   else {
-    return origin + delta;
+    return g92offset + delta;
   }
 }
 
@@ -333,21 +346,25 @@ void gpp::Machine::drawLineOnPlane(Canvas &canvas, Plane plane, Vec3D from,
   if (spindleDirection == off)
     return;
 
+  int b = spindleDirection == clockwise ? 255 : 0;
+
   if (plane == plane_xy)
-    canvas.drawLine(from.x, from.y, to.x, to.y, 0, 0, 0);
+    canvas.drawLine(from.x, from.y, to.x, to.y, 0, 0, b);
   else if (plane == plane_yz)
-    canvas.drawLine(from.y, from.z, to.y, to.z, 0, 0, 0);
+    canvas.drawLine(from.y, from.z, to.y, to.z, 0, 0, b);
   else if (plane == plane_xz)
-    canvas.drawLine(from.x, from.z, to.x, to.z, 0, 0, 0);
+    canvas.drawLine(from.x, from.z, to.x, to.z, 0, 0, b);
 }
 
 void gpp::Machine::drawLinesOnPlanes(Vec3D from, Vec3D to) {
   if (spindleDirection == off)
     return;
 
-  canvasXY.drawLine(from.x, from.y, to.x, to.y, 0, 0, 0);
-  canvasYZ.drawLine(from.y, from.z, to.y, to.z, 0, 0, 0);
-  canvasYZ.drawLine(from.x, from.z, to.x, to.z, 0, 0, 0);
+  int b = spindleDirection == clockwise ? 255 : 0;
+
+  canvasXY.drawLine(from.x, from.y, to.x, to.y, 0, 0, b);
+  canvasYZ.drawLine(from.y, from.z, to.y, to.z, 0, 0, b);
+  canvasYZ.drawLine(from.x, from.z, to.x, to.z, 0, 0, b);
 }
 
 gpp::Vec3D gpp::Vec3D::operator+(const Vec3D &rhs) {

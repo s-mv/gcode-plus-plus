@@ -215,3 +215,26 @@ gpp::Instruction gpp::BytecodeEmitter::handle_g(f64 arg,
 
   return {};
 }
+
+gpp::Instruction gpp::BytecodeEmitter::handle_m(f64 arg,
+                                                const std::vector<Word> &words,
+                                                int line, int column) {
+  if (arg == 3) {
+    return {.command = start_spindle_clockwise};
+  } else if (arg == 4) {
+    return {.command = start_spindle_counterclockwise};
+  } else if (arg == 5) {
+    return {.command = stop_spindle_turning};
+  } else if (arg == 6) {
+    return {.command = change_tool};
+  } else if (arg == 100) {
+    return {.command = write_parameters_to_file};
+  } else if (arg > 100) {
+    return {
+        .command = write_parameter_to_file,
+        .arguments = {arg - 100},
+    };
+  }
+
+  return {};
+}

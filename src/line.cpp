@@ -91,29 +91,18 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
 
     if (word.word == 'g') {
       Instruction instruction = handle_g(word.arg, words, line, column);
-      if (instruction.command != gpp::Command{}) {
+      if (instruction.command != gpp::Command{})
         verboseInstruction.command = instruction;
-        verboseInstructions.push_back(verboseInstruction);
-      }
+      else
+        continue;
     } else if (word.word == 'f') {
       verboseInstruction.command = {.command = set_feed_rate,
                                     .arguments = {word.arg}};
     } else if (word.word == 'm') {
-      if (word.arg == 3) {
-        verboseInstruction.command = {.command = start_spindle_clockwise};
-      } else if (word.arg == 4) {
-        verboseInstruction.command = {.command =
-                                          start_spindle_counterclockwise};
-      } else if (word.arg == 5) {
-        verboseInstruction.command = {.command = stop_spindle_turning};
-      } else if (word.arg == 100) {
-        verboseInstruction.command = {.command = write_parameters_to_file};
-      } else if (word.arg > 100) {
-        verboseInstruction.command = {
-            .command = write_parameter_to_file,
-            .arguments = {word.arg - 100},
-        };
-      } else
+      Instruction instruction = handle_m(word.arg, words, line, column);
+      if (instruction.command != gpp::Command{})
+        verboseInstruction.command = instruction;
+      else
         continue;
     } else if (word.word == 's') {
       if (word.arg < 0) {
@@ -127,6 +116,11 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
 
       verboseInstruction.command = {
           .command = set_spindle_speed,
+          .arguments = {word.arg},
+      };
+    } else if (word.word == 't') {
+      verboseInstruction.command = {
+          .command = select_tool,
           .arguments = {word.arg},
       };
     } else
