@@ -58,9 +58,15 @@ void Canvas::save(const std::string &filename) {
 
 void Canvas::setPixel(int x, int y, unsigned char r, unsigned char g,
                       unsigned char b) {
-  if (x < 0 || x >= width || y < 0 || y >= height)
+  int cx = width / 2;
+  int cy = height / 2;
+  int canvas_x = x + cx;
+  int canvas_y = cy - y;
+
+  if (canvas_x < 0 || canvas_x >= width || canvas_y < 0 || canvas_y >= height)
     return;
-  int index = (y * width + x) * 3;
+
+  int index = (canvas_y * width + canvas_x) * 3;
   data[index + 0] = r;
   data[index + 1] = g;
   data[index + 2] = b;

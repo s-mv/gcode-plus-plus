@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "canvas.hpp"
@@ -21,8 +22,10 @@ gpp::Machine::Machine(std::string input)
   this->spindleDirection = off;
   this->spindleSpeed = 0;
   this->emitter.machine = this;
+  initTools("config/tools.txt");
+
   std::cout << "Initialized machine!\n";
-  gpp::Machine::print_specs();
+  // printSpecs();
 
   handlers[Command::move_linear] =
       std::bind(&gpp::Machine::move_linear, this, std::placeholders::_1);
@@ -98,7 +101,32 @@ gpp::Instruction gpp::Machine::next() {
   return instruction;
 }
 
-void gpp::Machine::print_specs() {}
+void gpp::Machine::printSpecs() {}
+
+void gpp::Machine::initTools(std::string file) {
+  tools = {};
+
+  std::ifstream fp(file);
+  std::string line;
+  bool header_skipped = false;
+
+  while (std::getline(fp, line)) {
+    if (line.empty() || line[0] == '#')
+      continue;
+
+    std::istringstream iss(line);
+    Tool tool;
+
+    if (!(iss >> tool.pocket >> tool.fms >> tool.tlo >> tool.diam >>
+          tool.holder)) {
+      std::cerr << "Failed to parse numeric fields: " << line << "\n";
+      continue;
+    }
+
+    std::getline(iss >> std::ws, tool.description);
+    tools.push_back(tool);
+  }
+}
 
 void gpp::Machine::move_linear(std::vector<f64> args) {
   Vec3D prev = position;
@@ -257,6 +285,21 @@ void gpp::Machine::select_tool(std::vector<f64> args) {
 void gpp::Machine::change_tool(std::vector<f64> args) {
   currentTool = selectedTool;
   std::cout << "change_tool(" << currentTool << ")\n";
+}
+
+void gpp::Machine::program_stop(std::vector<f64> args) {
+  std::cout << "program_stop()\n";
+}
+
+void gpp::Machine::optional_program_stop(std::vector<f64> args) {
+  std::cout << "optional_program_stop()\n";
+}
+
+void gpp::Machine::program_end(std::vector<f64> args) {
+  set_origin_offsets({0, 0, 0});
+  stop_spindle_turning({});
+
+  std::cout << "program_end()\n";
 }
 
 void gpp::Machine::write_parameter_to_file(std::vector<f64> args) {

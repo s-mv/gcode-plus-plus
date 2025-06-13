@@ -24,11 +24,11 @@ gpp::Instruction gpp::BytecodeEmitter::handle_g(f64 arg,
     }
 
     if (std::isnan(x))
-      x = machine->position.x;
+      x = machine->position.x - machine->g92offset.x;
     if (std::isnan(y))
-      y = machine->position.y;
+      y = machine->position.y - machine->g92offset.y;
     if (std::isnan(z))
-      z = machine->position.z;
+      z = machine->position.z - machine->g92offset.z;
 
     gpp::Command command =
         arg == 0 ? move_rapid : (arg == 1 ? move_linear : set_origin_offsets);
@@ -213,13 +213,19 @@ gpp::Instruction gpp::BytecodeEmitter::handle_g(f64 arg,
     };
   }
 
-  return {};
+  return {.command = no_command};
 }
 
 gpp::Instruction gpp::BytecodeEmitter::handle_m(f64 arg,
                                                 const std::vector<Word> &words,
                                                 int line, int column) {
-  if (arg == 3) {
+  if (arg == 0) {
+    return {.command = program_stop};
+  } else if (arg == 1) {
+    return {.command = optional_program_stop};
+  } else if (arg == 2) {
+    return {.command = program_end};
+  } else if (arg == 3) {
     return {.command = start_spindle_clockwise};
   } else if (arg == 4) {
     return {.command = start_spindle_counterclockwise};
@@ -236,5 +242,5 @@ gpp::Instruction gpp::BytecodeEmitter::handle_m(f64 arg,
     };
   }
 
-  return {};
+  return {.command = no_command};
 }

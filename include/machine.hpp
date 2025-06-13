@@ -42,6 +42,10 @@ enum gpp::Command : u8 {
   select_tool = 13,
   change_tool = 14,
 
+  program_stop = 15,
+  optional_program_stop = 16,
+  program_end = 17,
+
   /*** this is temporary ***/
   write_parameter_to_file = 253,
   write_parameters_to_file = 254,
@@ -56,8 +60,12 @@ enum gpp::Plane : u8 {
 };
 
 struct gpp::Tool {
-  double length;
-  double diameter;
+  int pocket;  // pocket number
+  int fms;     // flexible manufacturing system (FMS) tool number T<>
+  double tlo;  // tool length offset
+  double diam; // diameter
+  int holder;  // tool holder ID
+  std::string description;
 };
 
 struct gpp::Vec3D {
@@ -97,6 +105,7 @@ private:
   f64 spindleSpeed;
   u64 selectedTool;
   u64 currentTool;
+  std::vector<Tool> tools;
   // (TODO, add some references in comments)
 
   std::string input;
@@ -115,7 +124,8 @@ public:
   void saveCanvases();
 
 private:
-  void print_specs();
+  void initTools(std::string file);
+  void printSpecs(); // TODO
 
   void move_linear(std::vector<f64> args);
   void move_rapid(std::vector<f64> args);
@@ -138,6 +148,10 @@ private:
 
   void select_tool(std::vector<f64> args);
   void change_tool(std::vector<f64> args);
+
+  void program_stop(std::vector<f64> args);
+  void optional_program_stop(std::vector<f64> args);
+  void program_end(std::vector<f64> args);
 
   /*** this is temporary ***/
   void write_parameter_to_file(std::vector<f64> args);

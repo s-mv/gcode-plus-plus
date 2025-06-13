@@ -1,0 +1,10 @@
+# this file contains tool information and may be modified by the user
+
+# use '#' to start comments
+# comments MUST be started at the beginning of a line
+
+# Pocket | FMS | TLO      | DIAM  | HOLDER | TOOL DESCRIPTION
+
+60         60     0.000     0.000    0       large chuck
+32         32     296.515   0.000    0       8.5mm drill
+5          5      1.500     0.250    0       0.25" end mill

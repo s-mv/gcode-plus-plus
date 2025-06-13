@@ -91,7 +91,7 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
 
     if (word.word == 'g') {
       Instruction instruction = handle_g(word.arg, words, line, column);
-      if (instruction.command != gpp::Command{})
+      if (instruction.command != gpp::Command::no_command)
         verboseInstruction.command = instruction;
       else
         continue;
@@ -100,7 +100,7 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
                                     .arguments = {word.arg}};
     } else if (word.word == 'm') {
       Instruction instruction = handle_m(word.arg, words, line, column);
-      if (instruction.command != gpp::Command{})
+      if (instruction.command != gpp::Command::no_command)
         verboseInstruction.command = instruction;
       else
         continue;
