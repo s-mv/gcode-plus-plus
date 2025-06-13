@@ -7,6 +7,7 @@
 #include "util.hpp"
 
 #include <functional>
+#include <unordered_map>
 #include <vector>
 
 enum gpp::Unit : u8 { mm = 0, inch = 1, cm = 2 };
@@ -46,6 +47,8 @@ enum gpp::Command : u8 {
   optional_program_stop = 16,
   program_end = 17,
 
+  use_tool_length_offset = 18,
+
   /*** this is temporary ***/
   write_parameter_to_file = 253,
   write_parameters_to_file = 254,
@@ -60,11 +63,11 @@ enum gpp::Plane : u8 {
 };
 
 struct gpp::Tool {
-  int pocket;  // pocket number
-  int fms;     // flexible manufacturing system (FMS) tool number T<>
-  double tlo;  // tool length offset
-  double diam; // diameter
-  int holder;  // tool holder ID
+  i64 pocket; // pocket number
+  i64 fms;    // flexible manufacturing system (FMS) tool number T<>
+  f64 tlo;    // tool length offset
+  f64 diam;   // diameter
+  i64 holder; // tool holder ID
   std::string description;
 };
 
@@ -96,6 +99,7 @@ private:
 
   Vec3D position;  // current position relative to (0, 0, 0), not origin
   Vec3D g92offset; // offset from the origin due to g92
+  f64 g43offset;   // offset from the origin due to g43
   // Vec3D target;   // target position, NOTE is this needed?
   Unit unit; // unit could be mm or inch (as per me -- read TODO below)
   DistanceMode distanceMode; // absolute vs relative
@@ -105,7 +109,7 @@ private:
   f64 spindleSpeed;
   u64 selectedTool;
   u64 currentTool;
-  std::vector<Tool> tools;
+  std::unordered_map<int, Tool> tools;
   // (TODO, add some references in comments)
 
   std::string input;
@@ -152,6 +156,8 @@ private:
   void program_stop(std::vector<f64> args);
   void optional_program_stop(std::vector<f64> args);
   void program_end(std::vector<f64> args);
+
+  void use_tool_length_offset(std::vector<f64> args);
 
   /*** this is temporary ***/
   void write_parameter_to_file(std::vector<f64> args);

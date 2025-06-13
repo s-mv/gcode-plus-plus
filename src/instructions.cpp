@@ -179,12 +179,17 @@ gpp::Instruction gpp::BytecodeEmitter::handle_g(f64 arg,
                 z2,            // z2
             }};
   } else if (arg == 4) {
-    f64 p = 0;
-    for (Word operand : words) {
+    f64 p = NAN;
+    for (Word operand : words)
       if (operand.word == 'p') {
         p = operand.arg;
         break;
       }
+
+    if (std::isnan(p)) {
+      prettyPrintError("Missing dwell time (p<>) with signature.",
+                       getLineFromSource(line), line, column);
+      exit(0);
     }
 
     return {
@@ -201,6 +206,20 @@ gpp::Instruction gpp::BytecodeEmitter::handle_g(f64 arg,
     return {.command = use_length_units, .arguments = {Unit::inch}};
   } else if (arg == 21) {
     return {.command = use_length_units, .arguments = {Unit::mm}};
+  } else if (arg == 43) {
+    f64 h = NAN;
+    for (Word operand : words)
+      if (operand.word == 'h') {
+        h = operand.arg;
+        break;
+      }
+    if (std::isnan(h)) {
+      prettyPrintError("Missing offset index (h<>).", getLineFromSource(line),
+                       line, column);
+      exit(0);
+    }
+
+    return {.command = use_tool_length_offset, .arguments = {h}};
   } else if (arg == 90) {
     return {
         .command = use_distance_mode,

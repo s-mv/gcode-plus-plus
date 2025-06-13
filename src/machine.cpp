@@ -28,39 +28,41 @@ gpp::Machine::Machine(std::string input)
   // printSpecs();
 
   handlers[Command::move_linear] =
-      std::bind(&gpp::Machine::move_linear, this, std::placeholders::_1);
+      std::bind(&Machine::move_linear, this, std::placeholders::_1);
   handlers[Command::move_rapid] =
-      std::bind(&gpp::Machine::move_rapid, this, std::placeholders::_1);
+      std::bind(&Machine::move_rapid, this, std::placeholders::_1);
   handlers[Command::set_feed_rate] =
-      std::bind(&gpp::Machine::set_feed_rate, this, std::placeholders::_1);
+      std::bind(&Machine::set_feed_rate, this, std::placeholders::_1);
   handlers[Command::use_length_units] =
-      std::bind(&gpp::Machine::use_length_units, this, std::placeholders::_1);
+      std::bind(&Machine::use_length_units, this, std::placeholders::_1);
   handlers[Command::use_distance_mode] =
-      std::bind(&gpp::Machine::use_distance_mode, this, std::placeholders::_1);
+      std::bind(&Machine::use_distance_mode, this, std::placeholders::_1);
   handlers[Command::select_plane] =
-      std::bind(&gpp::Machine::select_plane, this, std::placeholders::_1);
+      std::bind(&Machine::select_plane, this, std::placeholders::_1);
   handlers[Command::arc_feed] =
-      std::bind(&gpp::Machine::arc_feed, this, std::placeholders::_1);
+      std::bind(&Machine::arc_feed, this, std::placeholders::_1);
 
   handlers[Command::dwell] =
-      std::bind(&gpp::Machine::dwell, this, std::placeholders::_1);
+      std::bind(&Machine::dwell, this, std::placeholders::_1);
   handlers[Command::set_origin_offsets] =
-      std::bind(&gpp::Machine::set_origin_offsets, this, std::placeholders::_1);
+      std::bind(&Machine::set_origin_offsets, this, std::placeholders::_1);
 
-  handlers[Command::start_spindle_clockwise] = std::bind(
-      &gpp::Machine::start_spindle_clockwise, this, std::placeholders::_1);
-  handlers[Command::start_spindle_counterclockwise] =
-      std::bind(&gpp::Machine::start_spindle_counterclockwise, this,
-                std::placeholders::_1);
-  handlers[Command::stop_spindle_turning] = std::bind(
-      &gpp::Machine::stop_spindle_turning, this, std::placeholders::_1);
+  handlers[Command::start_spindle_clockwise] =
+      std::bind(&Machine::start_spindle_clockwise, this, std::placeholders::_1);
+  handlers[Command::start_spindle_counterclockwise] = std::bind(
+      &Machine::start_spindle_counterclockwise, this, std::placeholders::_1);
+  handlers[Command::stop_spindle_turning] =
+      std::bind(&Machine::stop_spindle_turning, this, std::placeholders::_1);
   handlers[Command::set_spindle_speed] =
-      std::bind(&gpp::Machine::set_spindle_speed, this, std::placeholders::_1);
+      std::bind(&Machine::set_spindle_speed, this, std::placeholders::_1);
 
   handlers[Command::select_tool] =
-      std::bind(&gpp::Machine::select_tool, this, std::placeholders::_1);
+      std::bind(&Machine::select_tool, this, std::placeholders::_1);
   handlers[Command::change_tool] =
-      std::bind(&gpp::Machine::change_tool, this, std::placeholders::_1);
+      std::bind(&Machine::change_tool, this, std::placeholders::_1);
+
+  handlers[Command::use_tool_length_offset] =
+      std::bind(&Machine::use_tool_length_offset, this, std::placeholders::_1);
 
   /* these are probably temporary */
   handlers[Command::write_parameter_to_file] = std::bind(
@@ -104,7 +106,7 @@ gpp::Instruction gpp::Machine::next() {
 void gpp::Machine::printSpecs() {}
 
 void gpp::Machine::initTools(std::string file) {
-  tools = {};
+  tools.clear();
 
   std::ifstream fp(file);
   std::string line;
@@ -124,7 +126,7 @@ void gpp::Machine::initTools(std::string file) {
     }
 
     std::getline(iss >> std::ws, tool.description);
-    tools.push_back(tool);
+    tools[tool.pocket] = tool;
   }
 }
 
@@ -300,6 +302,11 @@ void gpp::Machine::program_end(std::vector<f64> args) {
   stop_spindle_turning({});
 
   std::cout << "program_end()\n";
+}
+
+void gpp::Machine::use_tool_length_offset(std::vector<f64> args) {
+  g43offset = tools.at(args.at(1)).tlo;
+  std::cout << "use_tool_length_offset(" << g43offset << ")\n";
 }
 
 void gpp::Machine::write_parameter_to_file(std::vector<f64> args) {

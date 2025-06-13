@@ -34,7 +34,7 @@ TEST_CASE("basic arithmetic", "[calculation]") {
   }
 }
 
-TEST_CASE("g0, g1, g20, g21, g90, g91", "[bytecode]") {
+TEST_CASE("g0, g1, g20, g21, g90, g91", "[g-code]") {
   std::string code = readFile("examples/basic.cnc");
   gpp::Machine machine(code);
 
@@ -69,7 +69,7 @@ TEST_CASE("g0, g1, g20, g21, g90, g91", "[bytecode]") {
   REQUIRE(instruction.command == gpp::Command::no_command);
 }
 
-TEST_CASE("g2, g3", "[bytecode]") {
+TEST_CASE("g2, g3", "[g-code]") {
   std::string code = readFile("examples/g2g3.cnc");
   gpp::Machine machine(code);
 
@@ -123,7 +123,6 @@ TEST_CASE("if-else-if-else-end", "[bytecode]") {
 
 TEST_CASE("while/do-while", "[bytecode]") {
   std::string code = readFile("examples/while.cnc");
-
   gpp::Machine machine(code);
 
   gpp::Instruction instruction;
@@ -144,7 +143,6 @@ TEST_CASE("while/do-while", "[bytecode]") {
 
 TEST_CASE("for", "[bytecode]") {
   std::string code = readFile("examples/for.cnc");
-
   gpp::Machine machine(code);
 
   gpp::Instruction instruction;
@@ -182,4 +180,34 @@ TEST_CASE("trigonometric functions", "[calculation]") {
 
     REQUIRE(result == Catch::Approx(expected_results[i]));
   }
+}
+
+TEST_CASE("m3, m4, m5", "[m-code]") {
+  std::string code = readFile("examples/m3m4m5.cnc");
+  gpp::Machine machine(code);
+
+  gpp::Instruction instruction;
+
+  instruction = machine.next();
+  REQUIRE(instruction.command == gpp::Command::set_spindle_speed);
+  REQUIRE(instruction.arguments == std::vector<f64>{100});
+
+  instruction = machine.next();
+  REQUIRE(instruction.command == gpp::Command::start_spindle_clockwise);
+  REQUIRE(instruction.arguments == std::vector<f64>{});
+
+  instruction = machine.next();
+  REQUIRE(instruction.command == gpp::Command::set_spindle_speed);
+  REQUIRE(instruction.arguments == std::vector<f64>{300});
+
+  instruction = machine.next();
+  REQUIRE(instruction.command == gpp::Command::start_spindle_counterclockwise);
+  REQUIRE(instruction.arguments == std::vector<f64>{});
+
+  instruction = machine.next();
+  REQUIRE(instruction.command == gpp::Command::stop_spindle_turning);
+  REQUIRE(instruction.arguments == std::vector<f64>{});
+
+  instruction = machine.next();
+  REQUIRE(instruction.command == gpp::Command::no_command);
 }
