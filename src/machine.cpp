@@ -61,6 +61,13 @@ gpp::Machine::Machine(std::string input)
   handlers[Command::change_tool] =
       std::bind(&Machine::change_tool, this, std::placeholders::_1);
 
+  handlers[Command::program_stop] =
+      std::bind(&Machine::program_stop, this, std::placeholders::_1);
+  handlers[Command::optional_program_stop] =
+      std::bind(&Machine::optional_program_stop, this, std::placeholders::_1);
+  handlers[Command::program_end] =
+      std::bind(&Machine::program_end, this, std::placeholders::_1);
+
   handlers[Command::use_tool_length_offset] =
       std::bind(&Machine::use_tool_length_offset, this, std::placeholders::_1);
 
@@ -133,8 +140,11 @@ void gpp::Machine::initTools(std::string file) {
 void gpp::Machine::move_linear(std::vector<f64> args) {
   Vec3D prev = position;
   position = resolvePosition(args.at(0), args.at(1), args.at(2));
-  std::cout << "move_linear(" << position.x << ", " << position.y << ", "
-            << position.z << ")\n";
+
+  Vec3D logical = getLogicalPosition();
+
+  std::cout << "move_linear(" << logical.x << ", " << logical.y << ", "
+            << logical.z << ")\n";
 
   drawLinesOnPlanes(prev, position);
 }
@@ -142,8 +152,11 @@ void gpp::Machine::move_linear(std::vector<f64> args) {
 void gpp::Machine::move_rapid(std::vector<f64> args) {
   Vec3D prev = position;
   position = resolvePosition(args.at(0), args.at(1), args.at(2));
-  std::cout << "move_rapid(" << position.x << ", " << position.y << ", "
-            << position.z << ")\n";
+
+  Vec3D logical = getLogicalPosition();
+
+  std::cout << "move_rapid(" << logical.x << ", " << logical.y << ", "
+            << logical.z << ")\n";
 
   drawLinesOnPlanes(prev, position);
 }
@@ -172,8 +185,8 @@ void gpp::Machine::use_distance_mode(std::vector<f64> args) {
 void gpp::Machine::select_plane(std::vector<f64> args) {
   plane = (Plane)args.at(0);
 
-  std::cout << "use_length_units(";
-  std::cout << plane;
+  std::cout << "select_plane(";
+  std::cout << (plane == plane_xy ? "XY" : (plane == plane_yz ? "YZ" : "XZ"));
   std::cout << ")\n";
 }
 
@@ -305,8 +318,8 @@ void gpp::Machine::program_end(std::vector<f64> args) {
 }
 
 void gpp::Machine::use_tool_length_offset(std::vector<f64> args) {
-  g43offset = tools.at(args.at(1)).tlo;
-  std::cout << "use_tool_length_offset(" << g43offset << ")\n";
+  toolOffset = tools.at(args.at(1)).tlo;
+  std::cout << "use_tool_length_offset(" << toolOffset << ")\n";
 }
 
 void gpp::Machine::write_parameter_to_file(std::vector<f64> args) {
@@ -376,19 +389,29 @@ const char *gpp::Machine::planeToString(Plane plane) {
   return plane == plane_xy ? "XY" : (plane == plane_yz ? "YZ" : "XZ");
 }
 
+gpp::Vec3D gpp::Machine::getLogicalPosition() {
+  return position - g92offset - g5xoffset + Vec3D{0, 0, toolOffset};
+}
+
 gpp::Vec3D gpp::Machine::resolvePosition(const f64 x, const f64 y,
                                          const f64 z) {
   if (std::isnan(x) && std::isnan(y) && std::isnan(z))
-    ; // TODO, error handling and handling individual axes
+    return position;
 
-  Vec3D delta = {x, y, z};
-  delta = delta * unitMultiplier(unit);
+  Vec3D currentLogical = getLogicalPosition();
+  Vec3D targetLogical = {
+      std::isnan(x) ? (distanceMode == relative ? 0 : currentLogical.x) : x,
+      std::isnan(y) ? (distanceMode == relative ? 0 : currentLogical.y) : y,
+      std::isnan(z) ? (distanceMode == relative ? 0 : currentLogical.z) : z};
+
+  targetLogical = targetLogical * unitMultiplier(unit);
 
   if (distanceMode == DistanceMode::relative)
-    return position + delta;
-  else {
-    return g92offset + delta;
-  }
+    targetLogical = currentLogical + targetLogical;
+
+  Vec3D targetMachine =
+      targetLogical + g92offset + g5xoffset - Vec3D{0, 0, toolOffset};
+  return targetMachine;
 }
 
 void gpp::Machine::drawLineOnPlane(Canvas &canvas, Plane plane, Vec3D from,
@@ -414,7 +437,11 @@ void gpp::Machine::drawLinesOnPlanes(Vec3D from, Vec3D to) {
 
   canvasXY.drawLine(from.x, from.y, to.x, to.y, 0, 0, b);
   canvasYZ.drawLine(from.y, from.z, to.y, to.z, 0, 0, b);
-  canvasYZ.drawLine(from.x, from.z, to.x, to.z, 0, 0, b);
+  canvasXZ.drawLine(from.x, from.z, to.x, to.z, 0, 0, b); // fixed here
+}
+
+std::ostream &operator<<(std::ostream &os, const gpp::Vec3D &v) {
+  return os << "Vec3D(" << v.x << ", " << v.y << ", " << v.z << ")";
 }
 
 gpp::Vec3D gpp::Vec3D::operator+(const Vec3D &rhs) {
@@ -427,6 +454,10 @@ gpp::Vec3D gpp::Vec3D::operator-(const Vec3D &rhs) {
 
 gpp::Vec3D gpp::Vec3D::operator*(f64 scalar) {
   return {x * scalar, y * scalar, z * scalar};
+}
+
+bool gpp::Vec3D::operator==(const Vec3D &rhs) {
+  return x == rhs.x && y == rhs.y && z == rhs.z;
 }
 
 f64 gpp::Vec3D::dot(const Vec3D &rhs) {

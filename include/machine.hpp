@@ -49,6 +49,8 @@ enum gpp::Command : u8 {
 
   use_tool_length_offset = 18,
 
+  // set_work_offset = 19,
+
   /*** this is temporary ***/
   write_parameter_to_file = 253,
   write_parameters_to_file = 254,
@@ -76,9 +78,11 @@ struct gpp::Vec3D {
   Vec3D operator+(const Vec3D &rhs);
   Vec3D operator-(const Vec3D &rhs);
   Vec3D operator*(f64 scalar);
+  bool operator==(const Vec3D &rhs);
   f64 dot(const Vec3D &rhs);
   Vec3D cross(const Vec3D &rhs);
 };
+std::ostream &operator<<(std::ostream &os, const gpp::Vec3D &v);
 
 struct gpp::Vec2D {
   f64 x, y;
@@ -97,9 +101,11 @@ struct gpp::Machine {
 private:
   BytecodeEmitter emitter;
 
-  Vec3D position;  // current position relative to (0, 0, 0), not origin
-  Vec3D g92offset; // offset from the origin due to g92
-  f64 g43offset;   // offset from the origin due to g43
+  Vec3D position;       // current position relative to (0, 0, 0)
+  Vec3D g5xoffset;      // offset from the origin due to g54-g59
+  Vec3D g92offset;      // offset from the origin due to g92/g52
+  f64 toolOffset;       // offset from the origin due to g43
+  Vec3D workOffsets[6]; // offsets for g54-g59
   // Vec3D target;   // target position, NOTE is this needed?
   Unit unit; // unit could be mm or inch (as per me -- read TODO below)
   DistanceMode distanceMode; // absolute vs relative
@@ -167,6 +173,7 @@ private:
   f64 unitMultiplier(Unit unit);
   const char *unitToString(Unit unit);
   const char *planeToString(Plane plane);
+  Vec3D getLogicalPosition();
   Vec3D resolvePosition(const f64 x, const f64 y, const f64 z);
   void drawLineOnPlane(Canvas &canvas, gpp::Plane plane, gpp::Vec3D from,
                        gpp::Vec3D to);
