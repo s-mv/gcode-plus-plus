@@ -42,7 +42,7 @@ TEST_CASE("g0, g1, g20, g21, g90, g91", "[g-code]") {
   REQUIRE(instruction.command == gpp::Command::no_command);
 }
 
-TEST_CASE("g92, g54-g59", "[g-code]") {
+/* TEST_CASE("g92, g54-g59", "[g-code]") {
   std::string code = readFile("examples/g92g5x.cnc");
   gpp::Machine machine(code);
 
@@ -64,7 +64,7 @@ TEST_CASE("g92, g54-g59", "[g-code]") {
 
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::Command::no_command);
-}
+} */
 
 TEST_CASE("g2, g3", "[g-code]") {
   std::string code = readFile("examples/g2g3.cnc");

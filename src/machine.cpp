@@ -70,6 +70,8 @@ gpp::Machine::Machine(std::string input)
 
   handlers[Command::use_tool_length_offset] =
       std::bind(&Machine::use_tool_length_offset, this, std::placeholders::_1);
+  handlers[Command::set_tool_length_offset] =
+      std::bind(&Machine::set_tool_length_offset, this, std::placeholders::_1);
 
   handlers[Command::set_wcs_coordinates] =
       std::bind(&Machine::set_wcs_coordinates, this, std::placeholders::_1);
@@ -376,11 +378,18 @@ void gpp::Machine::use_tool_length_offset(std::vector<f64> args) {
   std::cout << "use_tool_length_offset(" << toolOffset << ")\n";
 }
 
+void gpp::Machine::set_tool_length_offset(std::vector<f64> args) {
+  tools.at((int)args.at(0)).tlo = args.at(1);
+  std::cout << "set_tool_length_offset(" << args.at(0) << ", " << args.at(1)
+            << ")\n";
+}
+
 void gpp::Machine::set_wcs_coordinates(std::vector<f64> args) {
   int p = args.at(0);
   workOffsets[p - 1] = {args.at(1), args.at(2), args.at(3)};
-  std::cout << "set_wcs_coordinates(" << p << ", " << workOffsets[p].x << ", "
-            << workOffsets[p].y << ", " << workOffsets[p].z << ")\n";
+  std::cout << "set_wcs_coordinates(" << p << ", " << workOffsets[p - 1].x
+            << ", " << workOffsets[p - 1].y << ", " << workOffsets[p - 1].z
+            << ")\n";
 }
 
 void gpp::Machine::use_workspace(std::vector<f64> args) {

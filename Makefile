@@ -29,7 +29,7 @@ CXXFLAGS = -std=c++17 -g -I include/ $(ANTLR4_INCLUDE) $(STB_INCLUDE)
 default: dev
 
 test:
-	@echo "Running $(TEST_TYPE) tests."
+	@echo "Working on $(TEST_TYPE) tests."
 	@$(MAKE) --no-print-directory $(TEST_TYPE)
 
 unit: $(OBJECTS) $(ANTLR_OBJECTS) $(UNIT_TEST_FILES)

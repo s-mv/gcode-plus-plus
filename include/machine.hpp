@@ -52,9 +52,10 @@ enum gpp::Command : u8 {
   program_end = 17,
 
   use_tool_length_offset = 18,
+  set_tool_length_offset = 19,
 
-  set_wcs_coordinates = 19,
-  use_workspace = 20,
+  set_wcs_coordinates = 20,
+  use_workspace = 21,
 
   /*** this is temporary ***/
   write_parameter_to_file = 253,
@@ -170,6 +171,7 @@ private:
   void program_end(std::vector<f64> args);
 
   void use_tool_length_offset(std::vector<f64> args);
+  void set_tool_length_offset(std::vector<f64> args);
 
   void set_wcs_coordinates(std::vector<f64> args);
   void use_workspace(std::vector<f64> args);

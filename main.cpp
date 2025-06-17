@@ -47,13 +47,14 @@ int main(int argc, char **argv) {
       break;
     } else if (command == "next" || (command.empty() && next_used)) {
       next_used = true;
-      if (verbose) {
-        machine.printSpecs();
-      }
       if (machine.next().command == gpp::no_command) {
+        if (verbose)
+          machine.printSpecs();
         std::cout << "No more instructions left!\n";
         break;
       }
+      if (verbose)
+        machine.printSpecs();
     } else {
       next_used = false;
       std::cout
