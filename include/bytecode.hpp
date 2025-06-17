@@ -13,6 +13,10 @@
 #include "parser_antlr4BaseVisitor.h"
 #include "util.hpp"
 
+#ifdef smv_gpp_testing
+#define private public
+#endif
+
 struct gpp::Word {
   char word;
   f64 arg;
@@ -130,5 +134,9 @@ private:
   Instruction handle_m(f64 arg, const std::vector<Word> &words, int line,
                        int column);
 };
+
+#ifdef smv_gpp_testing
+#undef private
+#endif
 
 #endif

@@ -10,6 +10,10 @@
 #include <unordered_map>
 #include <vector>
 
+#ifdef smv_gpp_testing
+#define private public
+#endif
+
 enum gpp::Unit : u8 { mm = 0, inch = 1, cm = 2 };
 enum gpp::DistanceMode : u8 { absolute = 0, relative = 1 };
 enum gpp::SpindleDirection : i8 {
@@ -50,7 +54,7 @@ enum gpp::Command : u8 {
   use_tool_length_offset = 18,
 
   set_wcs_coordinates = 19,
-  // set_work_offset = 20,
+  use_workspace = 20,
 
   /*** this is temporary ***/
   write_parameter_to_file = 253,
@@ -166,7 +170,9 @@ private:
   void program_end(std::vector<f64> args);
 
   void use_tool_length_offset(std::vector<f64> args);
+
   void set_wcs_coordinates(std::vector<f64> args);
+  void use_workspace(std::vector<f64> args);
 
   /*** this is temporary ***/
   void write_parameter_to_file(std::vector<f64> args);
@@ -182,5 +188,9 @@ private:
                        gpp::Vec3D to);
   void drawLinesOnPlanes(Vec3D from, Vec3D to);
 };
+
+#ifdef smv_gpp_testing
+#undef private
+#endif
 
 #endif

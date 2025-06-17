@@ -25,4 +25,8 @@ enum DistanceMode : u8;
 enum Plane : u8;
 } // namespace gpp
 
+#ifndef private_prod
+#define private_prod private
+#endif
+
 #endif

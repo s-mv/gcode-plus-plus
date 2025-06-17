@@ -73,6 +73,8 @@ gpp::Machine::Machine(std::string input)
 
   handlers[Command::set_wcs_coordinates] =
       std::bind(&Machine::set_wcs_coordinates, this, std::placeholders::_1);
+  handlers[Command::use_workspace] =
+      std::bind(&Machine::use_workspace, this, std::placeholders::_1);
 
   /* these are probably temporary */
   handlers[Command::write_parameter_to_file] = std::bind(
@@ -376,9 +378,16 @@ void gpp::Machine::use_tool_length_offset(std::vector<f64> args) {
 
 void gpp::Machine::set_wcs_coordinates(std::vector<f64> args) {
   int p = args.at(0);
-  workOffsets[p] = {args.at(1), args.at(2), args.at(3)};
+  workOffsets[p - 1] = {args.at(1), args.at(2), args.at(3)};
   std::cout << "set_wcs_coordinates(" << p << ", " << workOffsets[p].x << ", "
             << workOffsets[p].y << ", " << workOffsets[p].z << ")\n";
+}
+
+void gpp::Machine::use_workspace(std::vector<f64> args) {
+  int offsetIndex = args.at(0);
+  g5xoffset = workOffsets[offsetIndex - 1];
+
+  std::cout << "use_workspace(" << offsetIndex << ")\n";
 }
 
 /* probably temporary */

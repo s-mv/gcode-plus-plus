@@ -14,7 +14,7 @@ TEST_CASE("regression test with captured output") {
 
   gpp::Machine machine = gpp::Machine(code);
 
-  while (machine.next())
+  while (machine.next().command != no_command)
     ;
 
   std::cout.rdbuf(oldBuffer);

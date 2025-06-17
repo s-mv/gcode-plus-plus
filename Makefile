@@ -2,7 +2,7 @@ TITLE    = gcode++
 CXX     ?= g++
 OBJECTS  = build/util.o build/frontend.o build/bytecode.o \
            build/expression.o build/machine.o build/line.o \
-					 build/instructions.o build/canvas.o
+           build/instructions.o build/canvas.o
 EXTERN   = extern/
 
 ### replace with your path ###
@@ -18,6 +18,9 @@ TEST_TYPE    = unit
 TEST_INCLUDE = -I $(EXTERN)catch2/
 TEST_TARGETS = unit regression
 
+UNIT_TEST_FILES = tests/unit.cpp tests/calculation.cpp tests/testutil.cpp \
+                  tests/extended_grammar.cpp tests/gcode.cpp tests/mcode.cpp
+
 LDFLAGS  = $(ANTLR4_LIB)libantlr4-runtime.a
 CXXFLAGS = -std=c++17 -g -I include/ $(ANTLR4_INCLUDE) $(STB_INCLUDE)
 
@@ -29,11 +32,18 @@ test:
 	@echo "Running $(TEST_TYPE) tests."
 	@$(MAKE) --no-print-directory $(TEST_TYPE)
 
-$(TEST_TARGETS): $(OBJECTS) $(ANTLR_OBJECTS)
-$(TEST_TARGETS): %: tests/%.cpp
-	@$(CXX) tests/$@.cpp $(TEST_INCLUDE) $(EXTERN)catch2/catch_amalgamated.cpp \
-		$(OBJECTS) $(ANTLR_OBJECTS) -o build/$@ $(CXXFLAGS) $(LDFLAGS)
-	@./build/$@ -s
+unit: $(OBJECTS) $(ANTLR_OBJECTS) $(UNIT_TEST_FILES)
+	@echo "Building unit tests..."
+	@$(CXX) $(UNIT_TEST_FILES) $(EXTERN)catch2/catch_amalgamated.cpp \
+		$(OBJECTS) $(ANTLR_OBJECTS) -o build/unit $(CXXFLAGS) $(LDFLAGS) $(TEST_INCLUDE)
+	@echo "Running unit tests..."
+	@./build/unit -s
+
+regression: $(OBJECTS) $(ANTLR_OBJECTS)
+	@echo "Building regression tests..."
+	@$(CXX) tests/regression.cpp $(TEST_INCLUDE) $(EXTERN)catch2/catch_amalgamated.cpp \
+		$(OBJECTS) $(ANTLR_OBJECTS) -o build/regression $(CXXFLAGS) $(LDFLAGS)
+	@./build/regression -s
 
 antlr:
 	@cd antlr4 && antlr4 -Dlanguage=Cpp -visitor -o ../extern/antlr4/gen \

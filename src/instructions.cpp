@@ -222,8 +222,8 @@ gpp::Instruction gpp::BytecodeEmitter::handle_g(f64 arg,
     if (l == 1) {
       // TODO
     } else if (l == 2) {
-      int pi = (int)p - 1;
-      if (pi > 5 || pi < 0) {
+      int pi = (int)p;
+      if (pi > 6 || pi < 1) {
         //  ERROR
         return {.command = no_command};
       }
@@ -256,16 +256,12 @@ gpp::Instruction gpp::BytecodeEmitter::handle_g(f64 arg,
     }
 
     return {.command = use_tool_length_offset, .arguments = {h}};
+  } else if (arg >= 54 && arg <= 59) {
+    return {.command = use_workspace, .arguments = {arg - 53}};
   } else if (arg == 90) {
-    return {
-        .command = use_distance_mode,
-        .arguments = {DistanceMode::absolute},
-    };
+    return {.command = use_distance_mode, .arguments = {absolute}};
   } else if (arg == 91) {
-    return {
-        .command = use_distance_mode,
-        .arguments = {DistanceMode::relative},
-    };
+    return {.command = use_distance_mode, .arguments = {relative}};
   }
 
   return {.command = no_command};
