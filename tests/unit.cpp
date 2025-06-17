@@ -112,6 +112,7 @@ TEST_CASE("g92, g54-g59", "[g-code]") {
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::Command::move_rapid);
   REQUIRE(approx_equal(instruction.arguments, std::vector<f64>{0, 0, 1}));
+  REQUIRE(approx_equal(machine.position, gpp::Vec3D{1, 0, 2}));
 
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::Command::no_command);

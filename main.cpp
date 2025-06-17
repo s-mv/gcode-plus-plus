@@ -10,7 +10,22 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  const char *src = argv[1];
+  bool verbose = false;
+  const char *src = nullptr;
+
+  for (int i = 1; i < argc; ++i) {
+    std::string arg(argv[i]);
+    if (arg == "-v") {
+      verbose = true;
+    } else {
+      src = argv[i];
+    }
+  }
+
+  if (!src) {
+    std::cerr << "No file provided as an argument!\n";
+    return -1;
+  }
 
   std::string input(readFile(src));
   if (input.empty()) {
@@ -28,16 +43,19 @@ int main(int argc, char **argv) {
   while (true) {
     std::cout << "> ";
     std::getline(std::cin, command);
-
     if (command == "exit") {
       break;
-    } else if (command == "next" || next_used) {
+    } else if (command == "next" || (command.empty() && next_used)) {
       next_used = true;
+      if (verbose) {
+        machine.printSpecs();
+      }
       if (machine.next().command == gpp::no_command) {
         std::cout << "No more instructions left!\n";
         break;
       }
     } else {
+      next_used = false;
       std::cout
           << "Unknown command... Available commands: `next` and `exit`.\n";
     }

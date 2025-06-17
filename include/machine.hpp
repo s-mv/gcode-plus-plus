@@ -49,7 +49,8 @@ enum gpp::Command : u8 {
 
   use_tool_length_offset = 18,
 
-  // set_work_offset = 19,
+  set_wcs_coordinates = 19,
+  // set_work_offset = 20,
 
   /*** this is temporary ***/
   write_parameter_to_file = 253,
@@ -72,6 +73,7 @@ struct gpp::Tool {
   i64 holder; // tool holder ID
   std::string description;
 };
+std::ostream &operator<<(std::ostream &os, const gpp::Tool &tool);
 
 struct gpp::Vec3D {
   f64 x, y, z;
@@ -131,11 +133,11 @@ public:
   void setMemory(i64 address, f64 value);
   f64 getMemory(i64 address);
   Instruction next();
+  void printSpecs();
   void saveCanvases();
 
 private:
   void initTools(std::string file);
-  void printSpecs(); // TODO
 
   void move_linear(std::vector<f64> args);
   void move_rapid(std::vector<f64> args);
@@ -164,6 +166,7 @@ private:
   void program_end(std::vector<f64> args);
 
   void use_tool_length_offset(std::vector<f64> args);
+  void set_wcs_coordinates(std::vector<f64> args);
 
   /*** this is temporary ***/
   void write_parameter_to_file(std::vector<f64> args);

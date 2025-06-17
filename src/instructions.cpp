@@ -196,6 +196,42 @@ gpp::Instruction gpp::BytecodeEmitter::handle_g(f64 arg,
         .command = dwell,
         .arguments = {p},
     };
+  } else if (arg == 10) {
+    f64 l = NAN, p = NAN;
+    f64 x = NAN, y = NAN, z = NAN;
+    for (Word operand : words) {
+      switch (operand.word) {
+      case 'l':
+        l = operand.arg;
+        break;
+      case 'p':
+        p = operand.arg;
+        break;
+      case 'x':
+        x = operand.arg;
+        break;
+      case 'y':
+        y = operand.arg;
+        break;
+      case 'z':
+        z = operand.arg;
+        break;
+      }
+    }
+
+    if (l == 1) {
+      // TODO
+    } else if (l == 2) {
+      int pi = (int)p - 1;
+      if (pi > 5 || pi < 0) {
+        //  ERROR
+        return {.command = no_command};
+      }
+      return {.command = set_wcs_coordinates, .arguments = {p, x, y, z}};
+    } else if (l == 20) {
+      // TODO
+    }
+
   } else if (arg == 17) {
     return {.command = select_plane, .arguments = {plane_xy}};
   } else if (arg == 18) {

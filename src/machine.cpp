@@ -71,6 +71,9 @@ gpp::Machine::Machine(std::string input)
   handlers[Command::use_tool_length_offset] =
       std::bind(&Machine::use_tool_length_offset, this, std::placeholders::_1);
 
+  handlers[Command::set_wcs_coordinates] =
+      std::bind(&Machine::set_wcs_coordinates, this, std::placeholders::_1);
+
   /* these are probably temporary */
   handlers[Command::write_parameter_to_file] = std::bind(
       &gpp::Machine::write_parameter_to_file, this, std::placeholders::_1);
@@ -110,7 +113,59 @@ gpp::Instruction gpp::Machine::next() {
   return instruction;
 }
 
-void gpp::Machine::printSpecs() {}
+void gpp::Machine::printSpecs() {
+  std::cout << "--- Machine Specifications ---\n";
+
+  std::cout << "Position: " << position << "\n";
+  std::cout << "G5x Offset: " << g5xoffset << "\n";
+  std::cout << "G92/G52 Offset: " << g92offset << "\n";
+  std::cout << "Tool Length Offset (G43): " << toolOffset << "\n";
+
+  std::cout << "Work Offsets (G54–G59):\n";
+  for (int i = 0; i < 6; ++i) {
+    std::cout << "  G5" << (4 + i) << ": " << workOffsets[i] << "\n";
+  }
+
+  std::cout << "Unit: " << (unit == mm ? "mm" : "inch") << "\n";
+  std::cout << "Distance Mode: "
+            << (distanceMode == absolute ? "Absolute" : "Relative") << "\n";
+
+  std::cout << "Plane: ";
+  switch (plane) {
+  case plane_xy:
+    std::cout << "XY\n";
+    break;
+  case plane_yz:
+    std::cout << "YZ\n";
+    break;
+  case plane_xz:
+    std::cout << "XZ\n";
+    break;
+  default:
+    std::cout << "Unknown\n";
+    break;
+  }
+
+  std::cout << "Feed Rate: " << feedRate << " "
+            << (unit == mm ? "mm/min" : "in/min") << "\n";
+
+  std::cout << "Spindle Direction: "
+            << (spindleDirection == clockwise          ? "CW"
+                : spindleDirection == counterclockwise ? "CCW"
+                                                       : "Off")
+            << "\n";
+
+  std::cout << "Spindle Speed: " << spindleSpeed << " RPM\n";
+  std::cout << "Selected Tool: " << selectedTool << "\n";
+  std::cout << "Current Tool: " << currentTool << "\n";
+
+  std::cout << "Tools Loaded: " << tools.size() << "\n";
+  for (const auto &[id, tool] : tools) {
+    std::cout << "  Tool " << id << ": " << tool << "\n";
+  }
+
+  std::cout << "-------------------------------\n";
+}
 
 void gpp::Machine::initTools(std::string file) {
   tools.clear();
@@ -143,8 +198,7 @@ void gpp::Machine::move_linear(std::vector<f64> args) {
 
   Vec3D logical = getLogicalPosition();
 
-  std::cout << "move_linear(" << logical.x << ", " << logical.y << ", "
-            << logical.z << ")\n";
+  std::cout << "move_linear" << logical << "\n";
 
   drawLinesOnPlanes(prev, position);
 }
@@ -155,8 +209,7 @@ void gpp::Machine::move_rapid(std::vector<f64> args) {
 
   Vec3D logical = getLogicalPosition();
 
-  std::cout << "move_rapid(" << logical.x << ", " << logical.y << ", "
-            << logical.z << ")\n";
+  std::cout << "move_rapid" << logical << "\n";
 
   drawLinesOnPlanes(prev, position);
 }
@@ -262,8 +315,7 @@ void gpp::Machine::set_origin_offsets(std::vector<f64> args) {
   logical_position = logical_position * unitMultiplier(unit);
   g92offset = position - logical_position;
 
-  std::cout << "set_origin_offsets(" << g92offset.x << ", " << g92offset.y
-            << ", " << g92offset.z << ")\n";
+  std::cout << "set_origin_offsets" << g92offset << "\n";
 }
 
 void gpp::Machine::start_spindle_clockwise(std::vector<f64> args) {
@@ -318,10 +370,18 @@ void gpp::Machine::program_end(std::vector<f64> args) {
 }
 
 void gpp::Machine::use_tool_length_offset(std::vector<f64> args) {
-  toolOffset = tools.at(args.at(1)).tlo;
+  toolOffset = tools.at(args.at(0)).tlo;
   std::cout << "use_tool_length_offset(" << toolOffset << ")\n";
 }
 
+void gpp::Machine::set_wcs_coordinates(std::vector<f64> args) {
+  int p = args.at(0);
+  workOffsets[p] = {args.at(1), args.at(2), args.at(3)};
+  std::cout << "set_wcs_coordinates(" << p << ", " << workOffsets[p].x << ", "
+            << workOffsets[p].y << ", " << workOffsets[p].z << ")\n";
+}
+
+/* probably temporary */
 void gpp::Machine::write_parameter_to_file(std::vector<f64> args) {
   std::cout << "write_parameter_to_file(" << args.at(0) << ")\n";
   std::ofstream file(".data.txt");
@@ -336,8 +396,6 @@ void gpp::Machine::write_parameter_to_file(std::vector<f64> args) {
 }
 
 void gpp::Machine::write_parameters_to_file(std::vector<f64> args) {
-  std::cout << "write_parameters_to_file(";
-
   std::ofstream file(".data.txt");
   if (!file) {
     std::cerr << "Failed to open .data.txt for writing\n";
@@ -350,7 +408,7 @@ void gpp::Machine::write_parameters_to_file(std::vector<f64> args) {
 
   file.close();
 
-  std::cout << ")\n";
+  std::cout << "write_parameters_to_file()\n";
 }
 
 void gpp::Machine::saveCanvases() {
@@ -437,11 +495,20 @@ void gpp::Machine::drawLinesOnPlanes(Vec3D from, Vec3D to) {
 
   canvasXY.drawLine(from.x, from.y, to.x, to.y, 0, 0, b);
   canvasYZ.drawLine(from.y, from.z, to.y, to.z, 0, 0, b);
-  canvasXZ.drawLine(from.x, from.z, to.x, to.z, 0, 0, b); // fixed here
+  canvasXZ.drawLine(from.x, from.z, to.x, to.z, 0, 0, b);
+}
+
+std::ostream &operator<<(std::ostream &os, const gpp::Tool &tool) {
+  os << "[Tool]"
+     << " Pocket: " << tool.pocket << ", FMS: " << tool.fms
+     << ", TLO: " << tool.tlo << ", Diameter: " << tool.diam
+     << ", Holder: " << tool.holder << ", Description: \"" << tool.description
+     << "\"";
+  return os;
 }
 
 std::ostream &operator<<(std::ostream &os, const gpp::Vec3D &v) {
-  return os << "Vec3D(" << v.x << ", " << v.y << ", " << v.z << ")";
+  return os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
 }
 
 gpp::Vec3D gpp::Vec3D::operator+(const Vec3D &rhs) {
