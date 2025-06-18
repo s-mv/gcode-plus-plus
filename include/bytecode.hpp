@@ -133,6 +133,19 @@ private:
 
   Instruction handle_m(f64 arg, const std::vector<Word> &words, int line,
                        int column);
+
+  // helpers for instructions.cpp
+  inline void applyCurrentPositionDefaults(Vec3D &delta);
+  inline void extractCoordinates(const std::vector<Word> &words, f64 &x, f64 &y,
+                                 f64 &z);
+  inline void extractArcParams(const std::vector<Word> &words, f64 &x, f64 &y,
+                               f64 &z, f64 &i, f64 &j, f64 &k, f64 &r);
+
+  inline f64 findParameter(const std::vector<Word> &words, char letter);
+  inline Vec2D getPlaneCoordinates(const Plane plane, const Vec3D &pos);
+  inline Vec2D getCurrentPlanePosition(const Plane plane,
+                                       const Vec3D &position);
+  inline Vec2D getArcCenterOffsets(const gpp::Plane plane, f64 i, f64 j, f64 k);
 };
 
 #ifdef smv_gpp_testing

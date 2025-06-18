@@ -16,8 +16,9 @@
     }                                                                          \
   } while (0)
 
-inline void extractCoordinates(const std::vector<gpp::Word> &words, f64 &x,
-                               f64 &y, f64 &z) {
+inline void
+gpp::BytecodeEmitter::extractCoordinates(const std::vector<gpp::Word> &words,
+                                         f64 &x, f64 &y, f64 &z) {
   x = y = z = NAN;
   for (const gpp::Word &operand : words) {
     switch (operand.word) {
@@ -34,8 +35,10 @@ inline void extractCoordinates(const std::vector<gpp::Word> &words, f64 &x,
   }
 }
 
-inline void extractArcParams(const std::vector<gpp::Word> &words, f64 &x,
-                             f64 &y, f64 &z, f64 &i, f64 &j, f64 &k, f64 &r) {
+inline void
+gpp::BytecodeEmitter::extractArcParams(const std::vector<Word> &words, f64 &x,
+                                       f64 &y, f64 &z, f64 &i, f64 &j, f64 &k,
+                                       f64 &r) {
   x = y = z = i = j = k = r = NAN;
   for (const gpp::Word &operand : words) {
     switch (operand.word) {
@@ -64,7 +67,8 @@ inline void extractArcParams(const std::vector<gpp::Word> &words, f64 &x,
   }
 }
 
-inline f64 findParameter(const std::vector<gpp::Word> &words, char letter) {
+inline f64 gpp::BytecodeEmitter::findParameter(const std::vector<Word> &words,
+                                               char letter) {
   for (const gpp::Word &operand : words) {
     if (operand.word == letter) {
       return operand.arg;
@@ -73,80 +77,58 @@ inline f64 findParameter(const std::vector<gpp::Word> &words, char letter) {
   return NAN;
 }
 
-inline void applyCurrentPositionDefaults(f64 &x, f64 &y, f64 &z,
-                                         const gpp::Vec3D position) {
-  if (std::isnan(x))
-    x = position.x;
-  if (std::isnan(y))
-    y = position.y;
-  if (std::isnan(z))
-    z = position.z;
+inline void gpp::BytecodeEmitter::applyCurrentPositionDefaults(Vec3D &delta) {
+  auto pos = machine->getLogicalPosition();
+  if (std::isnan(delta.x))
+    delta.x = pos.x;
+  if (std::isnan(delta.y))
+    delta.y = pos.y;
+  if (std::isnan(delta.z))
+    delta.z = pos.z;
 }
 
-inline void getPlaneCoordinates(const gpp::Plane plane, f64 x, f64 y, f64 z,
-                                f64 &x_plane, f64 &y_plane, f64 &z_plane) {
+inline gpp::Vec2D gpp::BytecodeEmitter::getPlaneCoordinates(const Plane plane,
+                                                            const Vec3D &pos) {
   switch (plane) {
   case gpp::plane_xy:
-    x_plane = x;
-    y_plane = y;
-    z_plane = z;
-    break;
+    return {pos.x, pos.y};
   case gpp::plane_yz:
-    x_plane = y;
-    y_plane = z;
-    z_plane = x;
-    break;
+    return {pos.y, pos.z};
   case gpp::plane_xz:
-    x_plane = z;
-    y_plane = x;
-    z_plane = y;
-    break;
+    return {pos.z, pos.x};
   }
+  return {0, 0}; // fallback
 }
 
-inline void getCurrentPlanePosition(const gpp::Plane plane, f64 &x0, f64 &y0,
-                                    const gpp::Vec3D position) {
-  switch (plane) {
-  case gpp::plane_xy:
-    x0 = position.x;
-    y0 = position.y;
-    break;
-  case gpp::plane_yz:
-    x0 = position.y;
-    y0 = position.z;
-    break;
-  case gpp::plane_xz:
-    x0 = position.z;
-    y0 = position.x;
-    break;
-  }
+inline gpp::Vec2D
+gpp::BytecodeEmitter::getCurrentPlanePosition(const Plane plane,
+                                              const Vec3D &position) {
+  return getPlaneCoordinates(plane, position);
 }
 
-inline void getArcCenterOffsets(const gpp::Plane plane, f64 i, f64 j, f64 k,
-                                f64 &offset_x, f64 &offset_y) {
+inline gpp::Vec2D
+gpp::BytecodeEmitter::getArcCenterOffsets(const gpp::Plane plane, f64 i, f64 j,
+                                          f64 k) {
   switch (plane) {
   case gpp::plane_xy:
-    offset_x = i;
-    offset_y = j;
-    break;
+    return {i, j};
   case gpp::plane_yz:
-    offset_x = j;
-    offset_y = k;
-    break;
+    return {j, k};
   case gpp::plane_xz:
-    offset_x = k;
-    offset_y = i;
-    break;
+    return {k, i};
   }
+  return {0, 0}; // fallback
 }
 
 #define SIMPLE_GCODE_CASE(code, cmd)                                           \
   case code:                                                                   \
-    return {.command = cmd};
+    return { .command = cmd }
 
 #define SINGLE_ARG_GCODE_CASE(code, cmd, arg_val)                              \
   case code:                                                                   \
-    return {.command = cmd, .arguments = {arg_val}};
+    return {                                                                   \
+      .command = cmd, .arguments = { arg_val }                                 \
+    }
 
 gpp::Instruction
 gpp::BytecodeEmitter::handle_g(f64 arg, const std::vector<gpp::Word> &words,
@@ -155,26 +137,22 @@ gpp::BytecodeEmitter::handle_g(f64 arg, const std::vector<gpp::Word> &words,
   case 0:
   case 1:
   case 92: {
-    f64 x, y, z;
-    extractCoordinates(words, x, y, z);
-    if (std::isnan(x))
-      x = machine->position.x;
-    if (std::isnan(y))
-      y = machine->position.y;
-    if (std::isnan(z))
-      z = machine->position.z;
+    Vec3D delta;
+    this->extractCoordinates(words, delta.x, delta.y, delta.z);
+    this->applyCurrentPositionDefaults(delta);
 
     Command command = (arg == 0)   ? move_rapid
                       : (arg == 1) ? move_linear
                                    : set_origin_offsets;
 
-    return {.command = command, .arguments = {x, y, z}};
+    return {.command = command, .arguments = {delta.x, delta.y, delta.z}};
   }
 
   case 2:
   case 3: {
-    f64 x, y, z, i, j, k, r;
-    extractArcParams(words, x, y, z, i, j, k, r);
+    Vec3D delta;
+    f64 i, j, k, r;
+    this->extractArcParams(words, delta.x, delta.y, delta.z, i, j, k, r);
 
     REQUIRE_CONDITION(machine->feedRate != 0,
                       "Feed rate should be non-zero for feed_arc to run!");
@@ -188,7 +166,7 @@ gpp::BytecodeEmitter::handle_g(f64 arg, const std::vector<gpp::Word> &words,
         std::string("Arc isn't aligned to the current plane, i.e. the ") +
             machine->planeToString(machine->plane) + " plane.");
 
-    applyCurrentPositionDefaults(x, y, z, machine->position);
+    this->applyCurrentPositionDefaults(delta);
     if (std::isnan(i))
       i = 0;
     if (std::isnan(j))
@@ -196,24 +174,22 @@ gpp::BytecodeEmitter::handle_g(f64 arg, const std::vector<gpp::Word> &words,
     if (std::isnan(k))
       k = 0;
 
-    f64 x0, y0, x1, y1, xc, yc, z2;
     int rotation = (arg == 2) ? 1 : -1;
 
-    getCurrentPlanePosition(machine->plane, x0, y0, machine->position);
-    getPlaneCoordinates(machine->plane, x, y, z, x1, y1, z2);
-
-    Vec2D a = {x0, y0};
-    Vec2D b = {x1, y1};
+    gpp::Vec2D currentPos =
+        this->getCurrentPlanePosition(machine->plane, machine->position);
+    gpp::Vec2D targetPos = this->getPlaneCoordinates(machine->plane, delta);
+    gpp::Vec2D center;
 
     if (!std::isnan(r)) {
-      Vec2D delta = b - a;
+      gpp::Vec2D delta = targetPos - currentPos;
       f64 len = sqrt(delta.dot(delta));
 
       REQUIRE_CONDITION(len <= 2 * r, "Radius too small for arc!");
 
-      Vec2D midpoint = (a + b) * 0.5;
+      gpp::Vec2D midpoint = (currentPos + targetPos) * 0.5;
       f64 h = sqrt(r * r - (len * len) / 4.0);
-      Vec2D perpendicular = {-delta.y, delta.x};
+      gpp::Vec2D perpendicular = {-delta.y, delta.x};
 
       f64 perpendicularLen = sqrt(perpendicular.x * perpendicular.x +
                                   perpendicular.y * perpendicular.y);
@@ -221,35 +197,30 @@ gpp::BytecodeEmitter::handle_g(f64 arg, const std::vector<gpp::Word> &words,
           perpendicularLen != 0,
           "Invalid arc calculation: zero-length perpendicular vector.");
 
-      perpendicular.x /= perpendicularLen;
-      perpendicular.y /= perpendicularLen;
-
-      Vec2D center = midpoint + perpendicular * h * rotation;
-      xc = center.x;
-      yc = center.y;
+      perpendicular = perpendicular * (1.0 / perpendicularLen);
+      center = midpoint + perpendicular * h * rotation;
     } else {
-      f64 offset_x, offset_y;
-      getArcCenterOffsets(machine->plane, i, j, k, offset_x, offset_y);
-      xc = x0 + offset_x;
-      yc = y0 + offset_y;
+      gpp::Vec2D offset = this->getArcCenterOffsets(machine->plane, i, j, k);
+      center = currentPos + offset;
     }
 
     return {.command = arc_feed,
-            .arguments = {x1, y1, xc, yc, static_cast<f64>(rotation), z2}};
+            .arguments = {targetPos.x, targetPos.y, center.x, center.y,
+                          static_cast<f64>(rotation), delta.z}};
   }
 
   case 4: {
-    f64 p = findParameter(words, 'p');
+    f64 p = this->findParameter(words, 'p');
     REQUIRE_CONDITION(!std::isnan(p),
                       "Missing dwell time (p<>) with signature.");
     return {.command = dwell, .arguments = {p}};
   }
 
   case 10: {
-    f64 l = findParameter(words, 'l');
-    f64 p = findParameter(words, 'p');
+    f64 l = this->findParameter(words, 'l');
+    f64 p = this->findParameter(words, 'p');
     f64 x, y, z;
-    extractCoordinates(words, x, y, z);
+    this->extractCoordinates(words, x, y, z);
     if (std::isnan(x))
       x = 0;
     if (std::isnan(y))
@@ -270,17 +241,21 @@ gpp::BytecodeEmitter::handle_g(f64 arg, const std::vector<gpp::Word> &words,
     break;
   }
 
-    SINGLE_ARG_GCODE_CASE(17, select_plane, plane_xy)
-    SINGLE_ARG_GCODE_CASE(18, select_plane, plane_yz)
-    SINGLE_ARG_GCODE_CASE(19, select_plane, plane_xz)
-    SINGLE_ARG_GCODE_CASE(20, use_length_units, Unit::inch)
-    SINGLE_ARG_GCODE_CASE(21, use_length_units, Unit::mm)
-    SINGLE_ARG_GCODE_CASE(90, use_distance_mode, absolute)
-    SINGLE_ARG_GCODE_CASE(91, use_distance_mode, relative)
+    SINGLE_ARG_GCODE_CASE(17, select_plane, plane_xy);
+    SINGLE_ARG_GCODE_CASE(18, select_plane, plane_yz);
+    SINGLE_ARG_GCODE_CASE(19, select_plane, plane_xz);
+    SINGLE_ARG_GCODE_CASE(20, use_length_units, Unit::inch);
+    SINGLE_ARG_GCODE_CASE(21, use_length_units, Unit::mm);
+    SINGLE_ARG_GCODE_CASE(90, use_distance_mode, absolute);
+    SINGLE_ARG_GCODE_CASE(91, use_distance_mode, relative);
 
   case 43: {
-    f64 h = findParameter(words, 'h');
-    REQUIRE_CONDITION(!std::isnan(h), "Missing offset index (h<>).");
+    f64 h = this->findParameter(words, 'h');
+
+    // this assumes that the tool changer is non-random
+    if (h == 0 || std::isnan(h))
+      h = machine->currentTool;
+
     return {.command = use_tool_length_offset, .arguments = {h}};
   }
 
@@ -300,14 +275,14 @@ gpp::BytecodeEmitter::handle_m(f64 arg, const std::vector<gpp::Word> &words,
   int m_code = static_cast<int>(arg);
 
   switch (m_code) {
-    SIMPLE_GCODE_CASE(0, program_stop)
-    SIMPLE_GCODE_CASE(1, optional_program_stop)
-    SIMPLE_GCODE_CASE(2, program_end)
-    SIMPLE_GCODE_CASE(3, start_spindle_clockwise)
-    SIMPLE_GCODE_CASE(4, start_spindle_counterclockwise)
-    SIMPLE_GCODE_CASE(5, stop_spindle_turning)
-    SIMPLE_GCODE_CASE(6, change_tool)
-    SIMPLE_GCODE_CASE(100, write_parameters_to_file)
+    SIMPLE_GCODE_CASE(0, program_stop);
+    SIMPLE_GCODE_CASE(1, optional_program_stop);
+    SIMPLE_GCODE_CASE(2, program_end);
+    SIMPLE_GCODE_CASE(3, start_spindle_clockwise);
+    SIMPLE_GCODE_CASE(4, start_spindle_counterclockwise);
+    SIMPLE_GCODE_CASE(5, stop_spindle_turning);
+    SIMPLE_GCODE_CASE(6, change_tool);
+    SIMPLE_GCODE_CASE(100, write_parameters_to_file);
 
   default:
     if (m_code > 100) {

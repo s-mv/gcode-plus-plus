@@ -198,22 +198,20 @@ void gpp::Machine::initTools(std::string file) {
 
 void gpp::Machine::move_linear(std::vector<f64> args) {
   Vec3D prev = position;
-  position = resolvePosition(args.at(0), args.at(1), args.at(2));
+  Vec3D delta = {args.at(0), args.at(1), args.at(2)};
+  position = resolvePosition(delta);
 
-  Vec3D logical = getLogicalPosition();
-
-  std::cout << "move_linear" << logical << "\n";
+  std::cout << "move_linear" << delta << "\n";
 
   drawLinesOnPlanes(prev, position);
 }
 
 void gpp::Machine::move_rapid(std::vector<f64> args) {
   Vec3D prev = position;
-  position = resolvePosition(args.at(0), args.at(1), args.at(2));
+  Vec3D delta = {args.at(0), args.at(1), args.at(2)};
+  position = resolvePosition(delta);
 
-  Vec3D logical = getLogicalPosition();
-
-  std::cout << "move_rapid" << logical << "\n";
+  std::cout << "move_rapid" << delta << "\n";
 
   drawLinesOnPlanes(prev, position);
 }
@@ -257,10 +255,10 @@ void gpp::Machine::arc_feed(std::vector<f64> args) {
 
   Vec3D prev = position;
   position = plane == plane_xy
-                 ? resolvePosition(first_end, second_end, axis_end_point)
+                 ? resolvePosition({first_end, second_end, axis_end_point})
              : plane == plane_yz
-                 ? resolvePosition(axis_end_point, first_end, second_end)
-                 : resolvePosition(first_end, axis_end_point, second_end);
+                 ? resolvePosition({axis_end_point, first_end, second_end})
+                 : resolvePosition({first_end, axis_end_point, second_end});
 
   std::cout << "arc_feed(" << first_end << ", " << second_end << ", "
             << first_axis << ", " << second_axis << ", " << rotation << ", "
@@ -469,16 +467,18 @@ gpp::Vec3D gpp::Machine::getLogicalPosition() {
   return position - g92offset - g5xoffset + Vec3D{0, 0, toolOffset};
 }
 
-gpp::Vec3D gpp::Machine::resolvePosition(const f64 x, const f64 y,
-                                         const f64 z) {
-  if (std::isnan(x) && std::isnan(y) && std::isnan(z))
+gpp::Vec3D gpp::Machine::resolvePosition(const Vec3D delta) {
+  if (std::isnan(delta.x) && std::isnan(delta.y) && std::isnan(delta.z))
     return position;
 
   Vec3D currentLogical = getLogicalPosition();
   Vec3D targetLogical = {
-      std::isnan(x) ? (distanceMode == relative ? 0 : currentLogical.x) : x,
-      std::isnan(y) ? (distanceMode == relative ? 0 : currentLogical.y) : y,
-      std::isnan(z) ? (distanceMode == relative ? 0 : currentLogical.z) : z};
+      std::isnan(delta.x) ? (distanceMode == relative ? 0 : currentLogical.x)
+                          : delta.x,
+      std::isnan(delta.y) ? (distanceMode == relative ? 0 : currentLogical.y)
+                          : delta.y,
+      std::isnan(delta.z) ? (distanceMode == relative ? 0 : currentLogical.z)
+                          : delta.z};
 
   targetLogical = targetLogical * unitMultiplier(unit);
 

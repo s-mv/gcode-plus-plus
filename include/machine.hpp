@@ -185,9 +185,8 @@ private:
   const char *unitToString(Unit unit);
   const char *planeToString(Plane plane);
   Vec3D getLogicalPosition();
-  Vec3D resolvePosition(const f64 x, const f64 y, const f64 z);
-  void drawLineOnPlane(Canvas &canvas, gpp::Plane plane, gpp::Vec3D from,
-                       gpp::Vec3D to);
+  Vec3D resolvePosition(Vec3D delta);
+  void drawLineOnPlane(Canvas &canvas, Plane plane, Vec3D from, Vec3D to);
   void drawLinesOnPlanes(Vec3D from, Vec3D to);
 };
 
