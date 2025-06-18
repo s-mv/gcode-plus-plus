@@ -256,6 +256,8 @@ gpp::BytecodeEmitter::handle_g(f64 arg, const std::vector<gpp::Word> &words,
     if (h == 0 || std::isnan(h))
       h = machine->currentTool;
 
+    h = machine->tools.at(h).tlo;
+
     return {.command = use_tool_length_offset, .arguments = {h}};
   }
 

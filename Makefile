@@ -37,7 +37,26 @@ unit: $(OBJECTS) $(ANTLR_OBJECTS) $(UNIT_TEST_FILES)
 	@$(CXX) $(UNIT_TEST_FILES) $(EXTERN)catch2/catch_amalgamated.cpp \
 		$(OBJECTS) $(ANTLR_OBJECTS) -o build/unit $(CXXFLAGS) $(LDFLAGS) $(TEST_INCLUDE)
 	@echo "Running unit tests..."
-	@./build/unit -s
+
+	@echo "Listing and running each test in isolation..."
+	@./build/unit --list-tests --verbosity quiet > .testlist.txt; \
+	total=0; pass=0; fail=0; \
+	while IFS= read -r testname; do \
+		[ -z "$$testname" ] && continue; \
+		echo ">>> Running: $$testname"; \
+		if ./build/unit "$$testname"; then \
+			echo "[PASS] $$testname"; \
+			pass=$$((pass + 1)); \
+		else \
+			echo "[FAIL] $$testname"; \
+			fail=$$((fail + 1)); \
+		fi; \
+		total=$$((total + 1)); \
+	done < .testlist.txt; \
+	rm -f .testlist.txt; \
+	echo "========================="; \
+	echo "Total: $$total | Passed: $$pass | Failed: $$fail"; \
+	test $$fail -eq 0
 
 regression: $(OBJECTS) $(ANTLR_OBJECTS)
 	@echo "Building regression tests..."
@@ -64,7 +83,7 @@ build/%.o: src/%.cpp
 
 clean:
 	@rm -rf ${OBJECTS} $(ANTLR_OBJECTS) build/unit.o build/unit \
-		 build/regression build/regression.o $(EXTERN)antlr4/gen/* build/$(TITLE)
+		build/regression build/regression.o $(EXTERN)antlr4/gen/* build/$(TITLE)
 
 # helper to make new source-header pairs
 name ?= newfile

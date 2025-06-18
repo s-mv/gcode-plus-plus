@@ -13,7 +13,6 @@ bool approx_equal(const std::vector<f64> &a, const std::vector<f64> &b,
     return false;
 
   for (size_t i = 0; i < a.size(); ++i) {
-    std::cout << a.at(i) << " " << b.at(i) << "\n";
     if (std::abs(a.at(i) - b.at(i)) > epsilon)
       return false;
   }

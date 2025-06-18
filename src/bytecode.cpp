@@ -1,6 +1,7 @@
 #include <any>
 #include <cmath>
 #include <cstddef>
+#include <cstdlib>
 #include <string>
 
 #include "bytecode.hpp"

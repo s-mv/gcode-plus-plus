@@ -207,6 +207,11 @@ void gpp::Machine::move_linear(std::vector<f64> args) {
 }
 
 void gpp::Machine::move_rapid(std::vector<f64> args) {
+  std::cout << "arguments are ";
+  for (auto i : args)
+    std::cout << i << " ";
+  std::cout << "\n";
+
   Vec3D prev = position;
   Vec3D delta = {args.at(0), args.at(1), args.at(2)};
   position = resolvePosition(delta);
@@ -372,7 +377,7 @@ void gpp::Machine::program_end(std::vector<f64> args) {
 }
 
 void gpp::Machine::use_tool_length_offset(std::vector<f64> args) {
-  toolOffset = tools.at(args.at(0)).tlo;
+  toolOffset = args.at(0);
   std::cout << "use_tool_length_offset(" << toolOffset << ")\n";
 }
 
