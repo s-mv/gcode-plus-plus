@@ -9,9 +9,8 @@
 #include "gpp.hpp"
 #include "util.hpp"
 
-/// helper
 gpp::Machine::Machine(std::string input)
-    : input(input), emitter(input), canvasXY(512, 512), canvasYZ(512, 512),
+    : input(std::move(input)), emitter(std::move(input)), canvasXY(512, 512), canvasYZ(512, 512),
       canvasXZ(512, 512) {
   this->position = (Vec3D){0, 0, 0};
   this->g92offset = (Vec3D){0, 0, 0};

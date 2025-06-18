@@ -5,7 +5,10 @@
 #include "catch_amalgamated.hpp"
 
 TEST_CASE("m3 m4 m5", "[m-code]") {
-  std::string code = readFile("examples/m3m4m5.cnc");
+  std::string code = "m3 s100\n"
+                     "s300 m4\n"
+                     "m5\n";
+
   gpp::Machine machine(code);
 
   gpp::Instruction instruction;

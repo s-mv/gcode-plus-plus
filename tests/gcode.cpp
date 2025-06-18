@@ -6,7 +6,10 @@
 #include "catch_amalgamated.hpp"
 
 TEST_CASE("g0 g1 g20 g21 g90 g91", "[g-code]") {
-  std::string code = readFile("examples/basic.cnc");
+  std::string code = "g0 g21\n"
+                     "g1 x1 y2 z3 f1200\n"
+                     "g20 g91\n"
+                     "g0 x1 y2 z50\n";
   gpp::Machine machine(code);
 
   gpp::Instruction instruction;
@@ -43,7 +46,10 @@ TEST_CASE("g0 g1 g20 g21 g90 g91", "[g-code]") {
 }
 
 TEST_CASE("g43", "[g-code]") {
-  std::string code = readFile("examples/g43.cnc");
+  std::string code = "g10 p1 l1 z2\n"
+                     "t1 m6\n"
+                     "g43 h1\n"
+                     "g0 z0\n";
   gpp::Machine machine(code);
 
   gpp::Instruction instruction;
@@ -72,7 +78,9 @@ TEST_CASE("g43", "[g-code]") {
 }
 
 TEST_CASE("g54-59", "[g-code]") {
-  std::string code = readFile("examples/g5x.cnc");
+  std::string code = "g10 p2 l2 x100 z10\n"
+                     "g55\n"
+                     "g0 x10 y10\n";
   gpp::Machine machine(code);
 
   gpp::Instruction instruction;
@@ -96,7 +104,14 @@ TEST_CASE("g54-59", "[g-code]") {
 }
 
 TEST_CASE("g2 g3", "[g-code]") {
-  std::string code = readFile("examples/g2g3.cnc");
+  std::string code = "f600\n"
+                     "g0 x0 y0 z0\n"
+                     "g2 x2 r1\n"
+                     "g3 x0 r1\n"
+                     "g0 x0 y0 z0\n"
+                     "g2 x2 y2 i1 j1\n"
+                     "g3 x0 y0 i-1 j-1\n";
+
   gpp::Machine machine(code);
 
   gpp::Instruction instruction;

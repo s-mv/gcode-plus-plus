@@ -42,7 +42,6 @@ struct gpp::ExecutionFrame {
 class gpp::BytecodeEmitter : public parser_antlr4BaseVisitor {
 private:
   char word;
-  std::vector<u8> modes; // TODO
   std::vector<Word> words;
 
   std::queue<Instruction> bytecode;
