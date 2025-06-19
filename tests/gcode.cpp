@@ -6,7 +6,7 @@
 #include "catch_amalgamated.hpp"
 
 TEST_CASE("g0 g1 g20 g21 g90 g91", "[g-code]") {
-  std::string code = "g0 g21\n"
+  std::string code = "g21\n"
                      "g1 x1 y2 z3 f1200\n"
                      "g20 g91\n"
                      "g0 x1 y2 z50\n";

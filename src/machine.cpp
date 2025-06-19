@@ -10,8 +10,8 @@
 #include "util.hpp"
 
 gpp::Machine::Machine(std::string input)
-    : input(std::move(input)), emitter(std::move(input)), canvasXY(512, 512), canvasYZ(512, 512),
-      canvasXZ(512, 512) {
+    : input(std::move(input)), emitter(std::move(input)), canvasXY(512, 512),
+      canvasYZ(512, 512), canvasXZ(512, 512) {
   this->position = (Vec3D){0, 0, 0};
   this->g92offset = (Vec3D){0, 0, 0};
   this->unit = Unit::mm;
@@ -206,11 +206,6 @@ void gpp::Machine::move_linear(std::vector<f64> args) {
 }
 
 void gpp::Machine::move_rapid(std::vector<f64> args) {
-  std::cout << "arguments are ";
-  for (auto i : args)
-    std::cout << i << " ";
-  std::cout << "\n";
-
   Vec3D prev = position;
   Vec3D delta = {args.at(0), args.at(1), args.at(2)};
   position = resolvePosition(delta);

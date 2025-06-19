@@ -176,6 +176,16 @@ private:
   void set_wcs_coordinates(std::vector<f64> args);
   void use_workspace(std::vector<f64> args);
 
+  void canned_cycle_cancel(std::vector<f64> args);
+  void canned_cycle_drill(std::vector<f64> args);
+  void canned_cycle_dwell_drill(std::vector<f64> args);
+  void canned_cycle_peck_drill(std::vector<f64> args);
+  void canned_cycle_tap(std::vector<f64> args);
+  void canned_cycle_bore(std::vector<f64> args);
+  void canned_cycle_back_bore(std::vector<f64> args);
+  void canned_cycle_bore_manual(std::vector<f64> args);
+  void canned_cycle_bore_dwell(std::vector<f64> args);
+
   /*** this is temporary ***/
   void write_parameter_to_file(std::vector<f64> args);
   void write_parameters_to_file(std::vector<f64> args);

@@ -27,6 +27,16 @@ struct gpp::Instruction {
   std::vector<f64> arguments;
 };
 
+struct VerboseInstruction {
+  char word;
+  f64 arg;
+  bool commentOrMessage;
+  gpp::Instruction command;
+};
+
+bool compareVerboseInstructions(const VerboseInstruction &a,
+                                const VerboseInstruction &b);
+
 struct gpp::ExecutionFrame {
   parser_antlr4::BlockContext *block;
   i64 linePointer;
@@ -127,11 +137,11 @@ private:
   //   helpers
   std::string getLineFromSource(int target);
   bool arcOffetsAligned(const Plane currentPlane, f64 i, f64 j, f64 k);
-  Instruction handle_g(f64 arg, const std::vector<Word> &words, int line,
-                       int column);
+  void handle_g(std::vector<VerboseInstruction> &list, f64 arg,
+                const std::vector<Word> &words, int line, int column);
 
-  Instruction handle_m(f64 arg, const std::vector<Word> &words, int line,
-                       int column);
+  void handle_m(std::vector<VerboseInstruction> &list, f64 arg,
+                const std::vector<Word> &words, int line, int column);
 
   // helpers for instructions.cpp
   inline void applyCurrentPositionDefaults(Vec3D &delta);

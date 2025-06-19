@@ -1,6 +1,7 @@
 #include "bytecode.hpp"
 #include "machine.hpp"
 #include <cmath>
+#include <vector>
 
 // I don't particularly like macros but that's life
 #define GCODE_ERROR(message)                                                   \
@@ -120,19 +121,26 @@ gpp::BytecodeEmitter::getArcCenterOffsets(const gpp::Plane plane, f64 i, f64 j,
   return {0, 0}; // fallback
 }
 
-#define SIMPLE_GCODE_CASE(code, cmd)                                           \
+#define SIMPLE_MCODE_CASE(code, cmd)                                           \
   case code:                                                                   \
-    return { .command = cmd }
+    list.push_back({.word = 'm',                                               \
+                    .arg = code,                                               \
+                    .commentOrMessage = false,                                 \
+                    .command = {.command = cmd}});                             \
+    break;
 
 #define SINGLE_ARG_GCODE_CASE(code, cmd, arg_val)                              \
   case code:                                                                   \
-    return {                                                                   \
-      .command = cmd, .arguments = { arg_val }                                 \
-    }
+    list.push_back({.word = 'g',                                               \
+                    .arg = code,                                               \
+                    .commentOrMessage = false,                                 \
+                    .command = {.command = cmd, .arguments = {arg_val}}});     \
+    break;
 
-gpp::Instruction
-gpp::BytecodeEmitter::handle_g(f64 arg, const std::vector<gpp::Word> &words,
-                               int line, int column) {
+void gpp::BytecodeEmitter::handle_g(std::vector<VerboseInstruction> &list,
+                                    f64 arg,
+                                    const std::vector<gpp::Word> &words,
+                                    int line, int column) {
   switch (static_cast<int>(arg)) {
   case 0:
   case 1:
@@ -145,7 +153,13 @@ gpp::BytecodeEmitter::handle_g(f64 arg, const std::vector<gpp::Word> &words,
                       : (arg == 1) ? move_linear
                                    : set_origin_offsets;
 
-    return {.command = command, .arguments = {delta.x, delta.y, delta.z}};
+    list.push_back({.word = 'g',
+                    .arg = arg,
+                    .commentOrMessage = false,
+                    .command = {.command = command,
+                                .arguments = {delta.x, delta.y, delta.z}}});
+
+    break;
   }
 
   case 2:
@@ -204,18 +218,28 @@ gpp::BytecodeEmitter::handle_g(f64 arg, const std::vector<gpp::Word> &words,
       center = currentPos + offset;
     }
 
-    return {.command = arc_feed,
-            .arguments = {targetPos.x, targetPos.y, center.x, center.y,
-                          static_cast<f64>(rotation), delta.z}};
+    list.push_back(
+        {.word = 'g',
+         .arg = arg,
+         .commentOrMessage = false,
+         .command = {.command = arc_feed,
+                     .arguments = {targetPos.x, targetPos.y, center.x, center.y,
+                                   static_cast<f64>(rotation), delta.z}}});
+
+    break;
   }
 
   case 4: {
     f64 p = this->findParameter(words, 'p');
     REQUIRE_CONDITION(!std::isnan(p),
                       "Missing dwell time (p<>) with signature.");
-    return {.command = dwell, .arguments = {p}};
-  }
 
+    list.push_back({.word = 'g',
+                    .arg = arg,
+                    .commentOrMessage = false,
+                    .command = {.command = dwell, .arguments = {p}}});
+    break;
+  }
   case 10: {
     f64 l = this->findParameter(words, 'l');
     f64 p = this->findParameter(words, 'p');
@@ -229,15 +253,29 @@ gpp::BytecodeEmitter::handle_g(f64 arg, const std::vector<gpp::Word> &words,
       z = 0;
 
     if (l == 1) {
-      return {.command = set_tool_length_offset, .arguments = {p, z}};
+      list.push_back({.word = 'g',
+                      .arg = arg,
+                      .commentOrMessage = false,
+                      .command = {.command = set_tool_length_offset,
+                                  .arguments = {p, z}}});
     } else if (l == 2) {
       int pi = static_cast<int>(p);
       REQUIRE_CONDITION(pi >= 1 && pi <= 6, "Invalid coordinate system number");
-      return {.command = set_wcs_coordinates, .arguments = {p, x, y, z}};
+
+      list.push_back({.word = 'g',
+                      .arg = arg,
+                      .commentOrMessage = false,
+                      .command = {.command = set_wcs_coordinates,
+                                  .arguments = {p, x, y, z}}});
     } else if (l == 20) {
       // TODO
-      return {.command = no_command};
+
+      list.push_back({.word = 'g',
+                      .arg = arg,
+                      .commentOrMessage = false,
+                      .command = {.command = no_command}});
     }
+
     break;
   }
 
@@ -258,40 +296,51 @@ gpp::BytecodeEmitter::handle_g(f64 arg, const std::vector<gpp::Word> &words,
 
     h = machine->tools.at(h).tlo;
 
-    return {.command = use_tool_length_offset, .arguments = {h}};
+    list.push_back(
+        {.word = 'g',
+         .arg = arg,
+         .commentOrMessage = false,
+         .command = {.command = use_tool_length_offset, .arguments = {h}}});
+
+    break;
   }
 
   default:
     if (arg >= 54 && arg <= 59) {
-      return {.command = use_workspace, .arguments = {arg - 53}};
+      list.push_back(
+          {.word = 'g',
+           .arg = arg,
+           .commentOrMessage = false,
+           .command = {.command = use_workspace, .arguments = {arg - 53}}});
     }
     break;
   }
-
-  return {.command = no_command};
 }
 
-gpp::Instruction
-gpp::BytecodeEmitter::handle_m(f64 arg, const std::vector<gpp::Word> &words,
-                               int line, int column) {
+void gpp::BytecodeEmitter::handle_m(std::vector<VerboseInstruction> &list,
+                                    f64 arg,
+                                    const std::vector<gpp::Word> &words,
+                                    int line, int column) {
   int m_code = static_cast<int>(arg);
 
   switch (m_code) {
-    SIMPLE_GCODE_CASE(0, program_stop);
-    SIMPLE_GCODE_CASE(1, optional_program_stop);
-    SIMPLE_GCODE_CASE(2, program_end);
-    SIMPLE_GCODE_CASE(3, start_spindle_clockwise);
-    SIMPLE_GCODE_CASE(4, start_spindle_counterclockwise);
-    SIMPLE_GCODE_CASE(5, stop_spindle_turning);
-    SIMPLE_GCODE_CASE(6, change_tool);
-    SIMPLE_GCODE_CASE(100, write_parameters_to_file);
+    SIMPLE_MCODE_CASE(0, program_stop);
+    SIMPLE_MCODE_CASE(1, optional_program_stop);
+    SIMPLE_MCODE_CASE(2, program_end);
+    SIMPLE_MCODE_CASE(3, start_spindle_clockwise);
+    SIMPLE_MCODE_CASE(4, start_spindle_counterclockwise);
+    SIMPLE_MCODE_CASE(5, stop_spindle_turning);
+    SIMPLE_MCODE_CASE(6, change_tool);
+    SIMPLE_MCODE_CASE(100, write_parameters_to_file);
 
   default:
     if (m_code > 100) {
-      return {.command = write_parameter_to_file, .arguments = {arg - 100}};
+      list.push_back({.word = 'm',
+                      .arg = arg,
+                      .commentOrMessage = false,
+                      .command = {.command = write_parameter_to_file,
+                                  .arguments = {arg - 100}}});
     }
     break;
   }
-
-  return {.command = no_command};
 }

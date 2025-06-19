@@ -13,8 +13,8 @@
 #include "util.hpp"
 
 gpp::BytecodeEmitter::BytecodeEmitter(std::string input)
-    : source(std::move(input)), inputStream(source), lexer(&inputStream), tokens(&lexer),
-      parser(&tokens) {
+    : source(std::move(input)), inputStream(source), lexer(&inputStream),
+      tokens(&lexer), parser(&tokens) {
   executionStack.push({.block = parser.block(), .linePointer = 0});
 }
 

@@ -13,13 +13,6 @@
 
 #define modal_groups_len (16)
 
-struct VerboseInstruction {
-  char word;
-  f64 arg;
-  bool commentOrMessage;
-  gpp::Instruction command;
-};
-
 const f64 *modal_groups[modal_groups_len] = {
     (const f64[]){4, 10, 28, 30, 52, 53, 92, 92.1, 92.2, 92.3, -1},
     (const f64[]){0, 1, 2, 3, 33, 38, 73, 76, 80, 81, 82, 83, 84, 85, 86, 87,
@@ -46,8 +39,6 @@ const f64 *modal_groups[modal_groups_len] = {
 
 // helpers
 f64 findModalGroup(f64 code);
-bool compareVerboseInstructions(const VerboseInstruction &a,
-                                const VerboseInstruction &b);
 int getInstructionPriority(VerboseInstruction instruction);
 
 antlrcpp::Any
@@ -90,20 +81,14 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
     };
 
     if (word.word == 'g') {
-      Instruction instruction = handle_g(word.arg, words, line, column);
-      if (instruction.command != gpp::Command::no_command)
-        verboseInstruction.command = instruction;
-      else
-        continue;
+      handle_g(verboseInstructions, word.arg, words, line, column);
+      continue;
     } else if (word.word == 'f') {
       verboseInstruction.command = {.command = set_feed_rate,
                                     .arguments = {word.arg}};
     } else if (word.word == 'm') {
-      Instruction instruction = handle_m(word.arg, words, line, column);
-      if (instruction.command != gpp::Command::no_command)
-        verboseInstruction.command = instruction;
-      else
-        continue;
+      handle_m(verboseInstructions, word.arg, words, line, column);
+      continue;
     } else if (word.word == 's') {
       if (word.arg < 0) {
         std::ostringstream error;
