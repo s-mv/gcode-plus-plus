@@ -1,5 +1,8 @@
+#define smv_gpp_testing
+
 #include "bytecode.hpp"
 #include "lexer_antlr4.h"
+#include "machine.hpp"
 #include "parser_antlr4.h"
 #include "util.hpp"
 
@@ -24,8 +27,8 @@ TEST_CASE("basic arithmetic", "[calculation]") {
 
     parser_antlr4::ExpressionContext *tree = parser.expression();
 
-    gpp::BytecodeEmitter emitter(input);
-    f64 result = std::any_cast<f64>(emitter.visit(tree));
+    gpp::Machine machine(input);
+    f64 result = std::any_cast<f64>(machine.emitter.visit(tree));
 
     REQUIRE(result == Catch::Approx(expected_results[i]));
   }
@@ -47,8 +50,8 @@ TEST_CASE("trigonometric functions", "[calculation]") {
 
     parser_antlr4::ExpressionContext *tree = parser.expression();
 
-    gpp::BytecodeEmitter emitter(input);
-    f64 result = std::any_cast<f64>(emitter.visit(tree));
+    gpp::Machine machine(input);
+    f64 result = std::any_cast<f64>(machine.emitter.visit(tree));
 
     REQUIRE(result == Catch::Approx(expected_results[i]));
   }
