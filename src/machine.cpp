@@ -10,17 +10,17 @@
 #include "util.hpp"
 
 gpp::Machine::Machine(std::string input)
-    : input(std::move(input)), emitter(std::move(input)), canvasXY(512, 512),
-      canvasYZ(512, 512), canvasXZ(512, 512) {
-  this->position = (Vec3D){0, 0, 0};
-  this->g92offset = (Vec3D){0, 0, 0};
-  this->unit = Unit::mm;
-  this->distanceMode = absolute;
-  this->plane = plane_xy;
-  this->feedRate = 0;
-  this->spindleDirection = off;
-  this->spindleSpeed = 0;
-  this->emitter.machine = this;
+    : emitter(*this), input(input), canvasXY(512, 512), canvasYZ(512, 512),
+      canvasXZ(512, 512) {
+  position = (Vec3D){0, 0, 0};
+  g92offset = (Vec3D){0, 0, 0};
+  unit = Unit::mm;
+  distanceMode = absolute;
+  plane = plane_xy;
+  feedRate = 0;
+  spindleDirection = off;
+  spindleSpeed = 0;
+
   initTools("config/tools.txt");
 
   std::cout << "Initialized machine!\n";

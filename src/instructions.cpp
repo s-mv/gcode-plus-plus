@@ -331,6 +331,36 @@ void gpp::BytecodeEmitter::handle_m(std::vector<VerboseInstruction> &list,
     SIMPLE_MCODE_CASE(4, start_spindle_counterclockwise);
     SIMPLE_MCODE_CASE(5, stop_spindle_turning);
     SIMPLE_MCODE_CASE(6, change_tool);
+
+  case 98: {
+    u64 p = this->findParameter(words, 'p');
+
+    ExecutionFrame frame;
+    executionStack.push({
+        .block = subroutines.at(p)->block(),
+        .linePointer = 0,
+        .whileLoopCondition = nullptr,
+        .start = 0,
+        .end = 0,
+    });
+    break;
+  }
+
+  case 99: {
+    if (bytecode.empty())
+      break;
+
+    if (executionStack.size() == 1) {
+      prettyPrintError("Return from subroutine without subroutine call!",
+                       getLineFromSource(line), line, column);
+      exit(1);
+    }
+
+    executionStack.pop();
+
+    break;
+  }
+
     SIMPLE_MCODE_CASE(100, write_parameters_to_file);
 
   default:

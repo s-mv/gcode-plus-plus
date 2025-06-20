@@ -12,10 +12,32 @@
 #include "support/Any.h"
 #include "util.hpp"
 
-gpp::BytecodeEmitter::BytecodeEmitter(std::string input)
-    : source(std::move(input)), inputStream(source), lexer(&inputStream),
+gpp::BytecodeEmitter::BytecodeEmitter(gpp::Machine &machine)
+    : inputStream(machine.input), machine(&machine), lexer(&inputStream),
       tokens(&lexer), parser(&tokens) {
   executionStack.push({.block = parser.block(), .linePointer = 0});
+  preprocess(executionStack.top().block);
+}
+
+void gpp::BytecodeEmitter::preprocess(parser_antlr4::BlockContext *block) {
+  for (parser_antlr4::StatementContext *statement : block->statement()) {
+    if (statement->subroutine()) {
+      parser_antlr4::SubroutineContext *subroutine = statement->subroutine();
+      f64 address = std::any_cast<f64>(visit(subroutine->real_value()));
+      subroutines.insert({address, subroutine});
+      preprocess(subroutine->block());
+    } else if (statement->if_statement()) {
+      for (auto block : statement->if_statement()->block()) {
+        preprocess(block);
+      }
+    } else if (statement->while_statement()) {
+      preprocess(statement->while_statement()->block());
+    } else if (statement->do_while_statement()) {
+      preprocess(statement->do_while_statement()->block());
+    } else if (statement->for_statement()) {
+      preprocess(statement->for_statement()->block());
+    }
+  }
 }
 
 gpp::Instruction gpp::BytecodeEmitter::next() {
@@ -122,6 +144,37 @@ gpp::Instruction gpp::BytecodeEmitter::next() {
   Instruction front = bytecode.front();
   bytecode.pop();
   return front;
+}
+
+antlrcpp::Any gpp::BytecodeEmitter::visitSubroutine(
+    parser_antlr4::SubroutineContext *context) {
+  if (subroutineEncountered) {
+    int line = context->getStart()->getLine();
+    int column = context->getStart()->getCharPositionInLine();
+
+    prettyPrintError("Nested subroutines aren't allowed!",
+                     getLineFromSource(line), line, column);
+    exit(0);
+  }
+
+  // TODO, check if the subroutine has an unconditional M99 at the end
+  // if (!containsUnconditionalM99(context->block())) {
+  //   int line = context->getStart()->getLine();
+  //   int column = context->getStart()->getCharPositionInLine();
+  //   prettyPrintError("Subroutine may not return (missing unconditional
+  //   M99).",
+  //                    getLineFromSource(line), line, column);
+  //   exit(1);
+  // }
+
+  subroutineEncountered = true;
+
+  f64 address = std::any_cast<f64>(visit(context->real_value()));
+  subroutines.insert({address, context});
+
+  subroutineEncountered = false;
+
+  return nullptr;
 }
 
 antlrcpp::Any
@@ -325,7 +378,7 @@ antlrcpp::Any gpp::BytecodeEmitter::visitParameter_setting(
 }
 
 std::string gpp::BytecodeEmitter::getLineFromSource(int target) {
-  std::istringstream stream(source);
+  std::istringstream stream(machine->input);
   std::string line;
   int currentLine = 1;
   while (std::getline(stream, line)) {
@@ -334,4 +387,50 @@ std::string gpp::BytecodeEmitter::getLineFromSource(int target) {
     currentLine++;
   }
   return "(source line not available)";
+}
+
+bool gpp::BytecodeEmitter::lineHasM99(parser_antlr4::StatementContext *stmt) {
+  auto line = dynamic_cast<parser_antlr4::LineContext *>(stmt);
+  if (!line)
+    return false;
+
+  for (auto seg : line->segment()) {
+    if (seg->getText() == "M99") {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool gpp::BytecodeEmitter::ifStatementAlwaysReturns(
+    parser_antlr4::If_statementContext *context) {
+  bool allReturn = containsUnconditionalM99(context->block(0));
+
+  size_t elifs = context->IF().size() - 1;
+  for (size_t i = 0; i < elifs; ++i) {
+    allReturn = allReturn && containsUnconditionalM99(context->block(i + 1));
+  }
+
+  if (context->ELSE().size() == elifs + 1) {
+    allReturn = allReturn && containsUnconditionalM99(context->block().back());
+  } else {
+    return false;
+  }
+
+  return allReturn;
+}
+
+bool gpp::BytecodeEmitter::containsUnconditionalM99(
+    parser_antlr4::BlockContext *context) {
+  for (auto stmt : context->statement()) {
+    if (lineHasM99(stmt))
+      return true;
+
+    if (auto ifstmt =
+            dynamic_cast<parser_antlr4::If_statementContext *>(stmt)) {
+      if (ifStatementAlwaysReturns(ifstmt))
+        return true;
+    }
+  }
+  return false;
 }

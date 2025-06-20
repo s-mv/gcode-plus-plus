@@ -22,6 +22,12 @@ public:
   virtual void enterStatement(parser_antlr4::StatementContext * /*ctx*/) override { }
   virtual void exitStatement(parser_antlr4::StatementContext * /*ctx*/) override { }
 
+  virtual void enterSubroutine(parser_antlr4::SubroutineContext * /*ctx*/) override { }
+  virtual void exitSubroutine(parser_antlr4::SubroutineContext * /*ctx*/) override { }
+
+  virtual void enterM99(parser_antlr4::M99Context * /*ctx*/) override { }
+  virtual void exitM99(parser_antlr4::M99Context * /*ctx*/) override { }
+
   virtual void enterLine(parser_antlr4::LineContext * /*ctx*/) override { }
   virtual void exitLine(parser_antlr4::LineContext * /*ctx*/) override { }
 

@@ -20,6 +20,12 @@ public:
   virtual void enterStatement(parser_antlr4::StatementContext *ctx) = 0;
   virtual void exitStatement(parser_antlr4::StatementContext *ctx) = 0;
 
+  virtual void enterSubroutine(parser_antlr4::SubroutineContext *ctx) = 0;
+  virtual void exitSubroutine(parser_antlr4::SubroutineContext *ctx) = 0;
+
+  virtual void enterM99(parser_antlr4::M99Context *ctx) = 0;
+  virtual void exitM99(parser_antlr4::M99Context *ctx) = 0;
+
   virtual void enterLine(parser_antlr4::LineContext *ctx) = 0;
   virtual void exitLine(parser_antlr4::LineContext *ctx) = 0;
 

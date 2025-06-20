@@ -23,6 +23,10 @@ public:
 
     virtual std::any visitStatement(parser_antlr4::StatementContext *context) = 0;
 
+    virtual std::any visitSubroutine(parser_antlr4::SubroutineContext *context) = 0;
+
+    virtual std::any visitM99(parser_antlr4::M99Context *context) = 0;
+
     virtual std::any visitLine(parser_antlr4::LineContext *context) = 0;
 
     virtual std::any visitIf_statement(parser_antlr4::If_statementContext *context) = 0;

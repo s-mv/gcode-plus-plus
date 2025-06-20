@@ -13,28 +13,29 @@ class  parser_antlr4 : public antlr4::Parser {
 public:
   enum {
     IF = 1, THEN = 2, DO = 3, WHILE = 4, FOR = 5, FROM = 6, TO = 7, ELSE = 8, 
-    END = 9, BREAK = 10, CONTINUE = 11, DIGIT = 12, LETTER = 13, PLUS = 14, 
-    MINUS = 15, DOT = 16, LEFT_BRACKET = 17, RIGHT_BRACKET = 18, POWER = 19, 
-    SLASH = 20, MODULO = 21, TIMES = 22, LOGICAL_AND = 23, EXCLUSIVE_OR = 24, 
-    NON_EXCLUSIVE_OR = 25, EQ = 26, NE = 27, LT = 28, LE = 29, GT = 30, 
-    GE = 31, ABSOLUTE_VALUE = 32, ARC_COSINE = 33, ARC_SINE = 34, COSINE = 35, 
-    E_RAISED_TO = 36, FIX_DOWN = 37, FIX_UP = 38, NATURAL_LOG_OF = 39, ROUND_OPERATION = 40, 
-    SINE = 41, SQUARE_ROOT = 42, TANGENT = 43, ARC_TANGENT = 44, PARAMETER_SIGN = 45, 
-    EQUAL_SIGN = 46, COMMENT = 47, NAMED_PARAMETER = 48, EOL = 49, WS = 50
+    END = 9, ENDIF = 10, ENDWHILE = 11, ENDFOR = 12, BREAK = 13, CONTINUE = 14, 
+    SUBROUTINE = 15, M99 = 16, DIGIT = 17, LETTER = 18, PLUS = 19, MINUS = 20, 
+    DOT = 21, LEFT_BRACKET = 22, RIGHT_BRACKET = 23, POWER = 24, SLASH = 25, 
+    MODULO = 26, TIMES = 27, LOGICAL_AND = 28, EXCLUSIVE_OR = 29, NON_EXCLUSIVE_OR = 30, 
+    EQ = 31, NE = 32, LT = 33, LE = 34, GT = 35, GE = 36, ABSOLUTE_VALUE = 37, 
+    ARC_COSINE = 38, ARC_SINE = 39, COSINE = 40, E_RAISED_TO = 41, FIX_DOWN = 42, 
+    FIX_UP = 43, NATURAL_LOG_OF = 44, ROUND_OPERATION = 45, SINE = 46, SQUARE_ROOT = 47, 
+    TANGENT = 48, ARC_TANGENT = 49, PARAMETER_SIGN = 50, EQUAL_SIGN = 51, 
+    COMMENT = 52, NAMED_PARAMETER = 53, EOL = 54, WS = 55
   };
 
   enum {
-    RuleBlock = 0, RuleStatement = 1, RuleLine = 2, RuleIf_statement = 3, 
-    RuleWhile_statement = 4, RuleDo_while_statement = 5, RuleFor_statement = 6, 
-    RuleBreak_statement = 7, RuleContinue_statement = 8, RuleBlock_delete = 9, 
-    RuleLine_number = 10, RuleSegment = 11, RuleMid_line_word = 12, RuleMid_line_letter = 13, 
-    RuleReal_value = 14, RuleReal_number = 15, RuleExpression = 16, RuleLogical_or_expression = 17, 
-    RuleLogical_xor_expression = 18, RuleLogical_and_expression = 19, RuleEquality_expression = 20, 
-    RuleRelational_expression = 21, RuleAdditive_expression = 22, RuleMultiplicative_expression = 23, 
-    RulePower_expression = 24, RuleUnary_expression = 25, RulePrimary = 26, 
-    RuleUnary_combo = 27, RuleOrdinary_unary_combo = 28, RuleOrdinary_unary_operation = 29, 
-    RuleArc_tangent_combo = 30, RuleParameter_setting = 31, RuleParameter_value = 32, 
-    RuleComment = 33
+    RuleBlock = 0, RuleStatement = 1, RuleSubroutine = 2, RuleM99 = 3, RuleLine = 4, 
+    RuleIf_statement = 5, RuleWhile_statement = 6, RuleDo_while_statement = 7, 
+    RuleFor_statement = 8, RuleBreak_statement = 9, RuleContinue_statement = 10, 
+    RuleBlock_delete = 11, RuleLine_number = 12, RuleSegment = 13, RuleMid_line_word = 14, 
+    RuleMid_line_letter = 15, RuleReal_value = 16, RuleReal_number = 17, 
+    RuleExpression = 18, RuleLogical_or_expression = 19, RuleLogical_xor_expression = 20, 
+    RuleLogical_and_expression = 21, RuleEquality_expression = 22, RuleRelational_expression = 23, 
+    RuleAdditive_expression = 24, RuleMultiplicative_expression = 25, RulePower_expression = 26, 
+    RuleUnary_expression = 27, RulePrimary = 28, RuleUnary_combo = 29, RuleOrdinary_unary_combo = 30, 
+    RuleOrdinary_unary_operation = 31, RuleArc_tangent_combo = 32, RuleParameter_setting = 33, 
+    RuleParameter_value = 34, RuleComment = 35
   };
 
   explicit parser_antlr4(antlr4::TokenStream *input);
@@ -56,6 +57,8 @@ public:
 
   class BlockContext;
   class StatementContext;
+  class SubroutineContext;
+  class M99Context;
   class LineContext;
   class If_statementContext;
   class While_statementContext;
@@ -116,6 +119,7 @@ public:
     For_statementContext *for_statement();
     Break_statementContext *break_statement();
     Continue_statementContext *continue_statement();
+    SubroutineContext *subroutine();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -125,6 +129,41 @@ public:
   };
 
   StatementContext* statement();
+
+  class  SubroutineContext : public antlr4::ParserRuleContext {
+  public:
+    SubroutineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *SUBROUTINE();
+    Real_valueContext *real_value();
+    BlockContext *block();
+    M99Context *m99();
+    std::vector<antlr4::tree::TerminalNode *> EOL();
+    antlr4::tree::TerminalNode* EOL(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  SubroutineContext* subroutine();
+
+  class  M99Context : public antlr4::ParserRuleContext {
+  public:
+    M99Context(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *M99();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  M99Context* m99();
 
   class  LineContext : public antlr4::ParserRuleContext {
   public:
@@ -154,13 +193,12 @@ public:
     antlr4::tree::TerminalNode* IF(size_t i);
     std::vector<ExpressionContext *> expression();
     ExpressionContext* expression(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> THEN();
-    antlr4::tree::TerminalNode* THEN(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> EOL();
-    antlr4::tree::TerminalNode* EOL(size_t i);
     std::vector<BlockContext *> block();
     BlockContext* block(size_t i);
+    antlr4::tree::TerminalNode *ENDIF();
     antlr4::tree::TerminalNode *END();
+    std::vector<antlr4::tree::TerminalNode *> EOL();
+    antlr4::tree::TerminalNode* EOL(size_t i);
     std::vector<antlr4::tree::TerminalNode *> ELSE();
     antlr4::tree::TerminalNode* ELSE(size_t i);
 
@@ -179,8 +217,8 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *WHILE();
     ExpressionContext *expression();
-    antlr4::tree::TerminalNode *DO();
     BlockContext *block();
+    antlr4::tree::TerminalNode *ENDWHILE();
     antlr4::tree::TerminalNode *END();
     std::vector<antlr4::tree::TerminalNode *> EOL();
     antlr4::tree::TerminalNode* EOL(size_t i);
@@ -202,7 +240,6 @@ public:
     BlockContext *block();
     antlr4::tree::TerminalNode *WHILE();
     ExpressionContext *expression();
-    antlr4::tree::TerminalNode *END();
     std::vector<antlr4::tree::TerminalNode *> EOL();
     antlr4::tree::TerminalNode* EOL(size_t i);
 
@@ -227,6 +264,7 @@ public:
     antlr4::tree::TerminalNode *TO();
     antlr4::tree::TerminalNode *DO();
     BlockContext *block();
+    antlr4::tree::TerminalNode *ENDFOR();
     antlr4::tree::TerminalNode *END();
     std::vector<antlr4::tree::TerminalNode *> EOL();
     antlr4::tree::TerminalNode* EOL(size_t i);
@@ -308,6 +346,7 @@ public:
     Mid_line_wordContext *mid_line_word();
     Parameter_settingContext *parameter_setting();
     CommentContext *comment();
+    M99Context *m99();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

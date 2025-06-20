@@ -15,8 +15,14 @@ FROM : F R O M ;
 TO : T O ;
 ELSE : E L S E ;
 END : E N D ;
+ENDIF : E N D I F ;
+ENDWHILE : E N D W H I L E ;
+ENDFOR : E N D F O R ;
 BREAK : B R E A K ;
 CONTINUE : C O N T I N U E ;
+
+SUBROUTINE: O;
+M99: M '0'* '9' '9' (DOT '0'+)?;
 
 // <<< language extensions
 

@@ -50,28 +50,34 @@ struct gpp::ExecutionFrame {
 };
 
 class gpp::BytecodeEmitter : public parser_antlr4BaseVisitor {
+  friend class Machine;
+
 private:
   char word;
   std::vector<Word> words;
 
   std::queue<Instruction> bytecode;
 
-  std::string source;
   antlr4::ANTLRInputStream inputStream;
   lexer_antlr4 lexer;
   antlr4::CommonTokenStream tokens;
   parser_antlr4 parser;
 
   std::stack<gpp::ExecutionFrame> executionStack;
+  std::unordered_map<u64, parser_antlr4::SubroutineContext *>
+      subroutines;
 
   std::unordered_map<std::string, f64> parameterAddresses;
   bool breakEncountered = false;
   bool continueEncountered = false;
+  bool subroutineEncountered = false;
 
 public:
   Machine *machine = nullptr;
 
   BytecodeEmitter(std::string input);
+  BytecodeEmitter(Machine &machine);
+  void preprocess(parser_antlr4::BlockContext *block);
   Instruction next();
 
 private:
@@ -113,6 +119,9 @@ private:
       parser_antlr4::Arc_tangent_comboContext *context) override;
 
   antlrcpp::Any
+  visitSubroutine(parser_antlr4::SubroutineContext *context) override;
+
+  antlrcpp::Any
   visitExpression(parser_antlr4::ExpressionContext *context) override;
   antlrcpp::Any visitLogical_or_expression(
       parser_antlr4::Logical_or_expressionContext *context) override;
@@ -142,6 +151,10 @@ private:
 
   void handle_m(std::vector<VerboseInstruction> &list, f64 arg,
                 const std::vector<Word> &words, int line, int column);
+
+  bool lineHasM99(parser_antlr4::StatementContext *stmt);
+  bool ifStatementAlwaysReturns(parser_antlr4::If_statementContext *context);
+  bool containsUnconditionalM99(parser_antlr4::BlockContext *context);
 
   // helpers for instructions.cpp
   inline void applyCurrentPositionDefaults(Vec3D &delta);

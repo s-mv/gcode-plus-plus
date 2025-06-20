@@ -106,6 +106,7 @@ struct gpp::Machine {
   friend class BytecodeEmitter;
 
 private:
+  std::string input;
   BytecodeEmitter emitter;
 
   Vec3D position;       // current position relative to (0, 0, 0)
@@ -125,7 +126,6 @@ private:
   std::unordered_map<int, Tool> tools;
   // (TODO, add some references in comments)
 
-  std::string input;
   std::function<void(std::vector<f64>)> handlers[g_command_len];
 
   Canvas canvasXY, canvasYZ, canvasXZ;

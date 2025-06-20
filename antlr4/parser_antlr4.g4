@@ -24,7 +24,14 @@ statement
     | for_statement
     | break_statement
     | continue_statement
+    | subroutine
     ;
+
+subroutine
+    : SUBROUTINE real_value EOL* block m99
+    ;
+
+m99 : M99 ;
 
 line
     : block_delete? line_number? segment* EOL+
@@ -33,23 +40,23 @@ line
 // >>> extended grammar
 
 if_statement
-    : IF expression THEN EOL block
-      (ELSE IF expression THEN EOL block)*
-      (ELSE EOL block)? END
+    : IF expression EOL* block
+      (ELSE IF expression EOL* block)*
+      (ELSE EOL block)? (ENDIF | END)
     ;
 
 while_statement
-    : WHILE expression DO EOL* block END
+    : WHILE expression EOL* block (ENDWHILE | END)
     ;
 
 do_while_statement
-    : DO EOL* block WHILE expression END
+    : DO EOL* block WHILE expression
     ;
 
 for_statement
     : FOR parameter_value
       FROM expression TO expression DO EOL*
-      block END
+      block (ENDFOR | END)
     ; 
 
 break_statement: BREAK;
@@ -69,6 +76,7 @@ segment
     : mid_line_word
     | parameter_setting
     | comment
+    | m99
     ;
 
 mid_line_word

@@ -23,6 +23,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitSubroutine(parser_antlr4::SubroutineContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitM99(parser_antlr4::M99Context *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitLine(parser_antlr4::LineContext *ctx) override {
     return visitChildren(ctx);
   }
