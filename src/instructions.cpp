@@ -270,10 +270,10 @@ void gpp::BytecodeEmitter::handle_g(std::vector<VerboseInstruction> &list,
     } else if (l == 20) {
       // TODO
 
-      list.push_back({.word = 'g',
-                      .arg = arg,
-                      .commentOrMessage = false,
-                      .command = {.command = no_command}});
+      // list.push_back({.word = 'g',
+      //                 .arg = arg,
+      //                 .commentOrMessage = false,
+      //                 .command = {.command = no_command}});
     }
 
     break;
@@ -284,9 +284,6 @@ void gpp::BytecodeEmitter::handle_g(std::vector<VerboseInstruction> &list,
     SINGLE_ARG_GCODE_CASE(19, select_plane, plane_xz);
     SINGLE_ARG_GCODE_CASE(20, use_length_units, Unit::inch);
     SINGLE_ARG_GCODE_CASE(21, use_length_units, Unit::mm);
-    SINGLE_ARG_GCODE_CASE(90, use_distance_mode, absolute);
-    SINGLE_ARG_GCODE_CASE(91, use_distance_mode, relative);
-
   case 43: {
     f64 h = this->findParameter(words, 'h');
 
@@ -302,6 +299,42 @@ void gpp::BytecodeEmitter::handle_g(std::vector<VerboseInstruction> &list,
          .commentOrMessage = false,
          .command = {.command = use_tool_length_offset, .arguments = {h}}});
 
+    break;
+  }
+
+    SINGLE_ARG_GCODE_CASE(90, use_distance_mode, absolute);
+    SINGLE_ARG_GCODE_CASE(91, use_distance_mode, relative);
+
+    SINGLE_ARG_GCODE_CASE(93, set_feed_mode, inverse_time);
+    SINGLE_ARG_GCODE_CASE(94, set_feed_mode, units_per_minute);
+    SINGLE_ARG_GCODE_CASE(95, set_feed_mode, units_per_revolution);
+
+  case 96: {
+    f64 d = this->findParameter(words, 'd');
+    f64 s = this->findParameter(words, 's');
+
+    if (std::isnan(s))
+      GCODE_ERROR("Missing parameter S<> for G96 command!.");
+
+    list.push_back({.word = 'g',
+                    .arg = 96,
+                    .commentOrMessage = false,
+                    .command = {.command = set_spindle_mode,
+                                .arguments = {constant_surface_speed}}});
+    break;
+  }
+
+  case 97: {
+    f64 s = this->findParameter(words, 's');
+
+    if (std::isnan(s))
+      GCODE_ERROR("Missing parameter S<> for G96 command!.");
+
+    list.push_back(
+        {.word = 'g',
+         .arg = 97,
+         .commentOrMessage = false,
+         .command = {.command = set_spindle_mode, .arguments = {fixed_rpm}}});
     break;
   }
 
@@ -350,14 +383,10 @@ void gpp::BytecodeEmitter::handle_m(std::vector<VerboseInstruction> &list,
     if (bytecode.empty())
       break;
 
-    if (executionStack.size() == 1) {
-      prettyPrintError("Return from subroutine without subroutine call!",
-                       getLineFromSource(line), line, column);
-      exit(1);
-    }
+    REQUIRE_CONDITION(executionStack.size() > 1,
+                      "Return from subroutine without subroutine call!");
 
     executionStack.pop();
-
     break;
   }
 

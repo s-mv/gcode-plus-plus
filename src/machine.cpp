@@ -18,7 +18,9 @@ gpp::Machine::Machine(std::string input)
   distanceMode = absolute;
   plane = plane_xy;
   feedRate = 0;
+  feedMode = units_per_minute;
   spindleDirection = off;
+  spindleMode = fixed_rpm;
   spindleSpeed = 0;
 
   initTools("config/tools.txt");
@@ -30,8 +32,12 @@ gpp::Machine::Machine(std::string input)
       std::bind(&Machine::move_linear, this, std::placeholders::_1);
   handlers[Command::move_rapid] =
       std::bind(&Machine::move_rapid, this, std::placeholders::_1);
+
   handlers[Command::set_feed_rate] =
       std::bind(&Machine::set_feed_rate, this, std::placeholders::_1);
+  handlers[Command::set_feed_mode] =
+      std::bind(&Machine::set_feed_mode, this, std::placeholders::_1);
+
   handlers[Command::use_length_units] =
       std::bind(&Machine::use_length_units, this, std::placeholders::_1);
   handlers[Command::use_distance_mode] =
@@ -54,6 +60,8 @@ gpp::Machine::Machine(std::string input)
       std::bind(&Machine::stop_spindle_turning, this, std::placeholders::_1);
   handlers[Command::set_spindle_speed] =
       std::bind(&Machine::set_spindle_speed, this, std::placeholders::_1);
+  handlers[Command::set_spindle_mode] =
+      std::bind(&Machine::set_spindle_mode, this, std::placeholders::_1);
 
   handlers[Command::select_tool] =
       std::bind(&Machine::select_tool, this, std::placeholders::_1);
@@ -202,6 +210,8 @@ void gpp::Machine::move_linear(std::vector<f64> args) {
 
   std::cout << "move_linear" << delta << "\n";
 
+  handleCSSMode();
+
   drawLinesOnPlanes(prev, position);
 }
 
@@ -212,12 +222,32 @@ void gpp::Machine::move_rapid(std::vector<f64> args) {
 
   std::cout << "move_rapid" << delta << "\n";
 
+  handleCSSMode();
+
   drawLinesOnPlanes(prev, position);
 }
 
 void gpp::Machine::set_feed_rate(std::vector<f64> args) {
-  feedRate = args.at(0);
+  rawFeedRate = args.at(0) * unitMultiplier(unit);
+
+  feedRate = (feedMode == units_per_minute) ? rawFeedRate
+             : (feedMode == inverse_time)
+                 ? 1.0 / rawFeedRate
+                 : rawFeedRate * std::abs(spindleSpeed);
+
   std::cout << "set_feed_rate(" << feedRate << ")\n";
+}
+
+void gpp::Machine::set_feed_mode(std::vector<f64> args) {
+  feedMode = (FeedMode)args.at(0);
+  rawFeedRate = NAN;
+
+  std::cout << "set_feed_mode(";
+  std::cout << (feedMode == units_per_minute
+                    ? "units_per_minute"
+                    : (feedMode == inverse_time ? "inverse_time"
+                                                : "units_per_revolution"));
+  std::cout << ")\n";
 }
 
 void gpp::Machine::use_length_units(std::vector<f64> args) {
@@ -341,8 +371,25 @@ void gpp::Machine::stop_spindle_turning(std::vector<f64> args) {
 }
 
 void gpp::Machine::set_spindle_speed(std::vector<f64> args) {
-  spindleSpeed = args.at(0);
+  rawSpindleSpeed = args.at(0);
+
+  if (spindleMode == constant_surface_speed)
+    handleCSSMode();
+  else
+    spindleSpeed = rawSpindleSpeed;
+
   std::cout << "set_spindle_speed(" << spindleSpeed << ")\n";
+  handleCSSMode();
+}
+
+void gpp::Machine::set_spindle_mode(std::vector<f64> args) {
+  spindleMode = (SpindleMode)args.at(0);
+  std::cout << "set_spindle_mode(";
+  std::cout << (spindleMode == fixed_rpm ? "fixed_rpm"
+                                         : "constant_surface_speed");
+  std::cout << ")\n";
+
+  handleCSSMode();
 }
 
 void gpp::Machine::select_tool(std::vector<f64> args) {
@@ -353,6 +400,7 @@ void gpp::Machine::select_tool(std::vector<f64> args) {
 void gpp::Machine::change_tool(std::vector<f64> args) {
   currentTool = selectedTool;
   std::cout << "change_tool(" << currentTool << ")\n";
+  handleCSSMode();
 }
 
 void gpp::Machine::program_stop(std::vector<f64> args) {
@@ -456,6 +504,40 @@ const char *gpp::Machine::unitToString(Unit unit) {
     return "in";
   }
   return "unknown";
+}
+
+void gpp::Machine::handleCSSMode() {
+  if (spindleMode != constant_surface_speed)
+    return;
+
+  f64 diameter = 0.0;
+
+  if (tools.at(currentTool).diam > 0.0) {
+    diameter = tools[currentTool].diam;
+  } else {
+    Vec3D pos = getLogicalPosition();
+    switch (plane) {
+    case plane_xy:
+      diameter = 2.0 * std::hypot(pos.x, pos.y);
+      break;
+    case plane_yz:
+      diameter = 2.0 * std::hypot(pos.y, pos.z);
+      break;
+    case plane_xz:
+      diameter = 2.0 * std::hypot(pos.x, pos.z);
+      break;
+    }
+  }
+
+  if (diameter > 0.0) {
+    spindleSpeed = (1000.0 * rawSpindleSpeed) / (M_PI * diameter);
+  } else {
+    spindleSpeed = 0.0;
+  }
+
+  if (feedMode == units_per_revolution) {
+    feedRate = rawFeedRate * spindleSpeed;
+  }
 }
 
 const char *gpp::Machine::planeToString(Plane plane) {

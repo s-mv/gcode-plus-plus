@@ -151,3 +151,33 @@ TEST_CASE("g2 g3", "[g-code]") {
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::no_command);
 }
+
+TEST_CASE("g93 g94 g95", "[g-code]") {
+  std::string code = "f1200\n"
+                     "g93\n"
+                     "g95\n"
+                     "g94\n ";
+
+  gpp::Machine machine(code);
+  gpp::Instruction instruction;
+
+  instruction = machine.next();
+  REQUIRE(instruction.command == gpp::set_feed_rate);
+  REQUIRE(approx_equal(instruction.arguments, std::vector<f64>{1200}));
+
+  instruction = machine.next();
+  REQUIRE(instruction.command == gpp::set_feed_mode);
+  REQUIRE(instruction.arguments[0] == gpp::inverse_time);
+  REQUIRE(machine.feedRate == Catch::Approx(1200));
+
+  instruction = machine.next();
+  REQUIRE(instruction.command == gpp::set_feed_mode);
+  REQUIRE(instruction.arguments[0] == units_per_revolution);
+
+  instruction = machine.next();
+  REQUIRE(instruction.command == gpp::set_feed_mode);
+  REQUIRE(instruction.arguments[0] == units_per_minute);
+
+  instruction = machine.next();
+  REQUIRE(instruction.command == gpp::no_command);
+}

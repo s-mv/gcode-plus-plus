@@ -23,6 +23,8 @@ enum SpindleDirection : i8;
 enum Unit : u8;
 enum DistanceMode : u8;
 enum Plane : u8;
+enum FeedMode : u8;
+enum SpindleMode : u8;
 } // namespace gpp
 
 #ifndef private_prod

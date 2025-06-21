@@ -22,46 +22,56 @@ enum gpp::SpindleDirection : i8 {
   counterclockwise = -1,
 };
 
+enum gpp::FeedMode : u8 {
+  inverse_time = 0,
+  units_per_minute = 1,
+  units_per_revolution = 2
+};
+
+enum gpp::SpindleMode : u8 { fixed_rpm = 0, constant_surface_speed = 1 };
+
 // this length is temporary
 #define g_command_len (256)
 enum gpp::Command : u8 {
-  move_linear = 0,
-  move_rapid = 1,
+  move_linear = 1,
+  move_rapid = 2,
 
-  set_feed_rate = 2,
+  set_feed_rate = 3,
+  set_feed_mode = 3,
 
-  use_length_units = 3,
-  use_distance_mode = 4,
-  select_plane = 5,
+  use_length_units = 4,
+  use_distance_mode = 5,
+  select_plane = 6,
 
-  arc_feed = 6,
+  arc_feed = 7,
 
-  dwell = 7,
-  set_origin_offsets = 8,
+  dwell = 8,
+  set_origin_offsets = 9,
 
-  start_spindle_clockwise = 9,
-  start_spindle_counterclockwise = 10,
-  stop_spindle_turning = 11,
-  set_spindle_speed = 12,
+  start_spindle_clockwise = 10,
+  start_spindle_counterclockwise = 11,
+  stop_spindle_turning = 12,
+  set_spindle_speed = 13,
+  set_spindle_mode = 14,
 
-  select_tool = 13,
-  change_tool = 14,
+  select_tool = 15,
+  change_tool = 16,
 
-  program_stop = 15,
-  optional_program_stop = 16,
-  program_end = 17,
+  program_stop = 17,
+  optional_program_stop = 18,
+  program_end = 19,
 
-  use_tool_length_offset = 18,
-  set_tool_length_offset = 19,
+  use_tool_length_offset = 20,
+  set_tool_length_offset = 21,
 
-  set_wcs_coordinates = 20,
-  use_workspace = 21,
+  set_wcs_coordinates = 22,
+  use_workspace = 23,
 
   /*** this is temporary ***/
-  write_parameter_to_file = 253,
-  write_parameters_to_file = 254,
+  write_parameter_to_file = 254,
+  write_parameters_to_file = 255,
 
-  no_command = 255, // invalid
+  no_command = 0, // invalid, wrapped around from 255+1
 };
 
 enum gpp::Plane : u8 {
@@ -118,9 +128,13 @@ private:
   Unit unit; // unit could be mm or inch (as per me -- read TODO below)
   DistanceMode distanceMode; // absolute vs relative
   Plane plane;
-  f64 feedRate; // "speed" of the head in unit/min
+  f64 rawFeedRate; // raw feedrate from set_feed_rate assuming unit/time
+  f64 feedRate;    // always in mm/min
+  FeedMode feedMode;
+  SpindleMode spindleMode;
   SpindleDirection spindleDirection;
   f64 spindleSpeed;
+  f64 rawSpindleSpeed;
   u64 selectedTool;
   u64 currentTool;
   std::unordered_map<int, Tool> tools;
@@ -148,6 +162,7 @@ private:
   void move_rapid(std::vector<f64> args);
 
   void set_feed_rate(std::vector<f64> args);
+  void set_feed_mode(std::vector<f64> args);
 
   void use_length_units(std::vector<f64> args);
   void use_distance_mode(std::vector<f64> args);
@@ -162,6 +177,7 @@ private:
   void start_spindle_counterclockwise(std::vector<f64> args);
   void stop_spindle_turning(std::vector<f64> args);
   void set_spindle_speed(std::vector<f64> args);
+  void set_spindle_mode(std::vector<f64> args);
 
   void select_tool(std::vector<f64> args);
   void change_tool(std::vector<f64> args);
@@ -196,6 +212,7 @@ private:
   const char *planeToString(Plane plane);
   Vec3D getLogicalPosition();
   Vec3D resolvePosition(Vec3D delta);
+  void handleCSSMode();
   void drawLineOnPlane(Canvas &canvas, Plane plane, Vec3D from, Vec3D to);
   void drawLinesOnPlanes(Vec3D from, Vec3D to);
 };
