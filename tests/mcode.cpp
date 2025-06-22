@@ -15,23 +15,23 @@ TEST_CASE("m3 m4 m5", "[m-code]") {
 
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::set_spindle_speed);
-  REQUIRE(approx_equal(instruction.arguments, std::vector<f64>{100}));
+  REQUIRE_approx_equal(instruction.arguments, std::vector<f64>{100});
 
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::start_spindle_clockwise);
-  REQUIRE(approx_equal(instruction.arguments, std::vector<f64>{}));
+  REQUIRE_approx_equal(instruction.arguments, std::vector<f64>{});
 
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::set_spindle_speed);
-  REQUIRE(approx_equal(instruction.arguments, std::vector<f64>{300}));
+  REQUIRE_approx_equal(instruction.arguments, std::vector<f64>{300});
 
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::start_spindle_counterclockwise);
-  REQUIRE(approx_equal(instruction.arguments, std::vector<f64>{}));
+  REQUIRE_approx_equal(instruction.arguments, std::vector<f64>{});
 
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::stop_spindle_turning);
-  REQUIRE(approx_equal(instruction.arguments, std::vector<f64>{}));
+  REQUIRE_approx_equal(instruction.arguments, std::vector<f64>{});
 
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::no_command);

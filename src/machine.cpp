@@ -22,6 +22,7 @@ gpp::Machine::Machine(std::string input)
   spindleDirection = off;
   spindleMode = fixed_rpm;
   spindleSpeed = 0;
+  currentTool = 1;
 
   initTools("config/tools.txt");
 
@@ -510,27 +511,25 @@ void gpp::Machine::handleCSSMode() {
   if (spindleMode != constant_surface_speed)
     return;
 
-  f64 diameter = 0.0;
+  Vec3D pos = getLogicalPosition();
 
-  if (tools.at(currentTool).diam > 0.0) {
-    diameter = tools[currentTool].diam;
-  } else {
-    Vec3D pos = getLogicalPosition();
-    switch (plane) {
-    case plane_xy:
-      diameter = 2.0 * std::hypot(pos.x, pos.y);
-      break;
-    case plane_yz:
-      diameter = 2.0 * std::hypot(pos.y, pos.z);
-      break;
-    case plane_xz:
-      diameter = 2.0 * std::hypot(pos.x, pos.z);
-      break;
-    }
+  f64 radius = 0.0;
+  switch (plane) {
+  case plane_xy:
+    radius = std::hypot(pos.x, pos.y);
+    break;
+  case plane_yz:
+    radius = std::hypot(pos.y, pos.z);
+    break;
+  case plane_xz:
+    radius = std::hypot(pos.x, pos.z);
+    break;
   }
 
-  if (diameter > 0.0) {
-    spindleSpeed = (1000.0 * rawSpindleSpeed) / (M_PI * diameter);
+  if (radius > 0.0) {
+    f64 surface_speed_mm_per_min =
+        rawSpindleSpeed * unitMultiplier(unit); // Convert to mm/min
+    spindleSpeed = (surface_speed_mm_per_min * 1000.0) / (2.0 * M_PI * radius);
   } else {
     spindleSpeed = 0.0;
   }

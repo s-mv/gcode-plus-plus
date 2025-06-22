@@ -16,25 +16,22 @@ TEST_CASE("missing axes in g0/g1", "[edge-cases]") {
 
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::move_rapid);
-  REQUIRE(approx_equal(instruction.arguments, {0, 0, 0}));
+  REQUIRE_approx_equal(instruction.arguments, {0, 0, 0});
 
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::set_feed_rate);
-  REQUIRE(approx_equal(instruction.arguments, {600}));
+  REQUIRE_approx_equal(instruction.arguments, {600});
 
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::move_linear);
-  REQUIRE(approx_equal(instruction.arguments, {0, 0, -10}));
-  REQUIRE(approx_equal(machine.position, gpp::Vec3D{0, 0, -10}));
+  REQUIRE_approx_equal(instruction.arguments, {0, 0, -10});
+  REQUIRE_approx_equal(machine.position, gpp::Vec3D{0, 0, -10});
 
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::move_rapid);
-  // print instruction arguments
-  for (const auto &arg : instruction.arguments) {
-    std::cout << arg << " ";
-  }
-  REQUIRE(approx_equal(instruction.arguments, {0, 100, -10}));
-  REQUIRE(approx_equal(machine.position, gpp::Vec3D{0, 100, -10}));
+
+  REQUIRE_approx_equal(instruction.arguments, {0, 100, -10});
+  REQUIRE_approx_equal(machine.position, gpp::Vec3D{0, 100, -10});
 
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::no_command);

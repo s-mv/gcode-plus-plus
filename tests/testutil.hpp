@@ -8,7 +8,7 @@
 #include "gpp.hpp"
 #include "machine.hpp"
 
-bool approx_equal(const gpp::Vec3D &a, const gpp::Vec3D &b, f64 epsilon = 1e-5);
-bool approx_equal(const std::vector<f64> &a, const std::vector<f64> &b,
+void REQUIRE_approx_equal(const gpp::Vec3D &a, const gpp::Vec3D &b, f64 epsilon = 1e-5);
+void REQUIRE_approx_equal(const std::vector<f64> &a, const std::vector<f64> &b,
                   double epsilon = 1e-5);
 #endif

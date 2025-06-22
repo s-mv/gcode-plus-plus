@@ -280,8 +280,8 @@ void gpp::BytecodeEmitter::handle_g(std::vector<VerboseInstruction> &list,
   }
 
     SINGLE_ARG_GCODE_CASE(17, select_plane, plane_xy);
-    SINGLE_ARG_GCODE_CASE(18, select_plane, plane_yz);
-    SINGLE_ARG_GCODE_CASE(19, select_plane, plane_xz);
+    SINGLE_ARG_GCODE_CASE(18, select_plane, plane_xz);
+    SINGLE_ARG_GCODE_CASE(19, select_plane, plane_yz);
     SINGLE_ARG_GCODE_CASE(20, use_length_units, Unit::inch);
     SINGLE_ARG_GCODE_CASE(21, use_length_units, Unit::mm);
   case 43: {

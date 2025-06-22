@@ -37,35 +37,35 @@ enum gpp::Command : u8 {
   move_rapid = 2,
 
   set_feed_rate = 3,
-  set_feed_mode = 3,
+  set_feed_mode = 4,
 
-  use_length_units = 4,
-  use_distance_mode = 5,
-  select_plane = 6,
+  use_length_units = 5,
+  use_distance_mode = 6,
+  select_plane = 7,
 
-  arc_feed = 7,
+  arc_feed = 8,
 
-  dwell = 8,
-  set_origin_offsets = 9,
+  dwell = 9,
+  set_origin_offsets = 10,
 
-  start_spindle_clockwise = 10,
-  start_spindle_counterclockwise = 11,
-  stop_spindle_turning = 12,
-  set_spindle_speed = 13,
-  set_spindle_mode = 14,
+  start_spindle_clockwise = 11,
+  start_spindle_counterclockwise = 12,
+  stop_spindle_turning = 13,
+  set_spindle_speed = 14,
+  set_spindle_mode = 15,
 
-  select_tool = 15,
-  change_tool = 16,
+  select_tool = 16,
+  change_tool = 17,
 
-  program_stop = 17,
-  optional_program_stop = 18,
-  program_end = 19,
+  program_stop = 18,
+  optional_program_stop = 19,
+  program_end = 20,
 
-  use_tool_length_offset = 20,
-  set_tool_length_offset = 21,
+  use_tool_length_offset = 21,
+  set_tool_length_offset = 22,
 
-  set_wcs_coordinates = 22,
-  use_workspace = 23,
+  set_wcs_coordinates = 23,
+  use_workspace = 24,
 
   /*** this is temporary ***/
   write_parameter_to_file = 254,
@@ -143,6 +143,7 @@ private:
   std::function<void(std::vector<f64>)> handlers[g_command_len];
 
   Canvas canvasXY, canvasYZ, canvasXZ;
+  bool plotToCanvas = false;
 
 public:
   std::vector<f64> memory;
