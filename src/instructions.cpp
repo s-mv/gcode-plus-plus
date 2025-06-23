@@ -153,11 +153,22 @@ void gpp::BytecodeEmitter::handle_g(std::vector<VerboseInstruction> &list,
                       : (arg == 1) ? move_linear
                                    : set_origin_offsets;
 
-    list.push_back({.word = 'g',
-                    .arg = arg,
-                    .commentOrMessage = false,
-                    .command = {.command = command,
-                                .arguments = {delta.x, delta.y, delta.z}}});
+    if (arg == 92)
+      list.push_back({.word = 'g',
+                      .arg = arg,
+                      .commentOrMessage = false,
+                      .command = {.command = command,
+                                  .arguments = {delta.x, delta.y, delta.z}}});
+    else {
+      machine->activeInstruction = {
+          .word = 'g',
+          .arg = arg,
+          .commentOrMessage = false,
+          .command = {.command = command,
+                      .arguments = {delta.x, delta.y, delta.z}}};
+
+      list.push_back(machine->activeInstruction);
+    }
 
     break;
   }
@@ -218,13 +229,15 @@ void gpp::BytecodeEmitter::handle_g(std::vector<VerboseInstruction> &list,
       center = currentPos + offset;
     }
 
-    list.push_back(
-        {.word = 'g',
-         .arg = arg,
-         .commentOrMessage = false,
-         .command = {.command = arc_feed,
-                     .arguments = {targetPos.x, targetPos.y, center.x, center.y,
-                                   static_cast<f64>(rotation), delta.z}}});
+    machine->activeInstruction = {
+        .word = 'g',
+        .arg = arg,
+        .commentOrMessage = false,
+        .command = {.command = arc_feed,
+                    .arguments = {targetPos.x, targetPos.y, center.x, center.y,
+                                  static_cast<f64>(rotation), delta.z}}};
+
+    list.push_back(machine->activeInstruction);
 
     break;
   }
@@ -339,13 +352,13 @@ void gpp::BytecodeEmitter::handle_g(std::vector<VerboseInstruction> &list,
   }
 
   default:
-    if (arg >= 54 && arg <= 59) {
+    if (arg >= 54 && arg <= 59)
       list.push_back(
           {.word = 'g',
            .arg = arg,
            .commentOrMessage = false,
            .command = {.command = use_workspace, .arguments = {arg - 53}}});
-    }
+
     break;
   }
 }

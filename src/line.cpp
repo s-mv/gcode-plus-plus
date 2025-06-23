@@ -73,6 +73,7 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
   }
 
   std::vector<VerboseInstruction> verboseInstructions;
+  bool noCode = true;
 
   for (const Word &word : words) {
     VerboseInstruction verboseInstruction = {
@@ -82,6 +83,7 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
     };
 
     if (word.word == 'g') {
+      noCode = false;
       handle_g(verboseInstructions, word.arg, words, line, column);
       continue;
     } else if (word.word == 'f') {
@@ -99,7 +101,6 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
         prettyPrintError(message, getLineFromSource(line), line, column);
         exit(0);
       }
-
       verboseInstruction.command = {
           .command = set_spindle_speed,
           .arguments = {word.arg},
@@ -113,6 +114,34 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
       continue;
 
     verboseInstructions.push_back(verboseInstruction);
+  }
+
+  if (machine->activeInstruction.word != '0' && noCode &&
+      machine->activeInstruction.arg >= 0 &&
+      machine->activeInstruction.arg <= 3) {
+    bool hasCoordinates = false;
+    bool hasArcParams = false;
+
+    for (const Word &w : words) {
+      if (w.word == 'x' || w.word == 'y' || w.word == 'z') {
+        hasCoordinates = true;
+      }
+      if (w.word == 'i' || w.word == 'j' || w.word == 'k' || w.word == 'r') {
+        hasArcParams = true;
+      }
+    }
+
+    if ((machine->activeInstruction.arg == 0 ||
+         machine->activeInstruction.arg == 1) &&
+        hasCoordinates) {
+      handle_g(verboseInstructions, machine->activeInstruction.arg, words, line,
+               column);
+    } else if ((machine->activeInstruction.arg == 2 ||
+                machine->activeInstruction.arg == 3) &&
+               (hasCoordinates || hasArcParams)) {
+      handle_g(verboseInstructions, machine->activeInstruction.arg, words, line,
+               column);
+    }
   }
 
   std::sort(verboseInstructions.begin(), verboseInstructions.end(),

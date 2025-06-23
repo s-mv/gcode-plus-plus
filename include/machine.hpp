@@ -137,8 +137,10 @@ private:
   f64 rawSpindleSpeed;
   u64 selectedTool;
   u64 currentTool;
+
   std::unordered_map<int, Tool> tools;
-  // (TODO, add some references in comments)
+
+  VerboseInstruction activeInstruction = {.word = '0'};
 
   std::function<void(std::vector<f64>)> handlers[g_command_len];
 
