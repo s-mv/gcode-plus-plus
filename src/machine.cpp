@@ -118,30 +118,32 @@ void gpp::Machine::setMemory(i64 address, f64 value) {
 }
 
 gpp::Instruction gpp::Machine::next() {
-  if (emitter.verboseInstructions.empty()) {
-    emitter.words.clear();
-
+  while (emitter.bytecode.empty()) {
     if (!emitter.fetchInstructions())
       return {no_command};
-  }
 
-  VerboseInstruction vi = emitter.verboseInstructions.front();
-  emitter.verboseInstructions.pop_front();
+    VerboseInstruction vi = emitter.verboseInstructions.front();
+    emitter.verboseInstructions.pop_front();
 
-  if (vi.word == 'g') {
-    handle_g(emitter.verboseInstructions, vi.arg, emitter.words, 0, 0);
-  } else if (vi.word == 'f') {
-    f64 f = emitter.findParameter(emitter.words, 'f');
-    emitter.bytecode.push_back({.command = gpp::set_feed_rate, .arguments = {f}});
-  } else if (vi.word == 'm') {
-    handle_m(emitter.verboseInstructions, vi.arg, emitter.words, 0, 0);
-  } else if (vi.word == 's') {
-    f64 s = emitter.findParameter(emitter.words, 's');
-    emitter.bytecode.push_back(
-        {.command = gpp::set_spindle_speed, .arguments = {s}});
-  } else if (vi.word == 't') {
-    f64 t = emitter.findParameter(emitter.words, 't');
-    emitter.bytecode.push_back({.command = gpp::select_tool, .arguments = {t}});
+    if (vi.word == 'c') {
+      emitter.words.clear();
+    } else if (vi.word == 'g') {
+      handle_g(emitter.verboseInstructions, vi.arg, emitter.words, 0, 0);
+    } else if (vi.word == 'f') {
+      f64 f = emitter.findParameter(emitter.words, 'f');
+      emitter.bytecode.push_back(
+          {.command = gpp::set_feed_rate, .arguments = {f}});
+    } else if (vi.word == 'm') {
+      handle_m(emitter.verboseInstructions, vi.arg, emitter.words, 0, 0);
+    } else if (vi.word == 's') {
+      f64 s = emitter.findParameter(emitter.words, 's');
+      emitter.bytecode.push_back(
+          {.command = gpp::set_spindle_speed, .arguments = {s}});
+    } else if (vi.word == 't') {
+      f64 t = emitter.findParameter(emitter.words, 't');
+      emitter.bytecode.push_back(
+          {.command = gpp::select_tool, .arguments = {t}});
+    }
   }
 
   Instruction instruction = emitter.bytecode.front();
@@ -154,7 +156,6 @@ gpp::Instruction gpp::Machine::next() {
 
   if (spindleDirection != off)
     saveCanvases();
-
   return instruction;
 }
 

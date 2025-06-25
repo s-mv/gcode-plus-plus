@@ -122,6 +122,8 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
   std::sort(verboseInstructions.begin(), verboseInstructions.end(),
             compareVerboseInstructions);
 
+  verboseInstructions.push_back({.word = 'c'});
+
   return nullptr;
 }
 

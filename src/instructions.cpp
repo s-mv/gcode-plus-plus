@@ -333,6 +333,101 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     break;
   }
 
+  // case 80:
+  case 81:
+  case 82:
+  case 86:
+  case 87: {
+
+    REQUIRE_CONDITION(feedRate > 0,
+                      "Feed rate must be set before G" + std::to_string(arg_i) +
+                          " is used!",
+                      emitter.getLineFromSource(line));
+
+    f64 x, y, z;
+    f64 r = emitter.findParameter(words, 'r');
+    f64 l_real = emitter.findParameter(words, 'l');
+    f64 p;
+    if (arg_i > 81) {
+      p = emitter.findParameter(words, 'p');
+      REQUIRE_CONDITION(!std::isnan(p), "Missing P<> parameter for G82!",
+                        emitter.getLineFromSource(line));
+    }
+
+    emitter.extractCoordinates(words, x, y, z);
+
+    REQUIRE_CONDITION(!std::isnan(z), "Missing Z<> for G81!",
+                      emitter.getLineFromSource(line));
+    REQUIRE_CONDITION(!std::isnan(r),
+                      "Missing R<> (retract height) for G" +
+                          std::to_string(arg_i) + "!",
+                      emitter.getLineFromSource(line));
+
+    if (std::isnan(l_real))
+      l_real = 1;
+
+    int l = static_cast<int>(l_real);
+    REQUIRE_CONDITION(
+        l >= 1, "L parameter for G" + std::to_string(arg_i) + " must be >= 1",
+        emitter.getLineFromSource(line));
+
+    Vec3D current = getLogicalPosition();
+    Vec3D drill_position = {x, y, z};
+
+    if (std::isnan(drill_position.x))
+      drill_position.x = current.x;
+    if (std::isnan(drill_position.y))
+      drill_position.y = current.y;
+
+    f64 retract_z = (distanceMode == absolute) ? r : current.z + r;
+
+    f64 old_z = current.z;
+    f64 final_retract_z =
+        (retractMode == old_z) ? std::max(old_z, retract_z) : retract_z;
+
+    REQUIRE_CONDITION(retract_z >= current.z || distanceMode == relative,
+                      "Retract plane R is below current Z!",
+                      emitter.getLineFromSource(line));
+
+    emitter.bytecode.push_back(
+        {.command = gpp::move_linear,
+         .arguments = {drill_position.x, drill_position.y, final_retract_z}});
+
+    SpindleDirection sd = spindleDirection;
+
+    for (int i = 0; i < l; i++) {
+      if (distanceMode == gpp::relative) {
+        emitter.bytecode.push_back(
+            {.command = gpp::move_linear,
+             .arguments = {drill_position.x, drill_position.y, 0}});
+
+        emitter.bytecode.push_back(
+            {.command = gpp::move_linear, .arguments = {0, 0, -z}});
+
+        if (arg_i > 81)
+          emitter.bytecode.push_back({.command = gpp::dwell, .arguments = {p}});
+
+        if (arg_i == 86)
+          emitter.bytecode.push_back({.command = gpp::stop_spindle_turning});
+
+        emitter.bytecode.push_back(
+            {.command = arg_i == 87 ? gpp::move_linear : gpp::move_rapid,
+             .arguments = {0, 0, z}});
+
+        if (arg_i == 86)
+          emitter.bytecode.push_back(
+              {.command = sd == gpp::clockwise
+                              ? gpp::start_spindle_clockwise
+                              : gpp::start_spindle_counterclockwise});
+      }
+    }
+
+    break;
+  }
+    // case 83:
+    // case 84:
+    // case 85:
+
   case 90:
     emitter.bytecode.push_back(
         {.command = gpp::use_distance_mode, .arguments = {absolute}});
@@ -381,6 +476,18 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
 
     emitter.bytecode.push_back(
         {.command = gpp::set_spindle_mode, .arguments = {fixed_rpm}});
+    break;
+  }
+
+  case 98: {
+    emitter.bytecode.push_back(
+        {.command = gpp::set_retract_mode, .arguments = {old_z}});
+    break;
+  }
+
+  case 99: {
+    emitter.bytecode.push_back(
+        {.command = gpp::set_retract_mode, .arguments = {r_plane}});
     break;
   }
 
