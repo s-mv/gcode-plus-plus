@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "bytecode.hpp"
 #include "canvas.hpp"
 #include "gpp.hpp"
 #include "util.hpp"
@@ -86,6 +87,11 @@ gpp::Machine::Machine(std::string input)
   handlers[Command::use_workspace] =
       std::bind(&Machine::use_workspace, this, std::placeholders::_1);
 
+  handlers[Command::set_retract_mode] =
+      std::bind(&Machine::set_retract_mode, this, std::placeholders::_1);
+  handlers[Command::set_motion_control_mode] =
+      std::bind(&Machine::set_motion_control_mode, this, std::placeholders::_1);
+
   /* these are probably temporary */
   handlers[Command::write_parameter_to_file] = std::bind(
       &gpp::Machine::write_parameter_to_file, this, std::placeholders::_1);
@@ -112,7 +118,34 @@ void gpp::Machine::setMemory(i64 address, f64 value) {
 }
 
 gpp::Instruction gpp::Machine::next() {
-  Instruction instruction = emitter.next();
+  if (emitter.verboseInstructions.empty()) {
+    emitter.words.clear();
+
+    if (!emitter.fetchInstructions())
+      return {no_command};
+  }
+
+  VerboseInstruction vi = emitter.verboseInstructions.front();
+  emitter.verboseInstructions.pop_front();
+
+  if (vi.word == 'g') {
+    handle_g(emitter.verboseInstructions, vi.arg, emitter.words, 0, 0);
+  } else if (vi.word == 'f') {
+    f64 f = emitter.findParameter(emitter.words, 'f');
+    emitter.bytecode.push_back({.command = gpp::set_feed_rate, .arguments = {f}});
+  } else if (vi.word == 'm') {
+    handle_m(emitter.verboseInstructions, vi.arg, emitter.words, 0, 0);
+  } else if (vi.word == 's') {
+    f64 s = emitter.findParameter(emitter.words, 's');
+    emitter.bytecode.push_back(
+        {.command = gpp::set_spindle_speed, .arguments = {s}});
+  } else if (vi.word == 't') {
+    f64 t = emitter.findParameter(emitter.words, 't');
+    emitter.bytecode.push_back({.command = gpp::select_tool, .arguments = {t}});
+  }
+
+  Instruction instruction = emitter.bytecode.front();
+  emitter.bytecode.pop_front();
 
   if (instruction.command == no_command)
     return instruction;
@@ -413,9 +446,6 @@ void gpp::Machine::optional_program_stop(std::vector<f64> args) {
 }
 
 void gpp::Machine::program_end(std::vector<f64> args) {
-  set_origin_offsets({0, 0, 0});
-  stop_spindle_turning({});
-
   std::cout << "program_end()\n";
 }
 
@@ -443,6 +473,25 @@ void gpp::Machine::use_workspace(std::vector<f64> args) {
   g5xoffset = workOffsets[offsetIndex - 1];
 
   std::cout << "use_workspace(" << offsetIndex << ")\n";
+}
+
+void gpp::Machine::set_retract_mode(std::vector<f64> args) {
+  retractMode = (RetractMode)args.at(0);
+
+  std::cout << "set_retract_mode(";
+  std::cout << (retractMode == old_z ? "old_z" : "r_plane");
+  std::cout << ")\n";
+}
+
+void gpp::Machine::set_motion_control_mode(std::vector<f64> args) {
+  motionControlMode = (MotionControlMode)args.at(0);
+
+  std::cout << "set_motion_control_mode(";
+  std::cout << (motionControlMode == exact_stop
+                    ? "exact_stop"
+                    : (motionControlMode == exact_path ? "exact_path"
+                                                       : "continuous"));
+  std::cout << ")\n";
 }
 
 /* probably temporary */
@@ -559,8 +608,6 @@ gpp::Vec3D gpp::Machine::resolvePosition(const Vec3D delta) {
                           : delta.y,
       std::isnan(delta.z) ? (distanceMode == relative ? 0 : currentLogical.z)
                           : delta.z};
-
-  targetLogical = targetLogical * unitMultiplier(unit);
 
   if (distanceMode == DistanceMode::relative)
     targetLogical = currentLogical + targetLogical;

@@ -22,6 +22,9 @@ enum gpp::SpindleDirection : i8 {
   counterclockwise = -1,
 };
 
+enum gpp::RetractMode : u8 { old_z = 0, r_plane = 1 };
+enum gpp::MotionControlMode : u8 { exact_stop, exact_path, continuous };
+
 enum gpp::FeedMode : u8 {
   inverse_time = 0,
   units_per_minute = 1,
@@ -66,6 +69,9 @@ enum gpp::Command : u8 {
 
   set_wcs_coordinates = 23,
   use_workspace = 24,
+
+  set_retract_mode = 25,
+  set_motion_control_mode = 26,
 
   /*** this is temporary ***/
   write_parameter_to_file = 254,
@@ -128,13 +134,15 @@ private:
   Unit unit; // unit could be mm or inch (as per me -- read TODO below)
   DistanceMode distanceMode; // absolute vs relative
   Plane plane;
+  FeedMode feedMode;
   f64 rawFeedRate; // raw feedrate from set_feed_rate assuming unit/time
   f64 feedRate;    // always in mm/min
-  FeedMode feedMode;
   SpindleMode spindleMode;
   SpindleDirection spindleDirection;
   f64 spindleSpeed;
   f64 rawSpindleSpeed;
+  RetractMode retractMode;
+  MotionControlMode motionControlMode;
   u64 selectedTool;
   u64 currentTool;
 
@@ -195,19 +203,17 @@ private:
   void set_wcs_coordinates(std::vector<f64> args);
   void use_workspace(std::vector<f64> args);
 
-  void canned_cycle_cancel(std::vector<f64> args);
-  void canned_cycle_drill(std::vector<f64> args);
-  void canned_cycle_dwell_drill(std::vector<f64> args);
-  void canned_cycle_peck_drill(std::vector<f64> args);
-  void canned_cycle_tap(std::vector<f64> args);
-  void canned_cycle_bore(std::vector<f64> args);
-  void canned_cycle_back_bore(std::vector<f64> args);
-  void canned_cycle_bore_manual(std::vector<f64> args);
-  void canned_cycle_bore_dwell(std::vector<f64> args);
+  void set_retract_mode(std::vector<f64> args);
+  void set_motion_control_mode(std::vector<f64> args);
 
   /*** this is temporary ***/
   void write_parameter_to_file(std::vector<f64> args);
   void write_parameters_to_file(std::vector<f64> args);
+
+  void handle_g(std::deque<VerboseInstruction> &list, f64 arg,
+                const std::vector<Word> &words, int line, int column);
+  void handle_m(std::deque<VerboseInstruction> &list, f64 arg,
+                const std::vector<Word> &words, int line, int column);
 
   // helpers
   f64 unitMultiplier(Unit unit);

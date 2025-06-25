@@ -4,18 +4,34 @@
 #include <vector>
 
 // I don't particularly like macros but that's life
-#define GCODE_ERROR(message)                                                   \
+#define GCODE_ERROR(message, source)                                           \
   do {                                                                         \
-    prettyPrintError(message, getLineFromSource(line), line, column);          \
+    prettyPrintError(message, source, line, column);                           \
     exit(0);                                                                   \
   } while (0)
 
-#define REQUIRE_CONDITION(condition, message)                                  \
+#define REQUIRE_CONDITION(condition, message, source)                          \
   do {                                                                         \
     if (!(condition)) {                                                        \
-      GCODE_ERROR(message);                                                    \
+      GCODE_ERROR(message, source);                                            \
     }                                                                          \
   } while (0)
+
+#define PUSH_INSTR(letter, value, is_msg, cmd, ...)                            \
+  list.push_back({.word = letter,                                              \
+                  .arg = value,                                                \
+                  .commentOrMessage = is_msg,                                  \
+                  .command = {.command = cmd, .arguments = {__VA_ARGS__}}})
+
+#define SIMPLE_MCODE_CASE(code, cmd)                                           \
+  case code:                                                                   \
+    PUSH_INSTR('m', code, false, cmd);                                         \
+    break;
+
+#define SINGLE_ARG_GCODE_CASE(code, cmd, arg_val)                              \
+  case code:                                                                   \
+    PUSH_INSTR('g', code, false, cmd, arg_val);                                \
+    break;
 
 inline void
 gpp::BytecodeEmitter::extractCoordinates(const std::vector<gpp::Word> &words,
@@ -24,13 +40,13 @@ gpp::BytecodeEmitter::extractCoordinates(const std::vector<gpp::Word> &words,
   for (const gpp::Word &operand : words) {
     switch (operand.word) {
     case 'x':
-      x = operand.arg;
+      x = operand.arg * machine->unitMultiplier(machine->unit);
       break;
     case 'y':
-      y = operand.arg;
+      y = operand.arg * machine->unitMultiplier(machine->unit);
       break;
     case 'z':
-      z = operand.arg;
+      z = operand.arg * machine->unitMultiplier(machine->unit);
       break;
     }
   }
@@ -68,8 +84,8 @@ gpp::BytecodeEmitter::extractArcParams(const std::vector<Word> &words, f64 &x,
   }
 }
 
-inline f64 gpp::BytecodeEmitter::findParameter(const std::vector<Word> &words,
-                                               char letter) {
+f64 gpp::BytecodeEmitter::findParameter(const std::vector<Word> &words,
+                                        char letter) {
   for (const gpp::Word &operand : words) {
     if (operand.word == letter) {
       return operand.arg;
@@ -79,6 +95,17 @@ inline f64 gpp::BytecodeEmitter::findParameter(const std::vector<Word> &words,
 }
 
 inline void gpp::BytecodeEmitter::applyCurrentPositionDefaults(Vec3D &delta) {
+  if (machine->distanceMode == relative) {
+    if (std::isnan(delta.x))
+      delta.x = 0;
+    if (std::isnan(delta.y))
+      delta.y = 0;
+    if (std::isnan(delta.z))
+      delta.z = 0;
+
+    return;
+  }
+
   auto pos = machine->getLogicalPosition();
   if (std::isnan(delta.x))
     delta.x = pos.x;
@@ -121,55 +148,51 @@ gpp::BytecodeEmitter::getArcCenterOffsets(const gpp::Plane plane, f64 i, f64 j,
   return {0, 0}; // fallback
 }
 
-#define SIMPLE_MCODE_CASE(code, cmd)                                           \
-  case code:                                                                   \
-    list.push_back({.word = 'm',                                               \
-                    .arg = code,                                               \
-                    .commentOrMessage = false,                                 \
-                    .command = {.command = cmd}});                             \
-    break;
-
-#define SINGLE_ARG_GCODE_CASE(code, cmd, arg_val)                              \
-  case code:                                                                   \
-    list.push_back({.word = 'g',                                               \
-                    .arg = code,                                               \
-                    .commentOrMessage = false,                                 \
-                    .command = {.command = cmd, .arguments = {arg_val}}});     \
-    break;
-
-void gpp::BytecodeEmitter::handle_g(std::vector<VerboseInstruction> &list,
+void gpp::BytecodeEmitter::handle_g(std::deque<VerboseInstruction> &list,
                                     f64 arg,
                                     const std::vector<gpp::Word> &words,
                                     int line, int column) {
-  switch (static_cast<int>(arg)) {
+  VerboseInstruction verboseInstruction = {
+      .word = 'g',
+      .arg = arg,
+      .commentOrMessage = false,
+      .command = {.command = no_command, .arguments = {}}};
+
+  list.push_back(verboseInstruction);
+}
+
+void gpp::BytecodeEmitter::handle_m(std::deque<VerboseInstruction> &list,
+                                    f64 arg,
+                                    const std::vector<gpp::Word> &words,
+                                    int line, int column) {
+  VerboseInstruction verboseInstruction = {
+      .word = 'm',
+      .arg = arg,
+      .commentOrMessage = false,
+      .command = {.command = no_command, .arguments = {}}};
+
+  list.push_back(verboseInstruction);
+}
+
+void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
+                            const std::vector<Word> &words, int line,
+                            int column) {
+  int arg_i = static_cast<int>(arg);
+
+  switch (arg_i) {
   case 0:
   case 1:
   case 92: {
     Vec3D delta;
-    this->extractCoordinates(words, delta.x, delta.y, delta.z);
-    this->applyCurrentPositionDefaults(delta);
+    emitter.extractCoordinates(words, delta.x, delta.y, delta.z);
+    emitter.applyCurrentPositionDefaults(delta);
 
-    Command command = (arg == 0)   ? move_rapid
-                      : (arg == 1) ? move_linear
-                                   : set_origin_offsets;
+    Command command = (arg == 0)   ? gpp::move_rapid
+                      : (arg == 1) ? gpp::move_linear
+                                   : gpp::set_origin_offsets;
 
-    if (arg == 92)
-      list.push_back({.word = 'g',
-                      .arg = arg,
-                      .commentOrMessage = false,
-                      .command = {.command = command,
-                                  .arguments = {delta.x, delta.y, delta.z}}});
-    else {
-      machine->activeInstruction = {
-          .word = 'g',
-          .arg = arg,
-          .commentOrMessage = false,
-          .command = {.command = command,
-                      .arguments = {delta.x, delta.y, delta.z}}};
-
-      list.push_back(machine->activeInstruction);
-    }
-
+    emitter.bytecode.push_back(
+        {.command = command, .arguments = {delta.x, delta.y, delta.z}});
     break;
   }
 
@@ -177,21 +200,23 @@ void gpp::BytecodeEmitter::handle_g(std::vector<VerboseInstruction> &list,
   case 3: {
     Vec3D delta;
     f64 i, j, k, r;
-    this->extractArcParams(words, delta.x, delta.y, delta.z, i, j, k, r);
+    emitter.extractArcParams(words, delta.x, delta.y, delta.z, i, j, k, r);
 
-    REQUIRE_CONDITION(machine->feedRate != 0,
-                      "Feed rate should be non-zero for feed_arc to run!");
-
-    REQUIRE_CONDITION(std::isnan(r) ||
-                          (std::isnan(i) && std::isnan(j) && std::isnan(k)),
-                      "Both r and i/j/k are defined!");
+    REQUIRE_CONDITION(feedRate != 0,
+                      "Feed rate should be non-zero for feed_arc to run!",
+                      emitter.getLineFromSource(line));
 
     REQUIRE_CONDITION(
-        arcOffetsAligned(machine->plane, i, j, k),
-        std::string("Arc isn't aligned to the current plane, i.e. the ") +
-            machine->planeToString(machine->plane) + " plane.");
+        std::isnan(r) || (std::isnan(i) && std::isnan(j) && std::isnan(k)),
+        "Both r and i/j/k are defined!", emitter.getLineFromSource(line));
 
-    this->applyCurrentPositionDefaults(delta);
+    REQUIRE_CONDITION(
+        emitter.arcOffetsAligned(plane, i, j, k),
+        std::string("Arc isn't aligned to the current plane, i.e. the ") +
+            planeToString(plane) + " plane.",
+        emitter.getLineFromSource(line));
+
+    emitter.applyCurrentPositionDefaults(delta);
     if (std::isnan(i))
       i = 0;
     if (std::isnan(j))
@@ -201,16 +226,16 @@ void gpp::BytecodeEmitter::handle_g(std::vector<VerboseInstruction> &list,
 
     int rotation = (arg == 2) ? 1 : -1;
 
-    gpp::Vec2D currentPos =
-        this->getCurrentPlanePosition(machine->plane, machine->position);
-    gpp::Vec2D targetPos = this->getPlaneCoordinates(machine->plane, delta);
+    gpp::Vec2D currentPos = emitter.getCurrentPlanePosition(plane, position);
+    gpp::Vec2D targetPos = emitter.getPlaneCoordinates(plane, delta);
     gpp::Vec2D center;
 
     if (!std::isnan(r)) {
       gpp::Vec2D delta = targetPos - currentPos;
       f64 len = sqrt(delta.dot(delta));
 
-      REQUIRE_CONDITION(len <= 2 * r, "Radius too small for arc!");
+      REQUIRE_CONDITION(len <= 2 * r, "Radius too small for arc!",
+                        emitter.getLineFromSource(line));
 
       gpp::Vec2D midpoint = (currentPos + targetPos) * 0.5;
       f64 h = sqrt(r * r - (len * len) / 4.0);
@@ -220,44 +245,39 @@ void gpp::BytecodeEmitter::handle_g(std::vector<VerboseInstruction> &list,
                                   perpendicular.y * perpendicular.y);
       REQUIRE_CONDITION(
           perpendicularLen != 0,
-          "Invalid arc calculation: zero-length perpendicular vector.");
+          "Invalid arc calculation: zero-length perpendicular vector.",
+          emitter.getLineFromSource(line));
 
       perpendicular = perpendicular * (1.0 / perpendicularLen);
       center = midpoint + perpendicular * h * rotation;
     } else {
-      gpp::Vec2D offset = this->getArcCenterOffsets(machine->plane, i, j, k);
+      gpp::Vec2D offset = emitter.getArcCenterOffsets(plane, i, j, k);
       center = currentPos + offset;
     }
 
-    machine->activeInstruction = {
+    activeInstruction = {
         .word = 'g',
         .arg = arg,
         .commentOrMessage = false,
-        .command = {.command = arc_feed,
+        .command = {.command = gpp::arc_feed,
                     .arguments = {targetPos.x, targetPos.y, center.x, center.y,
                                   static_cast<f64>(rotation), delta.z}}};
 
-    list.push_back(machine->activeInstruction);
-
+    emitter.bytecode.push_back(activeInstruction.command);
     break;
   }
 
   case 4: {
-    f64 p = this->findParameter(words, 'p');
-    REQUIRE_CONDITION(!std::isnan(p),
-                      "Missing dwell time (p<>) with signature.");
-
-    list.push_back({.word = 'g',
-                    .arg = arg,
-                    .commentOrMessage = false,
-                    .command = {.command = dwell, .arguments = {p}}});
+    f64 p = emitter.findParameter(words, 'p');
+    emitter.bytecode.push_back({.command = gpp::dwell, .arguments = {p}});
     break;
   }
+
   case 10: {
-    f64 l = this->findParameter(words, 'l');
-    f64 p = this->findParameter(words, 'p');
+    f64 l = emitter.findParameter(words, 'l');
+    f64 p = emitter.findParameter(words, 'p');
     f64 x, y, z;
-    this->extractCoordinates(words, x, y, z);
+    emitter.extractCoordinates(words, x, y, z);
     if (std::isnan(x))
       x = 0;
     if (std::isnan(y))
@@ -266,152 +286,168 @@ void gpp::BytecodeEmitter::handle_g(std::vector<VerboseInstruction> &list,
       z = 0;
 
     if (l == 1) {
-      list.push_back({.word = 'g',
-                      .arg = arg,
-                      .commentOrMessage = false,
-                      .command = {.command = set_tool_length_offset,
-                                  .arguments = {p, z}}});
+      emitter.bytecode.push_back(
+          {.command = gpp::set_tool_length_offset, .arguments = {p, z}});
     } else if (l == 2) {
       int pi = static_cast<int>(p);
-      REQUIRE_CONDITION(pi >= 1 && pi <= 6, "Invalid coordinate system number");
+      REQUIRE_CONDITION(pi >= 1 && pi <= 6, "Invalid coordinate system number",
+                        emitter.getLineFromSource(line));
 
-      list.push_back({.word = 'g',
-                      .arg = arg,
-                      .commentOrMessage = false,
-                      .command = {.command = set_wcs_coordinates,
-                                  .arguments = {p, x, y, z}}});
-    } else if (l == 20) {
-      // TODO
-
-      // list.push_back({.word = 'g',
-      //                 .arg = arg,
-      //                 .commentOrMessage = false,
-      //                 .command = {.command = no_command}});
+      emitter.bytecode.push_back(
+          {.command = gpp::set_wcs_coordinates, .arguments = {p, x, y, z}});
     }
-
     break;
   }
 
-    SINGLE_ARG_GCODE_CASE(17, select_plane, plane_xy);
-    SINGLE_ARG_GCODE_CASE(18, select_plane, plane_xz);
-    SINGLE_ARG_GCODE_CASE(19, select_plane, plane_yz);
-    SINGLE_ARG_GCODE_CASE(20, use_length_units, Unit::inch);
-    SINGLE_ARG_GCODE_CASE(21, use_length_units, Unit::mm);
+  case 17:
+    emitter.bytecode.push_back(
+        {.command = gpp::select_plane, .arguments = {plane_xy}});
+    break;
+  case 18:
+    emitter.bytecode.push_back(
+        {.command = gpp::select_plane, .arguments = {plane_xz}});
+    break;
+  case 19:
+    emitter.bytecode.push_back(
+        {.command = gpp::select_plane, .arguments = {plane_yz}});
+    break;
+  case 20:
+    emitter.bytecode.push_back(
+        {.command = gpp::use_length_units, .arguments = {Unit::inch}});
+    break;
+  case 21:
+    emitter.bytecode.push_back(
+        {.command = gpp::use_length_units, .arguments = {Unit::mm}});
+    break;
+
   case 43: {
-    f64 h = this->findParameter(words, 'h');
+    f64 h = emitter.findParameter(words, 'h');
 
-    // this assumes that the tool changer is non-random
     if (h == 0 || std::isnan(h))
-      h = machine->currentTool;
+      h = currentTool;
 
-    h = machine->tools.at(h).tlo;
+    h = tools.at(h).tlo;
 
-    list.push_back(
-        {.word = 'g',
-         .arg = arg,
-         .commentOrMessage = false,
-         .command = {.command = use_tool_length_offset, .arguments = {h}}});
-
+    emitter.bytecode.push_back(
+        {.command = gpp::use_tool_length_offset, .arguments = {h}});
     break;
   }
 
-    SINGLE_ARG_GCODE_CASE(90, use_distance_mode, absolute);
-    SINGLE_ARG_GCODE_CASE(91, use_distance_mode, relative);
+  case 90:
+    emitter.bytecode.push_back(
+        {.command = gpp::use_distance_mode, .arguments = {absolute}});
+    break;
+  case 91:
+    emitter.bytecode.push_back(
+        {.command = gpp::use_distance_mode, .arguments = {relative}});
+    break;
 
-    SINGLE_ARG_GCODE_CASE(93, set_feed_mode, inverse_time);
-    SINGLE_ARG_GCODE_CASE(94, set_feed_mode, units_per_minute);
-    SINGLE_ARG_GCODE_CASE(95, set_feed_mode, units_per_revolution);
+  case 93:
+    emitter.bytecode.push_back(
+        {.command = gpp::set_feed_mode, .arguments = {inverse_time}});
+    break;
+  case 94:
+    emitter.bytecode.push_back(
+        {.command = gpp::set_feed_mode, .arguments = {units_per_minute}});
+    break;
+  case 95:
+    emitter.bytecode.push_back(
+        {.command = gpp::set_feed_mode, .arguments = {units_per_revolution}});
+    break;
 
   case 96: {
-    f64 d = this->findParameter(words, 'd');
-    f64 s = this->findParameter(words, 's');
+    f64 d = emitter.findParameter(words, 'd');
+    f64 s = emitter.findParameter(words, 's');
 
-    if (std::isnan(s))
-      GCODE_ERROR("Missing parameter S<> for G96 command!.");
+    if (std ::isnan(s)) {
+      prettyPrintError("Missing parameter S<> for G96 command!",
+                       emitter.getLineFromSource(line), line, column);
+      exit(0);
+    }
 
-    list.push_back({.word = 'g',
-                    .arg = 96,
-                    .commentOrMessage = false,
-                    .command = {.command = set_spindle_mode,
-                                .arguments = {constant_surface_speed}}});
+    emitter.bytecode.push_back({.command = gpp::set_spindle_mode,
+                                .arguments = {constant_surface_speed}});
     break;
   }
 
   case 97: {
-    f64 s = this->findParameter(words, 's');
+    f64 s = emitter.findParameter(words, 's');
 
-    if (std::isnan(s))
-      GCODE_ERROR("Missing parameter S<> for G96 command!.");
+    if (std ::isnan(s)) {
+      prettyPrintError("Missing parameter S<> for G97 command!",
+                       emitter.getLineFromSource(line), line, column);
+      exit(0);
+    }
 
-    list.push_back(
-        {.word = 'g',
-         .arg = 97,
-         .commentOrMessage = false,
-         .command = {.command = set_spindle_mode, .arguments = {fixed_rpm}}});
+    emitter.bytecode.push_back(
+        {.command = gpp::set_spindle_mode, .arguments = {fixed_rpm}});
     break;
   }
 
   default:
-    if (arg >= 54 && arg <= 59)
-      list.push_back(
-          {.word = 'g',
-           .arg = arg,
-           .commentOrMessage = false,
-           .command = {.command = use_workspace, .arguments = {arg - 53}}});
-
+    if (arg >= 54 && arg <= 59) {
+      emitter.bytecode.push_back(
+          {.command = gpp::use_workspace, .arguments = {arg - 53}});
+    }
     break;
   }
 }
 
-void gpp::BytecodeEmitter::handle_m(std::vector<VerboseInstruction> &list,
-                                    f64 arg,
-                                    const std::vector<gpp::Word> &words,
-                                    int line, int column) {
+void gpp::Machine::handle_m(std::deque<gpp::VerboseInstruction> &list, f64 arg,
+                            const std::vector<Word> &words, int line,
+                            int column) {
   int m_code = static_cast<int>(arg);
 
   switch (m_code) {
-    SIMPLE_MCODE_CASE(0, program_stop);
-    SIMPLE_MCODE_CASE(1, optional_program_stop);
-    SIMPLE_MCODE_CASE(2, program_end);
-    SIMPLE_MCODE_CASE(3, start_spindle_clockwise);
-    SIMPLE_MCODE_CASE(4, start_spindle_counterclockwise);
-    SIMPLE_MCODE_CASE(5, stop_spindle_turning);
-    SIMPLE_MCODE_CASE(6, change_tool);
+  case 0:
+    emitter.bytecode.push_back({.command = gpp::program_stop, .arguments = {}});
+    break;
+  case 1:
+    emitter.bytecode.push_back(
+        {.command = gpp::optional_program_stop, .arguments = {}});
+    break;
+  case 2:
+    emitter.bytecode.push_back({.command = gpp::program_end, .arguments = {}});
+    break;
+  case 3:
+    emitter.bytecode.push_back(
+        {.command = gpp::start_spindle_clockwise, .arguments = {}});
+    break;
+  case 4:
+    emitter.bytecode.push_back(
+        {.command = gpp::start_spindle_counterclockwise, .arguments = {}});
+    break;
+  case 5:
+    emitter.bytecode.push_back(
+        {.command = gpp::stop_spindle_turning, .arguments = {}});
+    break;
+  case 6:
+    emitter.bytecode.push_back({.command = gpp::change_tool, .arguments = {}});
+    break;
 
   case 98: {
-    u64 p = this->findParameter(words, 'p');
-
+    u64 p = emitter.findParameter(words, 'p');
     ExecutionFrame frame;
-    executionStack.push({
-        .block = subroutines.at(p)->block(),
+    emitter.executionStack.push({
+        .block = emitter.subroutines.at(p)->block(),
         .linePointer = 0,
-        .whileLoopCondition = nullptr,
-        .start = 0,
-        .end = 0,
     });
     break;
   }
-
-  case 99: {
-    if (bytecode.empty())
-      break;
-
-    REQUIRE_CONDITION(executionStack.size() > 1,
-                      "Return from subroutine without subroutine call!");
-
-    executionStack.pop();
+  case 99:
+    emitter.executionStack.pop();
     break;
-  }
 
-    SIMPLE_MCODE_CASE(100, write_parameters_to_file);
+  case 100:
+    emitter.bytecode.push_back(
+        {.command = gpp::write_parameters_to_file, .arguments = {}});
+    break;
 
   default:
     if (m_code > 100) {
-      list.push_back({.word = 'm',
-                      .arg = arg,
-                      .commentOrMessage = false,
-                      .command = {.command = write_parameter_to_file,
-                                  .arguments = {arg - 100}}});
+      emitter.bytecode.push_back(
+          {.command = gpp::write_parameter_to_file,
+           .arguments = {static_cast<double>(m_code - 100)}});
     }
     break;
   }

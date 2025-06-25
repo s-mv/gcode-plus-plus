@@ -37,9 +37,13 @@ TEST_CASE("g0 g1 g20 g21 g90 g91", "[g-code]") {
   REQUIRE_approx_equal(instruction.arguments,
                        std::vector<f64>{gpp::DistanceMode::relative});
 
+  f64 multiplier = machine.unitMultiplier(gpp::inch);
+
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::move_rapid);
-  REQUIRE_approx_equal(instruction.arguments, std::vector<f64>{1, 2, 50});
+  REQUIRE_approx_equal(
+      instruction.arguments,
+      std::vector<f64>{1 * multiplier, 2 * multiplier, 50 * multiplier});
 
   instruction = machine.next();
   REQUIRE(instruction.command == gpp::no_command);

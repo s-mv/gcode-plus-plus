@@ -1,7 +1,7 @@
 #ifndef smv_gpp_bytecode_hpp
 #define smv_gpp_bytecode_hpp
 
-#include <queue>
+#include <deque>
 #include <stack>
 #include <string>
 #include <unordered_map>
@@ -22,20 +22,26 @@ struct gpp::Word {
   f64 arg;
 };
 
+enum gpp::Macro : u8 {
+  no_macro = 0,
+  g81 = 81,
+};
+
 struct gpp::Instruction {
   Command command;
+  Macro macro = no_macro; // for things like canonical commands
   std::vector<f64> arguments;
 };
 
-struct VerboseInstruction {
+struct gpp::VerboseInstruction {
   char word;
   f64 arg;
   bool commentOrMessage;
-  gpp::Instruction command;
+  Instruction command;
 };
 
-bool compareVerboseInstructions(const VerboseInstruction &a,
-                                const VerboseInstruction &b);
+bool compareVerboseInstructions(const gpp::VerboseInstruction &a,
+                                const gpp::VerboseInstruction &b);
 
 struct gpp::ExecutionFrame {
   parser_antlr4::BlockContext *block;
@@ -55,8 +61,8 @@ class gpp::BytecodeEmitter : public parser_antlr4BaseVisitor {
 private:
   char word;
   std::vector<Word> words;
-
-  std::queue<Instruction> bytecode;
+  std::deque<Instruction> bytecode;
+  std::deque<VerboseInstruction> verboseInstructions;
 
   antlr4::ANTLRInputStream inputStream;
   lexer_antlr4 lexer;
@@ -64,8 +70,7 @@ private:
   parser_antlr4 parser;
 
   std::stack<gpp::ExecutionFrame> executionStack;
-  std::unordered_map<u64, parser_antlr4::SubroutineContext *>
-      subroutines;
+  std::unordered_map<u64, parser_antlr4::SubroutineContext *> subroutines;
 
   std::unordered_map<std::string, f64> parameterAddresses;
   bool breakEncountered = false;
@@ -78,7 +83,7 @@ public:
   BytecodeEmitter(std::string input);
   BytecodeEmitter(Machine &machine);
   void preprocess(parser_antlr4::BlockContext *block);
-  Instruction next();
+  bool fetchInstructions();
 
 private:
   void setMemory(std::string address, f64 value);
@@ -146,10 +151,10 @@ private:
   //   helpers
   std::string getLineFromSource(int target);
   bool arcOffetsAligned(const Plane currentPlane, f64 i, f64 j, f64 k);
-  void handle_g(std::vector<VerboseInstruction> &list, f64 arg,
+  void handle_g(std::deque<VerboseInstruction> &list, f64 arg,
                 const std::vector<Word> &words, int line, int column);
 
-  void handle_m(std::vector<VerboseInstruction> &list, f64 arg,
+  void handle_m(std::deque<VerboseInstruction> &list, f64 arg,
                 const std::vector<Word> &words, int line, int column);
 
   bool lineHasM99(parser_antlr4::StatementContext *stmt);
@@ -163,7 +168,7 @@ private:
   inline void extractArcParams(const std::vector<Word> &words, f64 &x, f64 &y,
                                f64 &z, f64 &i, f64 &j, f64 &k, f64 &r);
 
-  inline f64 findParameter(const std::vector<Word> &words, char letter);
+  f64 findParameter(const std::vector<Word> &words, char letter);
   inline Vec2D getPlaneCoordinates(const Plane plane, const Vec3D &pos);
   inline Vec2D getCurrentPlanePosition(const Plane plane,
                                        const Vec3D &position);

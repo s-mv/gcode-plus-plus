@@ -5,10 +5,10 @@ OBJECTS  = build/util.o build/frontend.o build/bytecode.o \
            build/instructions.o build/canvas.o
 EXTERN   = extern/
 
-### replace with your path ###
+### replace with your path(s) ###
 ANTLR4_LIB     = $(EXTERN)antlr4/lib/
 ANTLR4_INCLUDE = -I $(EXTERN)antlr4/gen/ -I $(EXTERN)antlr4/include/
-ANTLR_OBJECTS  = build/lexer_antlr4.o build/parser_antlr4.o \
+ANTLR4_OBJECTS  = build/lexer_antlr4.o build/parser_antlr4.o \
                  build/parser_antlr4BaseVisitor.o
 
 STB_INCLUDE = -I $(EXTERN)stb/
@@ -33,10 +33,10 @@ test:
 	@echo "Working on $(TEST_TYPE) tests."
 	@$(MAKE) --no-print-directory $(TEST_TYPE)
 
-unit: $(OBJECTS) $(ANTLR_OBJECTS) $(UNIT_TEST_FILES)
+unit: $(OBJECTS) $(ANTLR4_OBJECTS) $(UNIT_TEST_FILES)
 	@echo "Building unit tests..."
 	@$(CXX) $(UNIT_TEST_FILES) $(EXTERN)catch2/catch_amalgamated.cpp \
-		$(OBJECTS) $(ANTLR_OBJECTS) -o build/unit $(CXXFLAGS) $(LDFLAGS) $(TEST_INCLUDE)
+		$(OBJECTS) $(ANTLR4_OBJECTS) -o build/unit $(CXXFLAGS) $(LDFLAGS) $(TEST_INCLUDE)
 	@echo "Running unit tests..."
 
 	@echo "Listing and running each test in isolation..."
@@ -59,18 +59,23 @@ unit: $(OBJECTS) $(ANTLR_OBJECTS) $(UNIT_TEST_FILES)
 	echo "Total: $$total | Passed: $$pass | Failed: $$fail"; \
 	test $$fail -eq 0
 
-regression: $(OBJECTS) $(ANTLR_OBJECTS)
+regression: $(OBJECTS) $(ANTLR4_OBJECTS)
 	@echo "Building regression tests..."
 	@$(CXX) tests/regression.cpp $(TEST_INCLUDE) $(EXTERN)catch2/catch_amalgamated.cpp \
-		$(OBJECTS) $(ANTLR_OBJECTS) -o build/regression $(CXXFLAGS) $(LDFLAGS)
+		$(OBJECTS) $(ANTLR4_OBJECTS) -o build/regression $(CXXFLAGS) $(LDFLAGS)
 	@./build/regression -s
 
 antlr:
-	@cd antlr4 && antlr4 -Dlanguage=Cpp -visitor -o ../extern/antlr4/gen \
-		lexer_antlr4.g4 parser_antlr4.g4
+	@cd antlr4 && java -jar ../$(EXTERN)antlr4/antlr-4.13.2-complete.jar -Dlanguage=Cpp \
+		-visitor -o ../extern/antlr4/gen lexer_antlr4.g4 parser_antlr4.g4
 
-dev: $(OBJECTS) $(ANTLR_OBJECTS)
-	@$(CXX) main.cpp $(OBJECTS) $(ANTLR_OBJECTS) -o build/$(TITLE) \
+dev: $(OBJECTS) $(ANTLR4_OBJECTS)
+	@$(CXX) main.cpp $(OBJECTS) $(ANTLR4_OBJECTS) -o build/$(TITLE) \
+		$(CXXFLAGS) $(LDFLAGS)
+
+DIR = /usr/local/bin
+install: $(OBJECTS) $(ANTLR4_OBJECTS)
+	@sudo $(CXX) main.cpp $(OBJECTS) $(ANTLR4_OBJECTS) -o $(DIR)/$(TITLE) \
 		$(CXXFLAGS) $(LDFLAGS)
 
 build/parser_antlr4BaseVisitor.o: extern/antlr4/gen/parser_antlr4BaseVisitor.cpp
@@ -83,7 +88,7 @@ build/%.o: src/%.cpp
 	@$(CXX) -c $< -o $@ $(CXXFLAGS)
 
 clean:
-	@rm -rf ${OBJECTS} $(ANTLR_OBJECTS) build/unit.o build/unit \
+	@rm -rf ${OBJECTS} $(ANTLR4_OBJECTS) build/unit.o build/unit \
 		build/regression build/regression.o $(EXTERN)antlr4/gen/* build/$(TITLE)
 
 # helper to make new source-header pairs

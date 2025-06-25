@@ -1,9 +1,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <queue>
 #include <unordered_set>
-#include <vector>
 
 #include "bytecode.hpp"
 
@@ -40,7 +38,7 @@ const f64 *modal_groups[modal_groups_len] = {
 
 // helpers
 f64 findModalGroup(f64 code);
-int getInstructionPriority(VerboseInstruction instruction);
+int getInstructionPriority(gpp::VerboseInstruction instruction);
 
 antlrcpp::Any
 gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
@@ -72,7 +70,6 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
     }
   }
 
-  std::vector<VerboseInstruction> verboseInstructions;
   bool noCode = true;
 
   for (const Word &word : words) {
@@ -86,34 +83,12 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
       noCode = false;
       handle_g(verboseInstructions, word.arg, words, line, column);
       continue;
-    } else if (word.word == 'f') {
-      verboseInstruction.command = {.command = set_feed_rate,
-                                    .arguments = {word.arg}};
     } else if (word.word == 'm') {
       handle_m(verboseInstructions, word.arg, words, line, column);
       continue;
-    } else if (word.word == 's') {
-      if (word.arg < 0) {
-        std::ostringstream error;
-        error << "Spindle speed is less than 0: '" << word.arg << "'!";
-        std::string message = error.str();
-
-        prettyPrintError(message, getLineFromSource(line), line, column);
-        exit(0);
-      }
-      verboseInstruction.command = {
-          .command = set_spindle_speed,
-          .arguments = {word.arg},
-      };
-    } else if (word.word == 't') {
-      verboseInstruction.command = {
-          .command = select_tool,
-          .arguments = {word.arg},
-      };
-    } else
-      continue;
-
-    verboseInstructions.push_back(verboseInstruction);
+    } else if (word.word == 'f' || word.word == 's' || word.word == 't') {
+      verboseInstructions.push_back(verboseInstruction);
+    }
   }
 
   if (machine->activeInstruction.word != '0' && noCode &&
@@ -147,12 +122,6 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
   std::sort(verboseInstructions.begin(), verboseInstructions.end(),
             compareVerboseInstructions);
 
-  for (const VerboseInstruction &vi : verboseInstructions) {
-    bytecode.push(vi.command);
-  }
-
-  words.clear();
-
   return nullptr;
 }
 
@@ -178,7 +147,7 @@ f64 findModalGroup(f64 code) {
 
 // the comments are referenced from here:
 // https://linuxcnc.org/docs/stable/html/gcode/overview.html#gcode:order-of-execution
-int getInstructionPriority(VerboseInstruction instruction) {
+int getInstructionPriority(gpp::VerboseInstruction instruction) {
   //  0: O-word commands (optionally followed by a comment but no other
   //  words allowed on the same line)
   if (instruction.word == 'o')
@@ -319,8 +288,8 @@ int getInstructionPriority(VerboseInstruction instruction) {
   return 100;
 }
 
-bool compareVerboseInstructions(const VerboseInstruction &a,
-                                const VerboseInstruction &b) {
+bool compareVerboseInstructions(const gpp::VerboseInstruction &a,
+                                const gpp::VerboseInstruction &b) {
   int pa = getInstructionPriority(a);
   int pb = getInstructionPriority(b);
   return pa < pb;

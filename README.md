@@ -24,7 +24,16 @@ make dev
 ./build/gcode++ <filename>
 ```
 
-### Testing 
+### Install
+
+By default, `make install` builds and installs the binary into `/usr/local/bin`.
+
+```
+make install # optional: `DIR=/usr/bin` or something
+gcode++ <filename>
+```
+
+### Test 
 ```
 make test unit       # runs all unit tests
 make test regression # regression tests
@@ -40,3 +49,9 @@ make test regression # regression tests
 - **Spindle Control**: `M3`, `M4`, `M5`, `s<speed>`
 - **Feedrate**: `F<feedrate>`
 - More TODO...
+
+## ANTLR4 Dependency
+
+If you want to make changes to the [antlr grammar](/antlr4/), Java is required
+since `make antlr` depends on Java. You'll have to run `make antlr` to test as
+well as build the binary.

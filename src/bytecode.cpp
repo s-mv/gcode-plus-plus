@@ -40,10 +40,10 @@ void gpp::BytecodeEmitter::preprocess(parser_antlr4::BlockContext *block) {
   }
 }
 
-gpp::Instruction gpp::BytecodeEmitter::next() {
-  while (bytecode.empty()) {
+bool gpp::BytecodeEmitter::fetchInstructions() {
+  while (verboseInstructions.empty()) {
     if (executionStack.empty())
-      return {no_command};
+      return false;
 
     ExecutionFrame &frame = executionStack.top();
     std::vector<parser_antlr4::StatementContext *> statements =
@@ -141,9 +141,7 @@ gpp::Instruction gpp::BytecodeEmitter::next() {
     visit(statements.at(frame.linePointer++));
   }
 
-  Instruction front = bytecode.front();
-  bytecode.pop();
-  return front;
+  return true;
 }
 
 antlrcpp::Any gpp::BytecodeEmitter::visitSubroutine(
