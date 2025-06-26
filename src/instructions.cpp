@@ -379,30 +379,62 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     if (std::isnan(drill_position.y))
       drill_position.y = current.y;
 
-    f64 retract_z = (distanceMode == absolute) ? r : current.z + r;
-
     f64 old_z = current.z;
-    f64 final_retract_z =
-        (retractMode == old_z) ? std::max(old_z, retract_z) : retract_z;
+    f64 final_retract_z = (retractMode == old_z) ? std::max(old_z, r) : r;
 
-    REQUIRE_CONDITION(retract_z >= current.z || distanceMode == relative,
-                      "Retract plane R is below current Z!",
-                      emitter.getLineFromSource(line));
+    // REQUIRE_CONDITION(retract_z >= current.z || distanceMode == relative,
+    //                   "Retract plane R is below current Z!",
+    //                   emitter.getLineFromSource(line));
 
-    emitter.bytecode.push_back(
-        {.command = gpp::move_linear,
-         .arguments = {drill_position.x, drill_position.y, final_retract_z}});
+    if (distanceMode == absolute) {
+      if (old_z < r) {
+        emitter.bytecode.push_back({.command = gpp::move_rapid,
+                                    .arguments = {current.x, current.y, r}});
+        current.z = r;
+      }
+    } else {
+      if (r > 0) {
+        emitter.bytecode.push_back(
+            {.command = gpp::move_rapid, .arguments = {0, 0, r}});
+        current.z = r;
+      }
+    }
 
     SpindleDirection sd = spindleDirection;
 
     for (int i = 0; i < l; i++) {
-      if (distanceMode == gpp::relative) {
+      if (distanceMode == absolute) {
+        emitter.bytecode.push_back(
+            {.command = gpp::move_linear,
+             .arguments = {drill_position.x, drill_position.y, current.z}});
+
+        if (current.z != r)
+          emitter.bytecode.push_back(
+              {.command = gpp::move_rapid,
+               .arguments = {drill_position.x, drill_position.y, r}});
+
+        emitter.bytecode.push_back(
+            {.command = gpp::move_linear,
+             .arguments = {drill_position.x, drill_position.y,
+                           drill_position.z}});
+
+        if (arg_i > 81)
+          emitter.bytecode.push_back({.command = gpp::dwell, .arguments = {p}});
+
+        if (arg_i == 86)
+          emitter.bytecode.push_back({.command = gpp::stop_spindle_turning});
+
+        emitter.bytecode.push_back(
+            {.command = gpp::move_linear,
+             .arguments = {drill_position.x, drill_position.y, r}});
+      } else {
         emitter.bytecode.push_back(
             {.command = gpp::move_linear,
              .arguments = {drill_position.x, drill_position.y, 0}});
 
         emitter.bytecode.push_back(
-            {.command = gpp::move_linear, .arguments = {0, 0, -z}});
+            {.command = gpp::move_linear,
+             .arguments = {0, 0, -std::abs(drill_position.z)}});
 
         if (arg_i > 81)
           emitter.bytecode.push_back({.command = gpp::dwell, .arguments = {p}});
@@ -412,14 +444,14 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
 
         emitter.bytecode.push_back(
             {.command = arg_i == 87 ? gpp::move_linear : gpp::move_rapid,
-             .arguments = {0, 0, z}});
-
-        if (arg_i == 86)
-          emitter.bytecode.push_back(
-              {.command = sd == gpp::clockwise
-                              ? gpp::start_spindle_clockwise
-                              : gpp::start_spindle_counterclockwise});
+             .arguments = {0, 0, std::abs(drill_position.z)}});
       }
+
+      if (arg_i == 86)
+        emitter.bytecode.push_back(
+            {.command = sd == gpp::clockwise
+                            ? gpp::start_spindle_clockwise
+                            : gpp::start_spindle_counterclockwise});
     }
 
     break;
