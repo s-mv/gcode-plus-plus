@@ -14,14 +14,14 @@ public:
   enum {
     IF = 1, THEN = 2, DO = 3, WHILE = 4, FOR = 5, FROM = 6, TO = 7, ELSE = 8, 
     END = 9, ENDIF = 10, ENDWHILE = 11, ENDFOR = 12, BREAK = 13, CONTINUE = 14, 
-    SUBROUTINE = 15, M99 = 16, DIGIT = 17, LETTER = 18, PLUS = 19, MINUS = 20, 
-    DOT = 21, LEFT_BRACKET = 22, RIGHT_BRACKET = 23, POWER = 24, SLASH = 25, 
-    MODULO = 26, TIMES = 27, LOGICAL_AND = 28, EXCLUSIVE_OR = 29, NON_EXCLUSIVE_OR = 30, 
-    EQ = 31, NE = 32, LT = 33, LE = 34, GT = 35, GE = 36, ABSOLUTE_VALUE = 37, 
-    ARC_COSINE = 38, ARC_SINE = 39, COSINE = 40, E_RAISED_TO = 41, FIX_DOWN = 42, 
-    FIX_UP = 43, NATURAL_LOG_OF = 44, ROUND_OPERATION = 45, SINE = 46, SQUARE_ROOT = 47, 
-    TANGENT = 48, ARC_TANGENT = 49, PARAMETER_SIGN = 50, EQUAL_SIGN = 51, 
-    COMMENT = 52, NAMED_PARAMETER = 53, EOL = 54, WS = 55
+    SUBROUTINE = 15, M99 = 16, DIGIT = 17, LETTER = 18, DOLLAR = 19, PLUS = 20, 
+    MINUS = 21, DOT = 22, LEFT_BRACKET = 23, RIGHT_BRACKET = 24, POWER = 25, 
+    SLASH = 26, MODULO = 27, TIMES = 28, LOGICAL_AND = 29, EXCLUSIVE_OR = 30, 
+    NON_EXCLUSIVE_OR = 31, EQ = 32, NE = 33, LT = 34, LE = 35, GT = 36, 
+    GE = 37, ABSOLUTE_VALUE = 38, ARC_COSINE = 39, ARC_SINE = 40, COSINE = 41, 
+    E_RAISED_TO = 42, FIX_DOWN = 43, FIX_UP = 44, NATURAL_LOG_OF = 45, ROUND_OPERATION = 46, 
+    SINE = 47, SQUARE_ROOT = 48, TANGENT = 49, ARC_TANGENT = 50, PARAMETER_SIGN = 51, 
+    EQUAL_SIGN = 52, COMMENT = 53, NAMED_PARAMETER = 54, EOL = 55, WS = 56
   };
 
   enum {
@@ -378,6 +378,7 @@ public:
     Mid_line_letterContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *LETTER();
+    antlr4::tree::TerminalNode *DOLLAR();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

@@ -84,7 +84,7 @@ mid_line_word
     ;
 
 mid_line_letter
-    : LETTER
+    : LETTER | DOLLAR
     ;
 
 real_value

@@ -32,6 +32,8 @@ LETTER
     | 'a' .. 'z'
     ;
 
+DOLLAR : '$' ;
+
 PLUS  : '+' ;
 MINUS : '-' ;
 DOT   : '.' ;

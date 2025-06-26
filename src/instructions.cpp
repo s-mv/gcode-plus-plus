@@ -335,10 +335,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
 
   // case 80:
   case 81:
-  case 82:
-  case 86:
-  case 87: {
-
+  case 82: {
     REQUIRE_CONDITION(feedRate > 0,
                       "Feed rate must be set before G" + std::to_string(arg_i) +
                           " is used!",
@@ -400,8 +397,6 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
       }
     }
 
-    SpindleDirection sd = spindleDirection;
-
     for (int i = 0; i < l; i++) {
       if (distanceMode == absolute) {
         emitter.bytecode.push_back(
@@ -421,9 +416,6 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
         if (arg_i > 81)
           emitter.bytecode.push_back({.command = gpp::dwell, .arguments = {p}});
 
-        if (arg_i == 86)
-          emitter.bytecode.push_back({.command = gpp::stop_spindle_turning});
-
         emitter.bytecode.push_back(
             {.command = gpp::move_linear,
              .arguments = {drill_position.x, drill_position.y, r}});
@@ -439,26 +431,336 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
         if (arg_i > 81)
           emitter.bytecode.push_back({.command = gpp::dwell, .arguments = {p}});
 
-        if (arg_i == 86)
-          emitter.bytecode.push_back({.command = gpp::stop_spindle_turning});
-
         emitter.bytecode.push_back(
             {.command = arg_i == 87 ? gpp::move_linear : gpp::move_rapid,
              .arguments = {0, 0, std::abs(drill_position.z)}});
       }
-
-      if (arg_i == 86)
-        emitter.bytecode.push_back(
-            {.command = sd == gpp::clockwise
-                            ? gpp::start_spindle_clockwise
-                            : gpp::start_spindle_counterclockwise});
     }
 
     break;
   }
-    // case 83:
+
+  case 83: {
+    REQUIRE_CONDITION(feedRate > 0, "Feed rate must be set before G83 is used!",
+                      emitter.getLineFromSource(line));
+
+    f64 x, y, z;
+    f64 r = emitter.findParameter(words, 'r');
+    f64 l_real = emitter.findParameter(words, 'l');
+    f64 q = emitter.findParameter(words, 'q');
+
+    emitter.extractCoordinates(words, x, y, z);
+
+    REQUIRE_CONDITION(!std::isnan(z), "Missing Z<> for G83!",
+                      emitter.getLineFromSource(line));
+    REQUIRE_CONDITION(!std::isnan(r), "Missing R<> for G83!",
+                      emitter.getLineFromSource(line));
+    REQUIRE_CONDITION(!std::isnan(q) && q > 0,
+                      "Missing or invalid Q<> for G83!",
+                      emitter.getLineFromSource(line));
+
+    if (std::isnan(l_real))
+      l_real = 1;
+    int l = static_cast<int>(l_real);
+
+    Vec3D current = getLogicalPosition();
+    Vec3D target_position = {x, y, z};
+
+    if (std::isnan(target_position.x))
+      target_position.x = current.x;
+    if (std::isnan(target_position.y))
+      target_position.y = current.y;
+
+    f64 old_z = current.z;
+    f64 final_retract_z = (retractMode == old_z) ? std::max(old_z, r) : r;
+
+    if (distanceMode == absolute) {
+      if (old_z < r) {
+        emitter.bytecode.push_back({.command = gpp::move_rapid,
+                                    .arguments = {current.x, current.y, r}});
+        current.z = r;
+      }
+    } else {
+      if (r > 0) {
+        emitter.bytecode.push_back(
+            {.command = gpp::move_rapid, .arguments = {0, 0, r}});
+        current.z = r;
+      }
+    }
+
+    f64 clearance = unitMultiplier(unit);
+
+    for (int i = 0; i < l; i++) {
+      if (distanceMode == absolute) {
+        emitter.bytecode.push_back(
+            {.command = gpp::move_linear, .arguments = {x, y, r}});
+
+        while (current.z > z) {
+          f64 next_depth = std::max(current.z - q, z);
+          emitter.bytecode.push_back(
+              {.command = gpp::move_linear,
+               .arguments = {target_position.x, target_position.y,
+                             next_depth}});
+          current.z = next_depth;
+        }
+
+        emitter.bytecode.push_back(
+            {.command = gpp::move_rapid,
+             .arguments = {target_position.x, target_position.y, r}});
+        current.z = r;
+      } else {
+        emitter.bytecode.push_back(
+            {.command = gpp::move_linear, .arguments = {x, y, 0}});
+
+        while (current.z > z) {
+          f64 next_depth = std::max(current.z - q, z);
+          f64 increment = next_depth - current.z;
+          emitter.bytecode.push_back(
+              {.command = gpp::move_linear, .arguments = {0, 0, increment}});
+          current.z = next_depth;
+        }
+
+        emitter.bytecode.push_back(
+            {.command = gpp::move_rapid, .arguments = {0, 0, r - current.z}});
+        current.z = r;
+      }
+    }
+    break;
+  }
+
     // case 84:
-    // case 85:
+
+  case 85: {
+    REQUIRE_CONDITION(feedRate > 0, "Feed rate must be set before G85 is used!",
+                      emitter.getLineFromSource(line));
+
+    f64 x, y, z;
+    f64 r = emitter.findParameter(words, 'r');
+    f64 l_real = emitter.findParameter(words, 'l');
+    f64 q = emitter.findParameter(words, 'q');
+
+    emitter.extractCoordinates(words, x, y, z);
+
+    REQUIRE_CONDITION(!std::isnan(z), "Missing Z<> for G85!",
+                      emitter.getLineFromSource(line));
+    REQUIRE_CONDITION(!std::isnan(r), "Missing R<> for G85!",
+                      emitter.getLineFromSource(line));
+    REQUIRE_CONDITION(!std::isnan(q) && q > 0,
+                      "Missing or invalid Q<> for G85!",
+                      emitter.getLineFromSource(line));
+
+    if (std::isnan(l_real))
+      l_real = 1;
+    int l = static_cast<int>(l_real);
+
+    Vec3D current = getLogicalPosition();
+    Vec3D target_position = {x, y, z};
+
+    if (std::isnan(target_position.x))
+      target_position.x = current.x;
+    if (std::isnan(target_position.y))
+      target_position.y = current.y;
+
+    f64 old_z = current.z;
+    f64 final_retract_z = (retractMode == old_z) ? std::max(old_z, r) : r;
+
+    if (distanceMode == absolute) {
+      if (old_z < r) {
+        emitter.bytecode.push_back({.command = gpp::move_rapid,
+                                    .arguments = {current.x, current.y, r}});
+        current.z = r;
+      }
+    } else {
+      if (r > 0) {
+        emitter.bytecode.push_back(
+            {.command = gpp::move_rapid, .arguments = {0, 0, r}});
+        current.z = r;
+      }
+    }
+
+    for (int i = 0; i < l; i++) {
+      if (distanceMode == absolute) {
+        emitter.bytecode.push_back(
+            {.command = gpp::move_linear, .arguments = {x, y, z}});
+        if (z < old_z) {
+          emitter.bytecode.push_back(
+              {.command = gpp::move_linear, .arguments = {x, y, r}});
+        }
+        emitter.bytecode.push_back({.command = gpp::move_linear,
+                                    .arguments = {x, y, final_retract_z}});
+      } else {
+        emitter.bytecode.push_back(
+            {.command = gpp::move_linear, .arguments = {0, 0, z}});
+        if (z < old_z) {
+          emitter.bytecode.push_back(
+              {.command = gpp::move_linear, .arguments = {0, 0, r - z}});
+        }
+        emitter.bytecode.push_back({.command = gpp::move_linear,
+                                    .arguments = {0, 0, final_retract_z - r}});
+      }
+    }
+
+    break;
+  }
+
+  case 86: {
+    REQUIRE_CONDITION(feedRate > 0, "Feed rate must be set before G86 is used!",
+                      emitter.getLineFromSource(line));
+
+    f64 x, y, z;
+    f64 r = emitter.findParameter(words, 'r');
+    f64 l_real = emitter.findParameter(words, 'l');
+    f64 p = emitter.findParameter(words, 'p');
+    // f64 $ = emitter.findParameter(words, '$');
+
+    emitter.extractCoordinates(words, x, y, z);
+
+    REQUIRE_CONDITION(!std::isnan(z), "Missing Z<> for G86!",
+                      emitter.getLineFromSource(line));
+    REQUIRE_CONDITION(!std::isnan(r), "Missing R<> for G86!",
+                      emitter.getLineFromSource(line));
+
+    if (std::isnan(l_real))
+      l_real = 1;
+    int l = static_cast<int>(l_real);
+
+    Vec3D current = getLogicalPosition();
+    Vec3D target_position = {x, y, z};
+
+    if (std::isnan(target_position.x))
+      target_position.x = current.x;
+    if (std::isnan(target_position.y))
+      target_position.y = current.y;
+
+    f64 old_z = current.z;
+    f64 final_retract_z = (retractMode == old_z) ? std::max(old_z, r) : r;
+
+    if (distanceMode == absolute) {
+      if (old_z < r) {
+        emitter.bytecode.push_back({.command = gpp::move_rapid,
+                                    .arguments = {current.x, current.y, r}});
+        current.z = r;
+      }
+    } else {
+      if (r > 0) {
+        emitter.bytecode.push_back(
+            {.command = gpp::move_rapid, .arguments = {0, 0, r}});
+        current.z = r;
+      }
+    }
+
+    SpindleDirection sd = spindleDirection;
+
+    for (int i = 0; i < l; i++) {
+      if (distanceMode == absolute) {
+        emitter.bytecode.push_back(
+            {.command = gpp::move_rapid,
+             .arguments = {target_position.x, target_position.y, r}});
+
+        emitter.bytecode.push_back(
+            {.command = gpp::move_linear,
+             .arguments = {target_position.x, target_position.y, z}});
+
+        emitter.bytecode.push_back({.command = gpp::dwell, .arguments = {p}});
+
+        emitter.bytecode.push_back({.command = gpp::stop_spindle_turning});
+
+        emitter.bytecode.push_back(
+            {.command = gpp::move_rapid,
+             .arguments = {target_position.x, target_position.y, r}});
+
+        emitter.bytecode.push_back(
+            {.command = sd == gpp::clockwise
+                            ? gpp::start_spindle_clockwise
+                            : gpp::start_spindle_counterclockwise});
+      } else {
+        emitter.bytecode.push_back(
+            {.command = gpp::move_rapid, .arguments = {0, 0, r}});
+
+        emitter.bytecode.push_back(
+            {.command = gpp::move_linear, .arguments = {0, 0, z - r}});
+
+        emitter.bytecode.push_back({.command = gpp::dwell, .arguments = {p}});
+
+        emitter.bytecode.push_back({.command = gpp::stop_spindle_turning});
+
+        emitter.bytecode.push_back(
+            {.command = gpp::move_rapid, .arguments = {0, 0, r - z}});
+
+        emitter.bytecode.push_back(
+            {.command = sd == gpp::clockwise
+                            ? gpp::start_spindle_clockwise
+                            : gpp::start_spindle_counterclockwise});
+      }
+    }
+
+    break;
+  }
+
+    // case 87:
+    // case 88:
+
+  case 89: {
+    REQUIRE_CONDITION(feedRate > 0, "Feed rate must be set before G86 is used!",
+                      emitter.getLineFromSource(line));
+
+    f64 x, y, z;
+    f64 r = emitter.findParameter(words, 'r');
+    f64 l_real = emitter.findParameter(words, 'l');
+    f64 p = emitter.findParameter(words, 'p');
+
+    emitter.extractCoordinates(words, x, y, z);
+
+    REQUIRE_CONDITION(!std::isnan(z), "Missing Z<> for G86!",
+                      emitter.getLineFromSource(line));
+    REQUIRE_CONDITION(!std::isnan(r), "Missing R<> for G86!",
+                      emitter.getLineFromSource(line));
+
+    if (std::isnan(l_real))
+      l_real = 1;
+    int l = static_cast<int>(l_real);
+
+    Vec3D current = getLogicalPosition();
+    Vec3D target_position = {x, y, z};
+
+    if (std::isnan(target_position.x))
+      target_position.x = current.x;
+    if (std::isnan(target_position.y))
+      target_position.y = current.y;
+
+    f64 old_z = current.z;
+    f64 final_retract_z = (retractMode == old_z) ? std::max(old_z, r) : r;
+
+    if (distanceMode == absolute) {
+      if (old_z < r) {
+        emitter.bytecode.push_back({.command = gpp::move_rapid,
+                                    .arguments = {current.x, current.y, r}});
+        current.z = r;
+      }
+    } else {
+      if (r > 0) {
+        emitter.bytecode.push_back(
+            {.command = gpp::move_rapid, .arguments = {0, 0, r}});
+        current.z = r;
+      }
+    }
+
+    for (int i = 0; i < l; i++) {
+      if (distanceMode == absolute) {
+        emitter.bytecode.push_back(
+            {.command = gpp::move_linear,
+             .arguments = {target_position.x, target_position.y, z}});
+
+        emitter.bytecode.push_back({.command = gpp::dwell, .arguments = {p}});
+
+        emitter.bytecode.push_back(
+            {.command = gpp::move_rapid,
+             .arguments = {target_position.x, target_position.y, r}});
+      }
+    }
+
+    break;
+  }
 
   case 90:
     emitter.bytecode.push_back(
