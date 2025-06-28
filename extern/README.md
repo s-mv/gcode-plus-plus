@@ -13,3 +13,6 @@ See individual LICENSE files for the same:
 - [Catch2](catch2/LICENSE.txt)
 - [ANTLR4](antlr4/LICENSE.txt)
 - [stb](stb/LICENSE)
+
+Additionally this directory contains doctest that might replace Catch2 in the
+future. It uses the [MIT license](https://opensource.org/license/MIT).

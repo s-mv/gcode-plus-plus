@@ -18,7 +18,7 @@ TEST_TYPE    = unit
 TEST_INCLUDE = -I $(EXTERN)catch2/
 TEST_TARGETS = unit regression
 
-UNIT_TEST_FILES = tests/unit.cpp tests/calculation.cpp tests/testutil.cpp \
+UNIT_TEST_FILES = tests/unit.cpp tests/calculation.cpp \
                   tests/extended_grammar.cpp tests/gcode.cpp tests/mcode.cpp \
 									tests/edge_cases.cpp tests/g93_97.cpp
 

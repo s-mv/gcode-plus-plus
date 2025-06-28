@@ -7,51 +7,61 @@
 TEST_CASE("if-else-if-else-end", "[extended-grammar]") {
   std::string code = readFile("examples/if.cnc");
   gpp::Machine machine(code);
+  gpp::Vec3D expected_vec;
+  std::vector<f64> expected_args;
 
   gpp::Instruction instruction;
 
   instruction = machine.next();
-  REQUIRE(instruction.command == gpp::Command::move_rapid);
-  REQUIRE_approx_equal(instruction.arguments, std::vector<f64>{27, 9, 3});
+  expected_args = {27, 9, 3};
+  CHECK(instruction.command == gpp::Command::move_rapid);
+  CHECK_VEC_EQUAL(instruction.arguments, expected_args);
 
   instruction = machine.next();
-  REQUIRE(instruction.command == gpp::Command::no_command);
+  CHECK(instruction.command == gpp::Command::no_command);
 }
 
 TEST_CASE("while/do-while", "[extended-grammar]") {
   std::string code = readFile("examples/while.cnc");
   gpp::Machine machine(code);
+  gpp::Vec3D expected_vec;
+  std::vector<f64> expected_args;
 
   gpp::Instruction instruction;
 
   for (f64 i = 3; i > 0; i--) {
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::Command::move_rapid);
-    REQUIRE_approx_equal(instruction.arguments, std::vector<f64>{i, 0, 0});
+    expected_args = {i, 0, 0};
+    CHECK(instruction.command == gpp::Command::move_rapid);
+    CHECK_VEC_EQUAL(instruction.arguments, expected_args);
   }
 
   instruction = machine.next();
-  REQUIRE(instruction.command == gpp::Command::move_rapid);
-  REQUIRE_approx_equal(instruction.arguments, std::vector<f64>{5, 0, 0});
+  expected_args = {5, 0, 0};
+  CHECK(instruction.command == gpp::Command::move_rapid);
+  CHECK_VEC_EQUAL(instruction.arguments, expected_args);
 
   instruction = machine.next();
-  REQUIRE(instruction.command == gpp::Command::no_command);
+  CHECK(instruction.command == gpp::Command::no_command);
 }
 
 TEST_CASE("for", "[extended-grammar]") {
   std::string code = readFile("examples/for.cnc");
   gpp::Machine machine(code);
+  gpp::Vec3D expected_vec;
+  std::vector<f64> expected_args;
 
   gpp::Instruction instruction;
 
   for (f64 i = 0; i < 3; i++) {
     for (f64 j = 0; j < 3; j++) {
       instruction = machine.next();
-      REQUIRE(instruction.command == gpp::Command::move_rapid);
-      REQUIRE_approx_equal(instruction.arguments, std::vector<f64>{1, i, j});
+      expected_args = {1, i, j};
+      CHECK(instruction.command == gpp::Command::move_rapid);
+      CHECK_VEC_EQUAL(instruction.arguments, expected_args);
     }
   }
 
   instruction = machine.next();
-  REQUIRE(instruction.command == gpp::Command::no_command);
+  CHECK(instruction.command == gpp::Command::no_command);
 }

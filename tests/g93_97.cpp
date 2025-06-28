@@ -12,18 +12,21 @@ TEST_CASE("g93-95 feed modes with motion dependencies", "[g-code]") {
                        "g1 x10 y10\n";
 
     gpp::Machine machine(code);
+    gpp::Vec3D expected_vec;
+    std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_mode);
-    REQUIRE(instruction.arguments.at(0) == gpp::inverse_time);
+    CHECK(instruction.command == gpp::set_feed_mode);
+    expected_args = {gpp::inverse_time};
+    CHECK(instruction.arguments.at(0) == expected_args[0]);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_rate);
-    REQUIRE(machine.feedRate == Catch::Approx(1.0 / 0.1));
+    CHECK(instruction.command == gpp::set_feed_rate);
+    CHECK(machine.feedRate == Catch::Approx(1.0 / 0.1));
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::move_linear);
+    CHECK(instruction.command == gpp::move_linear);
   }
 
   SECTION("g94 units per minute - direct feed rate") {
@@ -32,18 +35,21 @@ TEST_CASE("g93-95 feed modes with motion dependencies", "[g-code]") {
                        "g1 x20\n";
 
     gpp::Machine machine(code);
+    gpp::Vec3D expected_vec;
+    std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_mode);
-    REQUIRE(instruction.arguments.at(0) == gpp::units_per_minute);
+    CHECK(instruction.command == gpp::set_feed_mode);
+    expected_args = {gpp::units_per_minute};
+    CHECK(instruction.arguments.at(0) == expected_args[0]);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_rate);
-    REQUIRE(machine.feedRate == Catch::Approx(1500.0));
+    CHECK(instruction.command == gpp::set_feed_rate);
+    CHECK(machine.feedRate == Catch::Approx(1500.0));
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::move_linear);
+    CHECK(instruction.command == gpp::move_linear);
   }
 
   SECTION("g95 units per revolution - depends on spindle speed") {
@@ -54,24 +60,27 @@ TEST_CASE("g93-95 feed modes with motion dependencies", "[g-code]") {
                        "g1 x5\n";
 
     gpp::Machine machine(code);
+    gpp::Vec3D expected_vec;
+    std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_spindle_speed);
+    CHECK(instruction.command == gpp::set_spindle_speed);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::start_spindle_clockwise);
+    CHECK(instruction.command == gpp::start_spindle_clockwise);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_mode);
-    REQUIRE(instruction.arguments.at(0) == gpp::units_per_revolution);
+    CHECK(instruction.command == gpp::set_feed_mode);
+    expected_args = {gpp::units_per_revolution};
+    CHECK(instruction.arguments.at(0) == expected_args[0]);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_rate);
-    REQUIRE(machine.feedRate == Catch::Approx(0.1 * 1000));
+    CHECK(instruction.command == gpp::set_feed_rate);
+    CHECK(machine.feedRate == Catch::Approx(0.1 * 1000));
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::move_linear);
+    CHECK(instruction.command == gpp::move_linear);
   }
 
   SECTION("g95 with zero spindle speed - edge case") {
@@ -80,17 +89,19 @@ TEST_CASE("g93-95 feed modes with motion dependencies", "[g-code]") {
                        "f0.1\n";
 
     gpp::Machine machine(code);
+    gpp::Vec3D expected_vec;
+    std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_spindle_speed);
+    CHECK(instruction.command == gpp::set_spindle_speed);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_mode);
+    CHECK(instruction.command == gpp::set_feed_mode);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_rate);
-    REQUIRE(machine.feedRate == Catch::Approx(0.0));
+    CHECK(instruction.command == gpp::set_feed_rate);
+    CHECK(machine.feedRate == Catch::Approx(0.0));
   }
 }
 
@@ -101,24 +112,27 @@ TEST_CASE("g96-97 spindle modes with motion dependencies", "[g-code]") {
                        "g1 x50\n";
 
     gpp::Machine machine(code);
+    gpp::Vec3D expected_vec;
+    std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::move_rapid);
+    CHECK(instruction.command == gpp::move_rapid);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_spindle_speed);
+    CHECK(instruction.command == gpp::set_spindle_speed);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_spindle_mode);
-    REQUIRE(instruction.arguments.at(0) == gpp::constant_surface_speed);
+    CHECK(instruction.command == gpp::set_spindle_mode);
+    expected_args = {gpp::constant_surface_speed};
+    CHECK(instruction.arguments.at(0) == expected_args[0]);
 
-    REQUIRE(machine.spindleSpeed ==
+    CHECK(machine.spindleSpeed ==
             Catch::Approx(1000 * 200 / (2 * M_PI * 25)).margin(1.0));
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::move_linear);
-    REQUIRE(machine.spindleSpeed ==
+    CHECK(instruction.command == gpp::move_linear);
+    CHECK(machine.spindleSpeed ==
             Catch::Approx(1000 * 200 / (2 * M_PI * 50)).margin(1.0));
   }
 
@@ -127,17 +141,19 @@ TEST_CASE("g96-97 spindle modes with motion dependencies", "[g-code]") {
                        "g96 s250\n";
 
     gpp::Machine machine(code);
+    gpp::Vec3D expected_vec;
+    std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::move_rapid);
+    CHECK(instruction.command == gpp::move_rapid);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_spindle_speed);
+    CHECK(instruction.command == gpp::set_spindle_speed);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_spindle_mode);
-    REQUIRE(machine.spindleSpeed == Catch::Approx(0.0));
+    CHECK(instruction.command == gpp::set_spindle_mode);
+    CHECK(machine.spindleSpeed == Catch::Approx(0.0));
   }
 
   SECTION("g97 fixed RPM mode") {
@@ -145,19 +161,23 @@ TEST_CASE("g96-97 spindle modes with motion dependencies", "[g-code]") {
                        "g0 x10 y10\n";
 
     gpp::Machine machine(code);
+    gpp::Vec3D expected_vec;
+    std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_spindle_speed);
-    REQUIRE_approx_equal(instruction.arguments, {2500});
+    CHECK(instruction.command == gpp::set_spindle_speed);
+    expected_args = {2500};
+    CHECK_VEC_EQUAL(instruction.arguments, expected_args);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_spindle_mode);
-    REQUIRE(instruction.arguments.at(0) == gpp::fixed_rpm);
+    CHECK(instruction.command == gpp::set_spindle_mode);
+    expected_args = {gpp::fixed_rpm};
+    CHECK(instruction.arguments.at(0) == expected_args[0]);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::move_rapid);
-    REQUIRE(machine.spindleSpeed == Catch::Approx(2500));
+    CHECK(instruction.command == gpp::move_rapid);
+    CHECK(machine.spindleSpeed == Catch::Approx(2500));
   }
 }
 
@@ -170,32 +190,34 @@ TEST_CASE("g93-97 interdependence - tricky edge cases", "[g-code]") {
                        "g1 x50\n";
 
     gpp::Machine machine(code);
+    gpp::Vec3D expected_vec;
+    std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::move_rapid);
+    CHECK(instruction.command == gpp::move_rapid);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_spindle_speed);
+    CHECK(instruction.command == gpp::set_spindle_speed);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_spindle_mode);
-    REQUIRE(machine.spindleSpeed ==
+    CHECK(instruction.command == gpp::set_spindle_mode);
+    CHECK(machine.spindleSpeed ==
             Catch::Approx(1000 * 150 / (2 * M_PI * 20)).margin(1.0));
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_mode);
+    CHECK(instruction.command == gpp::set_feed_mode);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_rate);
-    REQUIRE(machine.feedRate ==
+    CHECK(instruction.command == gpp::set_feed_rate);
+    CHECK(machine.feedRate ==
             Catch::Approx(0.05 * (1000 * 150 / (2 * M_PI * 20))).margin(0.5));
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::move_linear);
-    REQUIRE(machine.spindleSpeed ==
+    CHECK(instruction.command == gpp::move_linear);
+    CHECK(machine.spindleSpeed ==
             Catch::Approx(1000 * 150 / (2 * M_PI * 50)).margin(0.5));
-    REQUIRE(machine.feedRate ==
+    CHECK(machine.feedRate ==
             Catch::Approx(0.05 * (1000 * 150 / (2 * M_PI * 50))).margin(0.2));
   }
 
@@ -209,38 +231,40 @@ TEST_CASE("g93-97 interdependence - tricky edge cases", "[g-code]") {
                        "f800\n";
 
     gpp::Machine machine(code);
+    gpp::Vec3D expected_vec;
+    std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_spindle_speed);
-    REQUIRE(machine.spindleSpeed == Catch::Approx(1500));
+    CHECK(instruction.command == gpp::set_spindle_speed);
+    CHECK(machine.spindleSpeed == Catch::Approx(1500));
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_mode);
+    CHECK(instruction.command == gpp::set_feed_mode);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_rate);
-    REQUIRE(machine.feedRate == Catch::Approx(0.1 * 1500));
+    CHECK(instruction.command == gpp::set_feed_rate);
+    CHECK(machine.feedRate == Catch::Approx(0.1 * 1500));
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::move_rapid);
+    CHECK(instruction.command == gpp::move_rapid);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_spindle_speed);
+    CHECK(instruction.command == gpp::set_spindle_speed);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_spindle_mode);
-    REQUIRE(machine.spindleSpeed ==
+    CHECK(instruction.command == gpp::set_spindle_mode);
+    CHECK(machine.spindleSpeed ==
             Catch::Approx(1000 * 200 / (2 * M_PI * 30)).margin(1.0));
-    REQUIRE(machine.feedRate ==
+    CHECK(machine.feedRate ==
             Catch::Approx(0.1 * (1000 * 200 / (2 * M_PI * 30))).margin(0.5));
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_mode);
+    CHECK(instruction.command == gpp::set_feed_mode);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_rate);
-    REQUIRE(machine.feedRate == Catch::Approx(800.0));
+    CHECK(instruction.command == gpp::set_feed_rate);
+    CHECK(machine.feedRate == Catch::Approx(800.0));
   }
 
   SECTION("g93 with changing spindle speeds") {
@@ -252,27 +276,29 @@ TEST_CASE("g93-97 interdependence - tricky edge cases", "[g-code]") {
                        "f0.05\n";
 
     gpp::Machine machine(code);
+    gpp::Vec3D expected_vec;
+    std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_spindle_speed);
+    CHECK(instruction.command == gpp::set_spindle_speed);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_mode);
+    CHECK(instruction.command == gpp::set_feed_mode);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_rate);
-    REQUIRE(machine.feedRate == Catch::Approx(1.0 / 0.2));
+    CHECK(instruction.command == gpp::set_feed_rate);
+    CHECK(machine.feedRate == Catch::Approx(1.0 / 0.2));
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_spindle_speed);
-    REQUIRE(machine.spindleSpeed == Catch::Approx(2000.0));
+    CHECK(instruction.command == gpp::set_spindle_speed);
+    CHECK(machine.spindleSpeed == Catch::Approx(2000.0));
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_mode);
+    CHECK(instruction.command == gpp::set_feed_mode);
 
     instruction = machine.next();
-    REQUIRE(instruction.command == gpp::set_feed_rate);
-    REQUIRE(machine.feedRate == Catch::Approx(0.05 * 2000));
+    CHECK(instruction.command == gpp::set_feed_rate);
+    CHECK(machine.feedRate == Catch::Approx(0.05 * 2000));
   }
 }

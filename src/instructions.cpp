@@ -152,11 +152,10 @@ void gpp::BytecodeEmitter::handle_g(std::deque<VerboseInstruction> &list,
                                     f64 arg,
                                     const std::vector<gpp::Word> &words,
                                     int line, int column) {
-  VerboseInstruction verboseInstruction = {
-      .word = 'g',
-      .arg = arg,
-      .commentOrMessage = false,
-      .command = {.command = no_command, .arguments = {}}};
+  VerboseInstruction verboseInstruction = {.word = 'g',
+                                           .arg = arg,
+                                           .commentOrMessage = false,
+                                           .command = {.command = no_command}};
 
   list.push_back(verboseInstruction);
 }
@@ -165,11 +164,10 @@ void gpp::BytecodeEmitter::handle_m(std::deque<VerboseInstruction> &list,
                                     f64 arg,
                                     const std::vector<gpp::Word> &words,
                                     int line, int column) {
-  VerboseInstruction verboseInstruction = {
-      .word = 'm',
-      .arg = arg,
-      .commentOrMessage = false,
-      .command = {.command = no_command, .arguments = {}}};
+  VerboseInstruction verboseInstruction = {.word = 'm',
+                                           .arg = arg,
+                                           .commentOrMessage = false,
+                                           .command = {.command = no_command}};
 
   list.push_back(verboseInstruction);
 }
@@ -840,32 +838,38 @@ void gpp::Machine::handle_m(std::deque<gpp::VerboseInstruction> &list, f64 arg,
   int m_code = static_cast<int>(arg);
 
   switch (m_code) {
-  case 0:
-    emitter.bytecode.push_back({.command = gpp::program_stop, .arguments = {}});
+  case 0: {
+    emitter.bytecode.push_back({.command = gpp::program_stop});
     break;
-  case 1:
+  }
+  case 1: {
+    emitter.bytecode.push_back({.command = gpp::optional_program_stop});
+    break;
+  }
+  case 2: {
     emitter.bytecode.push_back(
-        {.command = gpp::optional_program_stop, .arguments = {}});
+        {.command = gpp::set_origin_offsets, .arguments = {0, 0, 0}});
+    emitter.bytecode.push_back({.command = gpp::stop_spindle_turning});
+    emitter.bytecode.push_back({.command = gpp::program_end});
     break;
-  case 2:
-    emitter.bytecode.push_back({.command = gpp::program_end, .arguments = {}});
+  }
+  case 3: {
+    emitter.bytecode.push_back({.command = gpp::start_spindle_clockwise});
     break;
-  case 3:
+  }
+  case 4: {
     emitter.bytecode.push_back(
-        {.command = gpp::start_spindle_clockwise, .arguments = {}});
+        {.command = gpp::start_spindle_counterclockwise});
     break;
-  case 4:
-    emitter.bytecode.push_back(
-        {.command = gpp::start_spindle_counterclockwise, .arguments = {}});
+  }
+  case 5: {
+    emitter.bytecode.push_back({.command = gpp::stop_spindle_turning});
     break;
-  case 5:
-    emitter.bytecode.push_back(
-        {.command = gpp::stop_spindle_turning, .arguments = {}});
+  }
+  case 6: {
+    emitter.bytecode.push_back({.command = gpp::change_tool});
     break;
-  case 6:
-    emitter.bytecode.push_back({.command = gpp::change_tool, .arguments = {}});
-    break;
-
+  }
   case 98: {
     u64 p = emitter.findParameter(words, 'p');
     ExecutionFrame frame;
@@ -875,21 +879,22 @@ void gpp::Machine::handle_m(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     });
     break;
   }
-  case 99:
+  case 99: {
     emitter.executionStack.pop();
     break;
-
-  case 100:
-    emitter.bytecode.push_back(
-        {.command = gpp::write_parameters_to_file, .arguments = {}});
+  }
+  case 100: {
+    emitter.bytecode.push_back({.command = gpp::write_parameters_to_file});
     break;
+  }
 
-  default:
+  default: {
     if (m_code > 100) {
       emitter.bytecode.push_back(
           {.command = gpp::write_parameter_to_file,
            .arguments = {static_cast<double>(m_code - 100)}});
     }
     break;
+  }
   }
 }

@@ -1,3 +1,5 @@
+#include "util.hpp"
+#include <vector>
 #define smv_gpp_testing
 
 #include "machine.hpp"
@@ -11,28 +13,35 @@ TEST_CASE("missing axes in g0/g1", "[edge-cases]") {
                      "g0 y100\n";
 
   gpp::Machine machine(code);
+  gpp::Vec3D expected_vec;
+  std::vector<f64> expected_args;
 
   gpp::Instruction instruction;
 
   instruction = machine.next();
-  REQUIRE(instruction.command == gpp::move_rapid);
-  REQUIRE_approx_equal(instruction.arguments, {0, 0, 0});
+  expected_args = {0, 0, 0};
+  CHECK(instruction.command == gpp::move_rapid);
+  CHECK_VEC_EQUAL(instruction.arguments, expected_args);
 
   instruction = machine.next();
-  REQUIRE(instruction.command == gpp::set_feed_rate);
-  REQUIRE_approx_equal(instruction.arguments, {600});
+  expected_args = {600};
+  CHECK(instruction.command == gpp::set_feed_rate);
+  CHECK_VEC_EQUAL(instruction.arguments, expected_args);
 
   instruction = machine.next();
-  REQUIRE(instruction.command == gpp::move_linear);
-  REQUIRE_approx_equal(instruction.arguments, {0, 0, -10});
-  REQUIRE_approx_equal(machine.position, gpp::Vec3D{0, 0, -10});
+  expected_args = {0, 0, -10};
+  CHECK(instruction.command == gpp::move_linear);
+  CHECK_VEC_EQUAL(instruction.arguments, expected_args);
+  expected_vec = {0, 0, -10};
+  CHECK_approx_equal(machine.position, expected_vec);
 
   instruction = machine.next();
-  REQUIRE(instruction.command == gpp::move_rapid);
-
-  REQUIRE_approx_equal(instruction.arguments, {0, 100, -10});
-  REQUIRE_approx_equal(machine.position, gpp::Vec3D{0, 100, -10});
+  expected_args = {0, 100, -10};
+  CHECK(instruction.command == gpp::move_rapid);
+  CHECK_VEC_EQUAL(instruction.arguments, expected_args);
+  expected_vec = {0, 100, -10};
+  CHECK_approx_equal(machine.position, expected_vec);
 
   instruction = machine.next();
-  REQUIRE(instruction.command == gpp::no_command);
+  CHECK(instruction.command == gpp::no_command);
 }

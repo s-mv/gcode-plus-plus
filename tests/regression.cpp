@@ -7,6 +7,8 @@
 TEST_CASE("regression test with captured output") {
   std::string code = readFile("examples/learnxiny.cnc");
   std::string expected = readFile("tests/regression.txt");
+  gpp::Vec3D expected_vec;
+  std::vector<f64> expected_args;
 
   std::ostringstream buffer;
   std::streambuf *oldBuffer = std::cout.rdbuf();
@@ -21,5 +23,5 @@ TEST_CASE("regression test with captured output") {
 
   std::string captured = buffer.str();
 
-  REQUIRE(captured == expected);
+  CHECK(captured == expected);
 }
