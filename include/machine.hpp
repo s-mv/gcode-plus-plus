@@ -160,6 +160,8 @@ public:
 
   Machine(std::string input);
 
+  void reset();
+
   void setMemory(i64 address, f64 value);
   f64 getMemory(i64 address);
   Instruction next();

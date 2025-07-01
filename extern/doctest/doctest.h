@@ -2439,7 +2439,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 #define DOCTEST_WARN(...) DOCTEST_ASSERT_IMPLEMENT_1(DT_WARN, __VA_ARGS__)
 #define DOCTEST_CHECK(...) DOCTEST_ASSERT_IMPLEMENT_1(DT_CHECK, __VA_ARGS__)
-#define DOCTEST_CHECK...) DOCTEST_ASSERT_IMPLEMENT_1(DT_REQUIRE, __VA_ARGS__)
+#define DOCTEST_REQUIRE(...) DOCTEST_ASSERT_IMPLEMENT_1(DT_REQUIRE, __VA_ARGS__)
 #define DOCTEST_WARN_FALSE(...) DOCTEST_ASSERT_IMPLEMENT_1(DT_WARN_FALSE, __VA_ARGS__)
 #define DOCTEST_CHECK_FALSE(...) DOCTEST_ASSERT_IMPLEMENT_1(DT_CHECK_FALSE, __VA_ARGS__)
 #define DOCTEST_REQUIRE_FALSE(...) DOCTEST_ASSERT_IMPLEMENT_1(DT_REQUIRE_FALSE, __VA_ARGS__)
@@ -2644,7 +2644,7 @@ int registerReporter(const char* name, int priority, bool isReporter) {
 
 #define DOCTEST_WARN(...) [&] { return __VA_ARGS__; }()
 #define DOCTEST_CHECK(...) [&] { return __VA_ARGS__; }()
-#define DOCTEST_CHECK...) [&] { return __VA_ARGS__; }()
+#define DOCTEST_REQUIRE(...) [&] { return __VA_ARGS__; }()
 #define DOCTEST_WARN_FALSE(...) [&] { return !(__VA_ARGS__); }()
 #define DOCTEST_CHECK_FALSE(...) [&] { return !(__VA_ARGS__); }()
 #define DOCTEST_REQUIRE_FALSE(...) [&] { return !(__VA_ARGS__); }()
@@ -2738,7 +2738,7 @@ namespace detail {
 
 #define DOCTEST_WARN(...) DOCTEST_FUNC_EMPTY
 #define DOCTEST_CHECK(...) DOCTEST_FUNC_EMPTY
-#define DOCTEST_CHECK...) DOCTEST_FUNC_EMPTY
+#define DOCTEST_REQUIRE(...) DOCTEST_FUNC_EMPTY
 #define DOCTEST_WARN_FALSE(...) DOCTEST_FUNC_EMPTY
 #define DOCTEST_CHECK_FALSE(...) DOCTEST_FUNC_EMPTY
 #define DOCTEST_REQUIRE_FALSE(...) DOCTEST_FUNC_EMPTY
@@ -2974,7 +2974,7 @@ namespace detail {
 #define CHECK_THROWS_WITH(expr, ...) DOCTEST_CHECK_THROWS_WITH(expr, __VA_ARGS__)
 #define CHECK_THROWS_WITH_AS(expr, with, ...) DOCTEST_CHECK_THROWS_WITH_AS(expr, with, __VA_ARGS__)
 #define CHECK_NOTHROW(...) DOCTEST_CHECK_NOTHROW(__VA_ARGS__)
-#define CHECK...) DOCTEST_CHECK__VA_ARGS__)
+#define REQUIRE(...) DOCTEST_REQUIRE(__VA_ARGS__)
 #define REQUIRE_FALSE(...) DOCTEST_REQUIRE_FALSE(__VA_ARGS__)
 #define REQUIRE_THROWS(...) DOCTEST_REQUIRE_THROWS(__VA_ARGS__)
 #define REQUIRE_THROWS_AS(expr, ...) DOCTEST_REQUIRE_THROWS_AS(expr, __VA_ARGS__)

@@ -1,14 +1,14 @@
 #define smv_gpp_testing
 
+#include "doctest.h"
+
 #include "bytecode.hpp"
 #include "lexer_antlr4.h"
 #include "machine.hpp"
 #include "parser_antlr4.h"
 #include "util.hpp"
 
-#include "catch_amalgamated.hpp"
-
-TEST_CASE("basic arithmetic", "[calculation]") {
+TEST_CASE("[calculation] basic arithmetic") {
   std::vector<std::string> expressions = {
       "[2 + 3 * [4 - 1]]",
       "[10 / [5 - 3] + 1]",
@@ -32,11 +32,11 @@ TEST_CASE("basic arithmetic", "[calculation]") {
     gpp::Machine machine(input);
     f64 result = std::any_cast<f64>(machine.emitter.visit(tree));
 
-    CHECK(result == Catch::Approx(expected_results[i]));
+    CHECK(result == doctest::Approx(expected_results[i]));
   }
 }
 
-TEST_CASE("trigonometric functions", "[calculation]") {
+TEST_CASE("[calculation] trigonometric functions") {
   std::vector<std::string> expressions = {
       "[sin 0]", "[cos 0]", "[sqrt 16]", "[abs -5]", "[exp 1]", "[ln 2.71828]",
   };
@@ -57,6 +57,6 @@ TEST_CASE("trigonometric functions", "[calculation]") {
     gpp::Machine machine(input);
     f64 result = std::any_cast<f64>(machine.emitter.visit(tree));
 
-    CHECK(result == Catch::Approx(expected_results[i]));
+    CHECK(result == doctest::Approx(expected_results[i]));
   }
 }

@@ -13,14 +13,17 @@ ANTLR4_OBJECTS  = build/lexer_antlr4.o build/parser_antlr4.o \
 
 STB_INCLUDE = -I $(EXTERN)stb/
 
-### testing with catch2 ###
+### testing with doctest ###
 TEST_TYPE    = unit
-TEST_INCLUDE = -I $(EXTERN)catch2/
+TEST_INCLUDE = -I $(EXTERN)doctest/
 TEST_TARGETS = unit regression
 
-UNIT_TEST_FILES = tests/unit.cpp tests/calculation.cpp \
-                  tests/extended_grammar.cpp tests/gcode.cpp tests/mcode.cpp \
-									tests/edge_cases.cpp tests/g93_97.cpp
+# UNIT_TEST_FILES = tests/unit.cpp tests/gcode.cpp
+
+UNIT_TEST_FILES = tests/unit.cpp \
+				tests/calculation.cpp tests/extended_grammar.cpp \
+				tests/gcode.cpp tests/mcode.cpp tests/edge_cases.cpp \
+				tests/g93_97.cpp tests/canned_cycles.cpp
 
 LDFLAGS  = $(ANTLR4_LIB)libantlr4-runtime.a
 CXXFLAGS = -std=c++17 -g -I include/ $(ANTLR4_INCLUDE) $(STB_INCLUDE)
@@ -35,33 +38,14 @@ test:
 
 unit: $(OBJECTS) $(ANTLR4_OBJECTS) $(UNIT_TEST_FILES)
 	@echo "Building unit tests..."
-	@$(CXX) $(UNIT_TEST_FILES) $(EXTERN)catch2/catch_amalgamated.cpp \
+	@$(CXX) $(UNIT_TEST_FILES) \
 		$(OBJECTS) $(ANTLR4_OBJECTS) -o build/unit $(CXXFLAGS) $(LDFLAGS) $(TEST_INCLUDE)
 	@echo "Running unit tests..."
-
-	@echo "Listing and running each test in isolation..."
-	@./build/unit --list-tests --verbosity quiet > .testlist.txt; \
-	total=0; pass=0; fail=0; \
-	while IFS= read -r testname; do \
-		[ -z "$$testname" ] && continue; \
-		echo ">>> Running: $$testname"; \
-		if ./build/unit "$$testname"; then \
-			echo "[PASS] $$testname"; \
-			pass=$$((pass + 1)); \
-		else \
-			echo "[FAIL] $$testname"; \
-			fail=$$((fail + 1)); \
-		fi; \
-		total=$$((total + 1)); \
-	done < .testlist.txt; \
-	rm -f .testlist.txt; \
-	echo "========================="; \
-	echo "Total: $$total | Passed: $$pass | Failed: $$fail"; \
-	test $$fail -eq 0
+	@./build/unit
 
 regression: $(OBJECTS) $(ANTLR4_OBJECTS)
 	@echo "Building regression tests..."
-	@$(CXX) tests/regression.cpp $(TEST_INCLUDE) $(EXTERN)catch2/catch_amalgamated.cpp \
+	@$(CXX) tests/regression.cpp $(TEST_INCLUDE) \
 		$(OBJECTS) $(ANTLR4_OBJECTS) -o build/regression $(CXXFLAGS) $(LDFLAGS)
 	@./build/regression -s
 

@@ -2,9 +2,9 @@
 #include "testutil.hpp"
 #include "util.hpp"
 
-#include "catch_amalgamated.hpp"
+#include "doctest.h"
 
-TEST_CASE("if-else-if-else-end", "[extended-grammar]") {
+TEST_CASE("[extended-grammar] if-else-if-else-end") {
   std::string code = readFile("examples/if.cnc");
   gpp::Machine machine(code);
   gpp::Vec3D expected_vec;
@@ -15,13 +15,13 @@ TEST_CASE("if-else-if-else-end", "[extended-grammar]") {
   instruction = machine.next();
   expected_args = {27, 9, 3};
   CHECK(instruction.command == gpp::Command::move_rapid);
-  CHECK_VEC_EQUAL(instruction.arguments, expected_args);
+  CHECK_ARRAY_EQUAL(instruction.arguments, expected_args);
 
   instruction = machine.next();
   CHECK(instruction.command == gpp::Command::no_command);
 }
 
-TEST_CASE("while/do-while", "[extended-grammar]") {
+TEST_CASE("[extended-grammar] while/do-while") {
   std::string code = readFile("examples/while.cnc");
   gpp::Machine machine(code);
   gpp::Vec3D expected_vec;
@@ -33,19 +33,19 @@ TEST_CASE("while/do-while", "[extended-grammar]") {
     instruction = machine.next();
     expected_args = {i, 0, 0};
     CHECK(instruction.command == gpp::Command::move_rapid);
-    CHECK_VEC_EQUAL(instruction.arguments, expected_args);
+    CHECK_ARRAY_EQUAL(instruction.arguments, expected_args);
   }
 
   instruction = machine.next();
   expected_args = {5, 0, 0};
   CHECK(instruction.command == gpp::Command::move_rapid);
-  CHECK_VEC_EQUAL(instruction.arguments, expected_args);
+  CHECK_ARRAY_EQUAL(instruction.arguments, expected_args);
 
   instruction = machine.next();
   CHECK(instruction.command == gpp::Command::no_command);
 }
 
-TEST_CASE("for", "[extended-grammar]") {
+TEST_CASE("[extended-grammar] for") {
   std::string code = readFile("examples/for.cnc");
   gpp::Machine machine(code);
   gpp::Vec3D expected_vec;
@@ -58,7 +58,7 @@ TEST_CASE("for", "[extended-grammar]") {
       instruction = machine.next();
       expected_args = {1, i, j};
       CHECK(instruction.command == gpp::Command::move_rapid);
-      CHECK_VEC_EQUAL(instruction.arguments, expected_args);
+      CHECK_ARRAY_EQUAL(instruction.arguments, expected_args);
     }
   }
 

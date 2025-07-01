@@ -13,17 +13,7 @@
 gpp::Machine::Machine(std::string input)
     : emitter(*this), input(input), canvasXY(512, 512), canvasYZ(512, 512),
       canvasXZ(512, 512) {
-  position = (Vec3D){0, 0, 0};
-  g92offset = (Vec3D){0, 0, 0};
-  unit = Unit::mm;
-  distanceMode = absolute;
-  plane = plane_xy;
-  feedRate = 0;
-  feedMode = units_per_minute;
-  spindleDirection = off;
-  spindleMode = fixed_rpm;
-  spindleSpeed = 0;
-  currentTool = 1;
+  reset();
 
   initTools("config/tools.txt");
 
@@ -97,6 +87,41 @@ gpp::Machine::Machine(std::string input)
       &gpp::Machine::write_parameter_to_file, this, std::placeholders::_1);
   handlers[Command::write_parameters_to_file] = std::bind(
       &gpp::Machine::write_parameters_to_file, this, std::placeholders::_1);
+}
+
+void gpp::Machine::reset() {
+  position = {0, 0, 0};
+  g92offset = {0, 0, 0};
+  g5xoffset = {0, 0, 0};
+  toolOffset = 0;
+
+  for (Vec3D &offset : workOffsets)
+    offset = {0, 0, 0};
+
+  unit = Unit::mm;
+  distanceMode = absolute;
+  plane = plane_xy;
+
+  feedRate = 0;
+  rawFeedRate = 0;
+  feedMode = units_per_minute;
+
+  spindleDirection = off;
+  spindleMode = fixed_rpm;
+  spindleSpeed = 0;
+  rawSpindleSpeed = 0;
+
+  retractMode = old_z;
+  motionControlMode = exact_stop;
+
+  selectedTool = 0;
+  currentTool = 1;
+  tools.clear();
+
+  activeInstruction = {.word = '0'};
+  memory.clear();
+
+  plotToCanvas = false;
 }
 
 f64 gpp::Machine::getMemory(i64 address) {
