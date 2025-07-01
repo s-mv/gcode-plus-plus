@@ -377,6 +377,8 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     if (std::isnan(drill_position.y))
       drill_position.y = current.y;
 
+    r *= unitMultiplier(unit);
+
     f64 old_z = current.z;
     f64 final_retract_z = (retractMode == old_z) ? std::max(old_z, r) : r;
 
