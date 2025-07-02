@@ -16,16 +16,16 @@ TEST_CASE("[g-code] g93-95 feed modes with motion dependencies") {
     std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_mode);
     expected_args = {gpp::inverse_time};
     CHECK(instruction.arguments.at(0) == expected_args[0]);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_rate);
     CHECK(machine.feedRate == doctest::Approx(1.0 / 0.1));
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_linear);
   }
 
@@ -39,16 +39,16 @@ TEST_CASE("[g-code] g93-95 feed modes with motion dependencies") {
     std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_mode);
     expected_args = {gpp::units_per_minute};
     CHECK(instruction.arguments.at(0) == expected_args[0]);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_rate);
     CHECK(machine.feedRate == doctest::Approx(1500.0));
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_linear);
   }
 
@@ -64,22 +64,22 @@ TEST_CASE("[g-code] g93-95 feed modes with motion dependencies") {
     std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_spindle_speed);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::start_spindle_clockwise);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_mode);
     expected_args = {gpp::units_per_revolution};
     CHECK(instruction.arguments.at(0) == expected_args[0]);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_rate);
     CHECK(machine.feedRate == doctest::Approx(0.1 * 1000));
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_linear);
   }
 
@@ -93,13 +93,13 @@ TEST_CASE("[g-code] g93-95 feed modes with motion dependencies") {
     std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_spindle_speed);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_mode);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_rate);
     CHECK(machine.feedRate == doctest::Approx(0.0));
   }
@@ -116,13 +116,13 @@ TEST_CASE("[g-code] g96-97 spindle modes with motion dependencies") {
     std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_rapid);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_spindle_speed);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_spindle_mode);
     expected_args = {gpp::constant_surface_speed};
     CHECK(instruction.arguments.at(0) == expected_args[0]);
@@ -130,7 +130,7 @@ TEST_CASE("[g-code] g96-97 spindle modes with motion dependencies") {
     CHECK(machine.spindleSpeed ==
           doctest::Approx(1000 * 200 / (2 * M_PI * 25)).epsilon(1.0));
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_linear);
     CHECK(machine.spindleSpeed ==
           doctest::Approx(1000 * 200 / (2 * M_PI * 50)).epsilon(1.0));
@@ -145,13 +145,13 @@ TEST_CASE("[g-code] g96-97 spindle modes with motion dependencies") {
     std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_rapid);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_spindle_speed);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_spindle_mode);
     CHECK(machine.spindleSpeed == doctest::Approx(0.0));
   }
@@ -165,17 +165,17 @@ TEST_CASE("[g-code] g96-97 spindle modes with motion dependencies") {
     std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_spindle_speed);
     expected_args = {2500};
     CHECK_ARRAY_EQUAL(instruction.arguments, expected_args);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_spindle_mode);
     expected_args = {gpp::fixed_rpm};
     CHECK(instruction.arguments.at(0) == expected_args[0]);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_rapid);
     CHECK(machine.spindleSpeed == doctest::Approx(2500));
   }
@@ -194,26 +194,26 @@ TEST_CASE("[g-code] g93-97 interdependence - tricky edge cases") {
     std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_rapid);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_spindle_speed);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_spindle_mode);
     CHECK(machine.spindleSpeed ==
           doctest::Approx(1000 * 150 / (2 * M_PI * 20)).epsilon(1.0));
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_mode);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_rate);
     CHECK(machine.feedRate ==
           doctest::Approx(0.05 * (1000 * 150 / (2 * M_PI * 20))).epsilon(0.5));
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_linear);
     CHECK(machine.spindleSpeed ==
           doctest::Approx(1000 * 150 / (2 * M_PI * 50)).epsilon(0.5));
@@ -235,34 +235,34 @@ TEST_CASE("[g-code] g93-97 interdependence - tricky edge cases") {
     std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_spindle_speed);
     CHECK(machine.spindleSpeed == doctest::Approx(1500));
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_mode);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_rate);
     CHECK(machine.feedRate == doctest::Approx(0.1 * 1500));
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_rapid);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_spindle_speed);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_spindle_mode);
     CHECK(machine.spindleSpeed ==
           doctest::Approx(1000 * 200 / (2 * M_PI * 30)).epsilon(1.0));
     CHECK(machine.feedRate ==
           doctest::Approx(0.1 * (1000 * 200 / (2 * M_PI * 30))).epsilon(0.5));
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_mode);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_rate);
     CHECK(machine.feedRate == doctest::Approx(800.0));
   }
@@ -280,24 +280,24 @@ TEST_CASE("[g-code] g93-97 interdependence - tricky edge cases") {
     std::vector<f64> expected_args;
     gpp::Instruction instruction;
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_spindle_speed);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_mode);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_rate);
     CHECK(machine.feedRate == doctest::Approx(1.0 / 0.2));
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_spindle_speed);
     CHECK(machine.spindleSpeed == doctest::Approx(2000.0));
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_mode);
 
-    instruction = machine.next();
+    instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::set_feed_rate);
     CHECK(machine.feedRate == doctest::Approx(0.05 * 2000));
   }

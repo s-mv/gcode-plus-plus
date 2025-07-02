@@ -154,6 +154,7 @@ private:
 
   Canvas canvasXY, canvasYZ, canvasXZ;
   bool plotToCanvas = false;
+  bool canvasEnabled = false;
 
 public:
   std::vector<f64> memory;
@@ -164,8 +165,10 @@ public:
 
   void setMemory(i64 address, f64 value);
   f64 getMemory(i64 address);
-  Instruction next();
+  std::string getCurrentLine();
+  SafeInstruction next();
   void printSpecs();
+  void enableCanvas();
   void saveCanvases();
 
 private:

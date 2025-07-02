@@ -18,30 +18,30 @@ TEST_CASE("[edge-cases] missing axes in g0/g1") {
 
   gpp::Instruction instruction;
 
-  instruction = machine.next();
+  instruction = expectValidInstruction(machine.next());
   expected_args = {0, 0, 0};
   CHECK(instruction.command == gpp::move_rapid);
   CHECK_ARRAY_EQUAL(instruction.arguments, expected_args);
 
-  instruction = machine.next();
+  instruction = expectValidInstruction(machine.next());
   expected_args = {600};
   CHECK(instruction.command == gpp::set_feed_rate);
   CHECK_ARRAY_EQUAL(instruction.arguments, expected_args);
 
-  instruction = machine.next();
+  instruction = expectValidInstruction(machine.next());
   expected_args = {0, 0, -10};
   CHECK(instruction.command == gpp::move_linear);
   CHECK_ARRAY_EQUAL(instruction.arguments, expected_args);
   expected_vec = {0, 0, -10};
   CHECK_VEC3D_EQUAL(machine.position, expected_vec);
 
-  instruction = machine.next();
+  instruction = expectValidInstruction(machine.next());
   expected_args = {0, 100, -10};
   CHECK(instruction.command == gpp::move_rapid);
   CHECK_ARRAY_EQUAL(instruction.arguments, expected_args);
   expected_vec = {0, 100, -10};
   CHECK_VEC3D_EQUAL(machine.position, expected_vec);
 
-  instruction = machine.next();
+  instruction = expectValidInstruction(machine.next());
   CHECK(instruction.command == gpp::no_command);
 }

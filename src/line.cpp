@@ -42,8 +42,8 @@ int getInstructionPriority(gpp::VerboseInstruction instruction);
 
 antlrcpp::Any
 gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
-  int line = context->getStart()->getLine();
-  int column = context->getStart()->getCharPositionInLine();
+  line = context->getStart()->getLine();
+  column = context->getStart()->getCharPositionInLine();
 
   for (parser_antlr4::SegmentContext *segment : context->segment()) {
     visit(segment);

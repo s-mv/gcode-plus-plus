@@ -13,7 +13,6 @@ struct ExecutionFrame;
 struct VerboseInstruction;
 struct Instruction;
 struct Word;
-enum Macro : u8;
 enum Command : u8;
 
 struct Machine;
@@ -29,10 +28,17 @@ enum FeedMode : u8;
 enum SpindleMode : u8;
 enum RetractMode : u8;
 enum MotionControlMode : u8;
-} // namespace gpp
 
-#ifndef private_prod
-#define private_prod private
-#endif
+enum ErrorType : u8 {
+  PARSE_ERROR,
+  PARAMETER_ERROR,
+  TOOL_ERROR,
+  MEMORY_ERROR,
+  HANDLER_ERROR,
+  IO_ERROR
+};
+
+struct Error;
+} // namespace gpp
 
 #endif

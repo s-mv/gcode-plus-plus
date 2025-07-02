@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iostream>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "bytecode.hpp"
@@ -142,10 +143,17 @@ void gpp::Machine::setMemory(i64 address, f64 value) {
   memory.at(address) = value;
 }
 
-gpp::Instruction gpp::Machine::next() {
+std::string gpp::Machine::getCurrentLine() {
+  int line = emitter.executionStack.empty()
+                 ? 0
+                 : emitter.executionStack.top().linePointer;
+  return emitter.getLineFromSource(line);
+}
+
+SafeInstruction gpp::Machine::next() {
   while (emitter.bytecode.empty()) {
     if (!emitter.fetchInstructions())
-      return {no_command};
+      return Instruction{no_command};
 
     VerboseInstruction vi = emitter.verboseInstructions.front();
     emitter.verboseInstructions.pop_front();
@@ -157,22 +165,30 @@ gpp::Instruction gpp::Machine::next() {
     } else if (vi.word == 'f') {
       f64 f = emitter.findParameter(emitter.words, 'f');
       emitter.bytecode.push_back(
-          {.command = gpp::set_feed_rate, .arguments = {f}});
+          Instruction{.command = gpp::set_feed_rate, .arguments = {f}});
     } else if (vi.word == 'm') {
       handle_m(emitter.verboseInstructions, vi.arg, emitter.words, 0, 0);
     } else if (vi.word == 's') {
       f64 s = emitter.findParameter(emitter.words, 's');
       emitter.bytecode.push_back(
-          {.command = gpp::set_spindle_speed, .arguments = {s}});
+          Instruction{.command = gpp::set_spindle_speed, .arguments = {s}});
     } else if (vi.word == 't') {
       f64 t = emitter.findParameter(emitter.words, 't');
       emitter.bytecode.push_back(
-          {.command = gpp::select_tool, .arguments = {t}});
+          Instruction{.command = gpp::select_tool, .arguments = {t}});
     }
   }
 
-  Instruction instruction = emitter.bytecode.front();
+  SafeInstruction safeInstruction = emitter.bytecode.front();
   emitter.bytecode.pop_front();
+
+  if (std::holds_alternative<Error>(safeInstruction)) {
+    Error &err = std::get<Error>(safeInstruction);
+    std::cout << "error at line " << emitter.line << " column "
+              << emitter.column << "\n";
+    return safeInstruction;
+  }
+  Instruction instruction = std::get<Instruction>(safeInstruction);
 
   if (instruction.command == no_command)
     return instruction;
@@ -181,6 +197,7 @@ gpp::Instruction gpp::Machine::next() {
 
   if (spindleDirection != off)
     saveCanvases();
+
   return instruction;
 }
 
@@ -550,7 +567,11 @@ void gpp::Machine::write_parameters_to_file(std::vector<f64> args) {
   std::cout << "write_parameters_to_file()\n";
 }
 
+void gpp::Machine::enableCanvas() { canvasEnabled = true; }
+
 void gpp::Machine::saveCanvases() {
+  if (!canvasEnabled)
+    return;
   canvasXY.save("output/canvas_xy.png");
   canvasYZ.save("output/canvas_yz.png");
   canvasXZ.save("output/canvas_xz.png");

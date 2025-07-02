@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <vector>
 
+#define smv_gpp_testing
 #include "gpp.hpp"
 #include "machine.hpp"
 #include "util.hpp"
@@ -24,5 +25,7 @@
     for (size_t i = 0; i < a.size(); ++i)                                      \
       CHECK(a.at(i) == doctest::Approx(b.at(i)).epsilon(1e-5));                \
   } while (0)
+
+gpp::Instruction expectValidInstruction(const SafeInstruction &result);
 
 #endif

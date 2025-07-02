@@ -5,6 +5,7 @@
 #include <stack>
 #include <string>
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
 #include "gpp.hpp"
@@ -22,22 +23,34 @@ struct gpp::Word {
   f64 arg;
 };
 
-enum gpp::Macro : u8 {
-  no_macro = 0,
-  g81 = 81,
-};
-
 struct gpp::Instruction {
   Command command;
-  Macro macro = no_macro; // for things like canonical commands
   std::vector<f64> arguments;
 };
+
+struct gpp::Error {
+private:
+  ErrorType type;
+  std::string message;
+  std::string source;
+  int line = -1;
+  int column = -1;
+  bool recoverable = true;
+
+public:
+  Error(ErrorType t, const std::string &msg, const std::string &source,
+        int line = -1, int column = -1, bool rec = true);
+  void print() const;
+  void updateSource(std::string &newSource);
+};
+
+using SafeInstruction = std::variant<gpp::Instruction, gpp::Error>;
 
 struct gpp::VerboseInstruction {
   char word;
   f64 arg;
   bool commentOrMessage;
-  Instruction command;
+  SafeInstruction instruction;
 };
 
 bool compareVerboseInstructions(const gpp::VerboseInstruction &a,
@@ -61,7 +74,7 @@ class gpp::BytecodeEmitter : public parser_antlr4BaseVisitor {
 private:
   char word;
   std::vector<Word> words;
-  std::deque<Instruction> bytecode;
+  std::deque<SafeInstruction> bytecode;
   std::deque<VerboseInstruction> verboseInstructions;
 
   antlr4::ANTLRInputStream inputStream;
@@ -76,6 +89,9 @@ private:
   bool breakEncountered = false;
   bool continueEncountered = false;
   bool subroutineEncountered = false;
+
+  int line = 0;
+  int column = 0;
 
 public:
   Machine *machine = nullptr;

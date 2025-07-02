@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
+#include <variant>
 
+#include "bytecode.hpp"
 #include "machine.hpp"
 #include "util.hpp"
 
@@ -34,6 +36,7 @@ int main(int argc, char **argv) {
   }
 
   gpp::Machine machine(input);
+  machine.enableCanvas();
 
   std::cout << "Type `next` to step, `exit` to quit!\n";
 
@@ -47,14 +50,28 @@ int main(int argc, char **argv) {
       break;
     } else if (command == "next" || (command.empty() && next_used)) {
       next_used = true;
-      if (machine.next().command == gpp::no_command) {
+
+      SafeInstruction safeInstruction = machine.next();
+
+      if (std::holds_alternative<gpp::Error>(safeInstruction)) {
+        gpp::Error &err = std::get<gpp::Error>(safeInstruction);
+        err.print();
+        break;
+      }
+
+      const gpp::Instruction &instr =
+          std::get<gpp::Instruction>(safeInstruction);
+
+      if (instr.command == gpp::no_command) {
         if (verbose)
           machine.printSpecs();
         std::cout << "No more instructions left!\n";
         break;
       }
+
       if (verbose)
         machine.printSpecs();
+
     } else {
       next_used = false;
       std::cout

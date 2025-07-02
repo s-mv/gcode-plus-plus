@@ -20,10 +20,10 @@ TEST_TARGETS = unit regression
 
 # UNIT_TEST_FILES = tests/unit.cpp tests/gcode.cpp
 
-UNIT_TEST_FILES = tests/unit.cpp \
+UNIT_TEST_FILES = tests/unit.cpp tests/testutil.cpp \
 				tests/calculation.cpp tests/extended_grammar.cpp \
 				tests/gcode.cpp tests/mcode.cpp tests/edge_cases.cpp \
-				tests/g93_97.cpp tests/canned_cycles.cpp
+				tests/g93_97.cpp tests/g81_83.cpp
 
 LDFLAGS  = $(ANTLR4_LIB)libantlr4-runtime.a
 CXXFLAGS = -std=c++17 -g -I include/ $(ANTLR4_INCLUDE) $(STB_INCLUDE)
