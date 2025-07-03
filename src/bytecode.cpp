@@ -150,16 +150,18 @@ antlrcpp::Any gpp::BytecodeEmitter::visitSubroutine(
     int line = context->getStart()->getLine();
     int column = context->getStart()->getCharPositionInLine();
 
-    prettyPrintError("Nested subroutines aren't allowed!",
-                     getLineFromSource(line), line, column);
-    exit(0);
+    bytecode.push_back(gpp::Error(ErrorType::PARSE_ERROR,
+                                  "Nested subroutines aren't allowed!",
+                                  getLineFromSource(line), line, column));
+    return nullptr;
   }
 
   // TODO, check if the subroutine has an unconditional M99 at the end
   // if (!containsUnconditionalM99(context->block())) {
   //   int line = context->getStart()->getLine();
   //   int column = context->getStart()->getCharPositionInLine();
-  //   prettyPrintError("Subroutine may not return (missing unconditional
+  // // TODO 2.0 replace with gpp::Error when uncommented
+  // prettyPrintError("Subroutine may not return (missing unconditional
   //   M99).",
   //                    getLineFromSource(line), line, column);
   //   exit(1);
