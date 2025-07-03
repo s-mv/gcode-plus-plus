@@ -23,7 +23,8 @@ TEST_TARGETS = unit regression
 UNIT_TEST_FILES = tests/unit.cpp tests/testutil.cpp \
 				tests/calculation.cpp tests/extended_grammar.cpp \
 				tests/gcode.cpp tests/mcode.cpp tests/edge_cases.cpp \
-				tests/g93_97.cpp tests/g81_83.cpp tests/g84_86.cpp
+				tests/g93_97.cpp tests/g81_83.cpp tests/g84_86.cpp \
+				tests/g87_89.cpp
 
 LDFLAGS  = $(ANTLR4_LIB)libantlr4-runtime.a
 CXXFLAGS = -std=c++17 -g -I include/ $(ANTLR4_INCLUDE) $(STB_INCLUDE)
