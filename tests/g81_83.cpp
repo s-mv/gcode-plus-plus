@@ -78,7 +78,7 @@ TEST_CASE("[g-code] g81") {
 
     instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_rapid);
-    expected_args = {254, 254, 25.4};
+    expected_args = {254, 254, 0};
     CHECK_ARRAY_EQUAL(instruction.arguments, expected_args);
 
     instruction = expectValidInstruction(machine.next());
@@ -157,7 +157,7 @@ TEST_CASE("[g-code] g81") {
 
     instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_rapid);
-    expected_args = {0, 0, 25.4};
+    expected_args = {0, 0, -25.4};
     CHECK_ARRAY_EQUAL(instruction.arguments, expected_args);
 
     instruction = expectValidInstruction(machine.next());
@@ -248,7 +248,7 @@ TEST_CASE("[g-code] g82") {
 
     instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_rapid);
-    expected_args = {254, 254, 25.4};
+    expected_args = {254, 254, 0};
     CHECK_ARRAY_EQUAL(instruction.arguments, expected_args);
 
     instruction = expectValidInstruction(machine.next());
@@ -337,7 +337,7 @@ TEST_CASE("[g-code] g82") {
 
     instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_rapid);
-    expected_args = {0, 0, 25.4};
+    expected_args = {0, 0, -25.4};
     CHECK_ARRAY_EQUAL(instruction.arguments, expected_args);
 
     instruction = expectValidInstruction(machine.next());
@@ -447,7 +447,7 @@ TEST_CASE("g83") {
 
     instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_rapid);
-    expected_args = {127, 127, 25.4};
+    expected_args = {127, 127, 0};
     CHECK_ARRAY_EQUAL(instruction.arguments, expected_args);
 
     instruction = expectValidInstruction(machine.next());
@@ -529,7 +529,7 @@ TEST_CASE("g83") {
 
     instruction = expectValidInstruction(machine.next());
     CHECK(instruction.command == gpp::move_rapid);
-    expected_args = {0, 0, 25.4};
+    expected_args = {0, 0, -25.4};
     CHECK_ARRAY_EQUAL(instruction.arguments, expected_args);
 
     instruction = expectValidInstruction(machine.next());
