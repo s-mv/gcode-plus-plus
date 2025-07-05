@@ -158,6 +158,11 @@ SafeInstruction gpp::Machine::next() {
     VerboseInstruction vi = emitter.verboseInstructions.front();
     emitter.verboseInstructions.pop_front();
 
+    if (vi.word == 'e') {
+      gpp::Error error = std::get<gpp::Error>(vi.instruction);
+      emitter.bytecode.push_back(gpp::Error(error));
+    }
+
     if (vi.word == 'c') {
       emitter.words.clear();
     } else if (vi.word == 'g') {

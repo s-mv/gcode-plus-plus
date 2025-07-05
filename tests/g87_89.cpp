@@ -5,8 +5,26 @@
 #include "machine.hpp"
 #include "testutil.hpp"
 
+// TEST_CASE("[g-code] g88") {
+//   SUBCASE("g88 basic with g98 g91") {
+//     std::string code = "g20 s100 m3 g88 g98 g90 x3 y3 z-2 r1 f100 p1 l2\n";
+//     gpp::Machine machine(code);
+//     gpp::Vec3D expected_vec;
+//     std::vector<f64> expected_args;
+//     gpp::Instruction instruction;
+//   }
+
+//   SUBCASE("g88 basic with g98 g90") {
+//     std::string code = "g20 s100 m3 g88 g98 g90 x3 y3 z-2 r1 f100 p1 l2\n";
+//     gpp::Machine machine(code);
+//     gpp::Vec3D expected_vec;
+//     std::vector<f64> expected_args;
+//     gpp::Instruction instruction;
+//   }
+// }
+
 TEST_CASE("[g-code] g89") {
-  SUBCASE("g89 basic with g98 g91") {
+  SUBCASE("g89 basic with g98 g90") {
     std::string code = "g20 s100 m3 g89 g98 g90 x3 y3 z-2 r1 f100 p1 l2\n";
     gpp::Machine machine(code);
     gpp::Vec3D expected_vec;

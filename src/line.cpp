@@ -63,8 +63,11 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
         error << "Multiple G-codes from modal group '" << group << "' found!";
         std::string message = error.str();
 
-        bytecode.push_back(gpp::Error(ErrorType::PARAMETER_ERROR, message,
-                                      getLineFromSource(line), line, column));
+        verboseInstructions.push_back(
+            {.word = 'e',
+             .instruction = gpp::Error(ErrorType::PARAMETER_ERROR, message,
+                                       getLineFromSource(line), line, column)});
+
         return nullptr;
       }
       seenModalGroups.insert(group);

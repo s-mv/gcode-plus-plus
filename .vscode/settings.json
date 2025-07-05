@@ -1,0 +1,24 @@
+{
+  "files.associations": {
+    "array": "cpp",
+    "charconv": "cpp",
+    "compare": "cpp",
+    "concepts": "cpp",
+    "cstdlib": "cpp",
+    "format": "cpp",
+    "functional": "cpp",
+    "iostream": "cpp",
+    "limits": "cpp",
+    "new": "cpp",
+    "numbers": "cpp",
+    "optional": "cpp",
+    "ranges": "cpp",
+    "span": "cpp",
+    "string_view": "cpp",
+    "system_error": "cpp",
+    "text_encoding": "cpp",
+    "tuple": "cpp",
+    "type_traits": "cpp",
+    "variant": "cpp"
+  }
+}
