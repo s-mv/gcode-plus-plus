@@ -1,7 +1,8 @@
 #include "bytecode.hpp"
+#include "gpp.hpp"
 #include "parser_antlr4.h"
 #include <cmath>
-#include <cstdio>
+#include <type_traits>
 
 antlrcpp::Any gpp::BytecodeEmitter::visitExpression(
     parser_antlr4::ExpressionContext *context) {
@@ -88,8 +89,19 @@ antlrcpp::Any gpp::BytecodeEmitter::visitMultiplicative_expression(
     f64 right = std::any_cast<f64>(visit(context->power_expression()));
     if (context->TIMES())
       return left * right;
-    if (context->SLASH())
+    if (context->SLASH()) {
+      if (right == 0) {
+        verboseInstructions.push_back(
+            {.word = 'e',
+             .instruction =
+                 gpp::Error(ErrorType::MATH_ERROR, "Division by zero!",
+                            getLineFromSource(line))});
+
+        return NAN;
+      }
+
       return left / right;
+    }
     if (context->MODULO())
       return fmod(left, right);
   }
@@ -164,12 +176,22 @@ antlrcpp::Any gpp::BytecodeEmitter::visitOrdinary_unary_combo(
   if (operation->TANGENT())
     return std::tan(value);
 
-  return 0; // TODO error handling
+  return NAN;
 }
 
 antlrcpp::Any gpp::BytecodeEmitter::visitArc_tangent_combo(
     parser_antlr4::Arc_tangent_comboContext *context) {
   f64 x = std::any_cast<f64>(visit(context->expression(0)));
   f64 y = std::any_cast<f64>(visit(context->expression(1)));
+
+  if (y == 0) {
+    verboseInstructions.push_back(
+        {.word = 'e',
+         .instruction = gpp::Error(ErrorType::MATH_ERROR, "Division by zero!",
+                                   getLineFromSource(line))});
+
+    return NAN;
+  }
+
   return std::atan(x / y);
 }

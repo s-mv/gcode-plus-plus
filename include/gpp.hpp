@@ -30,12 +30,12 @@ enum RetractMode : u8;
 enum MotionControlMode : u8;
 
 enum ErrorType : u8 {
-  PARSE_ERROR,
-  PARAMETER_ERROR,
-  TOOL_ERROR,
-  MEMORY_ERROR,
-  HANDLER_ERROR,
-  IO_ERROR
+  PARSE_ERROR = 0,
+  PARAMETER_ERROR = 1,
+  MEMORY_ERROR = 3,
+  MACHINE_ERROR = 4,
+  MATH_ERROR = 5,
+  GENERAL_ERROR = 6,
 };
 
 struct Error;

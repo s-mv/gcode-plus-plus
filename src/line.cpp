@@ -5,6 +5,7 @@
 
 #include "bytecode.hpp"
 
+#include "gpp.hpp"
 #include "machine.hpp"
 #include "parser_antlr4.h"
 #include "support/Any.h"
@@ -51,6 +52,17 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
 
   std::unordered_set<f64> seenModalGroups;
 
+  // error handling
+  for (const Word &word : words) {
+    if (std::isnan(word.arg)) {
+      verboseInstructions.push_back(
+          {.word = 'e',
+           .instruction =
+               gpp::Error(ErrorType::PARAMETER_ERROR, "Argument is unspecified",
+                          getLineFromSource(line), column)});
+    }
+  }
+
   for (const Word &word : words) {
     if (word.word == 'g') {
       f64 group = findModalGroup(word.arg);
@@ -91,6 +103,24 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
       handle_m(verboseInstructions, word.arg, words, line, column);
       continue;
     } else if (word.word == 'f' || word.word == 's' || word.word == 't') {
+      if (word.word == 'f' && word.arg < 0)
+        verboseInstruction.instruction = gpp::Error(
+            ErrorType::PARAMETER_ERROR, "Feedrate cannot be less than zero!",
+            getLineFromSource(line), line);
+      if (word.word == 's' && word.arg < 0) {
+        verboseInstruction.instruction =
+            gpp::Error(ErrorType::PARAMETER_ERROR,
+                       "Spindle speed cannot be less than zero!",
+                       getLineFromSource(line), line);
+      }
+      if (word.word == 't') {
+        if (word.arg < 0)
+          verboseInstruction.instruction =
+              gpp::Error(ErrorType::PARAMETER_ERROR,
+                         "Tool number cannot be less than zero!",
+                         getLineFromSource(line), line);
+      }
+
       verboseInstructions.push_back(verboseInstruction);
     }
   }

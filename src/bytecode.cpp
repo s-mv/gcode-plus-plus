@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <string>
+#include <variant>
 
 #include "bytecode.hpp"
 #include "machine.hpp"
@@ -294,9 +295,15 @@ antlrcpp::Any gpp::BytecodeEmitter::visitContinue_statement(
 antlrcpp::Any gpp::BytecodeEmitter::visitMid_line_word(
     parser_antlr4::Mid_line_wordContext *context) {
   char letter = std::tolower(context->mid_line_letter()->getText().at(0));
-  f64 value = std::any_cast<f64>(visit(context->real_value()));
 
-  words.push_back({letter, value});
+  std::any result = visit(context->real_value());
+  if (auto ptr = std::any_cast<f64>(&result)) {
+    f64 value = std::any_cast<f64>(visit(context->real_value()));
+
+    words.push_back({letter, value});
+  } else {
+    words.push_back({letter, NAN});
+  }
 
   return nullptr;
 }
@@ -309,7 +316,7 @@ antlrcpp::Any gpp::BytecodeEmitter::visitReal_value(
     return visit(context->expression());
   }
 
-  return 0.0;
+  return NAN;
 }
 
 antlrcpp::Any gpp::BytecodeEmitter::visitReal_number(

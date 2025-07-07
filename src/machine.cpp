@@ -179,8 +179,14 @@ SafeInstruction gpp::Machine::next() {
           Instruction{.command = gpp::set_spindle_speed, .arguments = {s}});
     } else if (vi.word == 't') {
       f64 t = emitter.findParameter(emitter.words, 't');
-      emitter.bytecode.push_back(
-          Instruction{.command = gpp::select_tool, .arguments = {t}});
+
+      if (tools.find(t) == tools.end())
+        emitter.bytecode.push_back(
+            gpp::Error(ErrorType::MACHINE_ERROR, "Tool does not exist!",
+                       emitter.getLineFromSource(emitter.line), emitter.line));
+      else
+        emitter.bytecode.push_back(
+            Instruction{.command = gpp::select_tool, .arguments = {t}});
     }
   }
 
