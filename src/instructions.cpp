@@ -28,13 +28,13 @@
     REQUIRE_CONDITION(feedRate > 0, gpp::ErrorType::MACHINE_ERROR,             \
                       "Feed rate must be set before G" +                       \
                           std::to_string(cycle_num) + " is used!",             \
-                      emitter.getLineFromSource(line));                        \
+                      'g');                                                    \
     REQUIRE_CONDITION(!std::isnan(z), gpp::ErrorType::PARAMETER_ERROR,         \
                       "Missing Z<> for G" + std::to_string(cycle_num) + "!",   \
-                      emitter.getLineFromSource(line));                        \
+                      'g');                                                    \
     REQUIRE_CONDITION(!std::isnan(r), gpp::ErrorType::PARAMETER_ERROR,         \
                       "Missing R<> for G" + std::to_string(cycle_num) + "!",   \
-                      emitter.getLineFromSource(line));                        \
+                      'g');                                                    \
   } while (0)
 
 #define SETUP_CANNED_CYCLE_POSITION()                                          \
@@ -74,11 +74,17 @@
         .arguments = {0, 0, (retractMode == gpp::old_z) ? old_z - r : 0}});    \
   }
 
-#define REQUIRE_CONDITION(condition, error_type, message, source)              \
+#define REQUIRE_CONDITION(condition, error_type, message, word_)               \
   do {                                                                         \
     if (!(condition)) {                                                        \
-      emitter.bytecode.push_back(                                              \
-          gpp::Error(error_type, message, source, line, column));              \
+      gpp::VerboseInstruction vInst = emitter.verboseInstructions.front();     \
+      if (vInst.line == -1)                                                    \
+        vInst.line = emitter.line;                                                     \
+      if (vInst.column == -1)                                                  \
+        vInst.column = emitter.column;                                                 \
+      emitter.bytecode.push_back(gpp::Error(                                   \
+          error_type, message, emitter.getLineFromSource(vInst.line),          \
+          vInst.line, vInst.column));                                          \
       return;                                                                  \
     }                                                                          \
   } while (0)
@@ -221,8 +227,12 @@ void gpp::BytecodeEmitter::handle_g(std::deque<VerboseInstruction> &list,
   VerboseInstruction verboseInstruction = {
       .word = 'g',
       .arg = arg,
+      .line = line,
+      .column = column,
       .commentOrMessage = false,
       .instruction = Instruction{.command = no_command}};
+
+  if ((0 <= arg && arg <= 3) || (81 <= arg && arg <= 89)) stickyArgs.g = arg;
 
   list.push_back(verboseInstruction);
 }
@@ -255,8 +265,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     REQUIRE_CONDITION(
         !(std::isnan(delta.x) && std::isnan(delta.y) && std::isnan(delta.z)),
         ErrorType::PARAMETER_ERROR,
-        "All axes missing for G" + std::to_string(arg_i) + "!",
-        emitter.getLineFromSource(line));
+        "All axes missing for G" + std::to_string(arg_i) + "!", 'g');
 
     emitter.applyCurrentPositionDefaults(delta);
 
@@ -276,35 +285,30 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     emitter.extractArcParams(words, delta.x, delta.y, delta.z, i, j, k, r);
 
     REQUIRE_CONDITION(feedRate != 0, ErrorType::MACHINE_ERROR,
-                      "Feed rate should be non-zero for feed_arc to run!",
-                      emitter.getLineFromSource(line));
+                      "Feed rate should be non-zero for feed_arc to run!", 'g');
 
     const bool both_defined =
         !std::isnan(r) && (!std::isnan(i) || !std::isnan(j) || !std::isnan(k));
 
     REQUIRE_CONDITION(!both_defined, ErrorType::PARAMETER_ERROR,
-                      "Both r and i/j/k are defined!",
-                      emitter.getLineFromSource(line));
+                      "Both r and i/j/k are defined!", 'r');
 
     REQUIRE_CONDITION(
         !(std::isnan(r) && std::isnan(i) && std::isnan(j) && std::isnan(k)),
-        ErrorType::PARAMETER_ERROR, "Neither r not i/j/k are defined!",
-        emitter.getLineFromSource(line));
+        ErrorType::PARAMETER_ERROR, "Neither r not i/j/k are defined!", 'g');
 
     REQUIRE_CONDITION(!(i != 0 && j != 0 && k != 0), ErrorType::PARAMETER_ERROR,
-                      "All of i, j and k are non-zero!",
-                      emitter.getLineFromSource(line));
+                      "All of i, j and k are non-zero!", 'i');
 
     REQUIRE_CONDITION(
         !(std::isnan(delta.x) && std::isnan(delta.y) && std::isnan(delta.z)),
-        ErrorType::PARAMETER_ERROR, "No axes mentioned (x/y/z).",
-        emitter.getLineFromSource(line));
+        ErrorType::PARAMETER_ERROR, "No axes mentioned (x/y/z).", 'g');
 
     REQUIRE_CONDITION(
         emitter.arcOffetsAligned(plane, i, j, k), ErrorType::MACHINE_ERROR,
         std::string("Arc isn't aligned to the current plane, i.e. the ") +
             planeToString(plane) + " plane.",
-        emitter.getLineFromSource(line));
+        'g');
 
     emitter.applyCurrentPositionDefaults(delta);
     if (std::isnan(i))
@@ -315,8 +319,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
       k = 0;
 
     REQUIRE_CONDITION(!(i == 0 && j == 0 && k == 0), ErrorType::PARAMETER_ERROR,
-                      "All of i, j and k are zero!",
-                      emitter.getLineFromSource(line));
+                      "All of i, j and k are zero!", 'g');
 
     int rotation = (arg == 2) ? 1 : -1;
 
@@ -329,12 +332,10 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
       f64 len = sqrt(delta.dot(delta));
 
       REQUIRE_CONDITION(r > 0, ErrorType::PARAMETER_ERROR,
-                        "Radius must be positive!",
-                        emitter.getLineFromSource(line));
+                        "Radius must be positive!", 'r');
 
       REQUIRE_CONDITION(len <= 2 * r, ErrorType::PARAMETER_ERROR,
-                        "Radius too small for arc!",
-                        emitter.getLineFromSource(line));
+                        "Radius too small for arc!", 'r');
 
       gpp::Vec2D midpoint = (currentPos + targetPos) * 0.5;
       f64 h = sqrt(r * r - (len * len) / 4.0);
@@ -344,8 +345,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
                                   perpendicular.y * perpendicular.y);
       REQUIRE_CONDITION(
           perpendicularLen != 0, ErrorType::PARAMETER_ERROR,
-          "Invalid arc calculation: zero-length perpendicular vector.",
-          emitter.getLineFromSource(line));
+          "Invalid arc calculation: zero-length perpendicular vector.", 'r');
 
       perpendicular = perpendicular * (1.0 / perpendicularLen);
       center = midpoint + perpendicular * h * rotation;
@@ -393,8 +393,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     } else if (l == 2) {
       int pi = static_cast<int>(p);
       REQUIRE_CONDITION(pi >= 1 && pi <= 6, ErrorType::PARAMETER_ERROR,
-                        "Invalid coordinate system number",
-                        emitter.getLineFromSource(line));
+                        "Invalid coordinate system number", 'l');
 
       emitter.bytecode.push_back(Instruction{
           .command = gpp::set_wcs_coordinates, .arguments = {p, x, y, z}});
@@ -430,8 +429,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
       h = currentTool;
 
     REQUIRE_CONDITION(tools.find(h) != tools.end(), ErrorType::MACHINE_ERROR,
-                      "Tool ID T" + std::to_string(h) + " not defined.",
-                      emitter.getLineFromSource(line));
+                      "Tool ID T" + std::to_string(h) + " not defined.", 'g');
 
     h = tools.at(h).tlo;
 
@@ -441,6 +439,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
   }
 
   case 80: {
+             emitter.stickyArgs.g = NAN;
     break;
   }
 
@@ -455,8 +454,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
 
     if (arg_i == 82)
       REQUIRE_CONDITION(!std::isnan(p) && p >= 0, ErrorType::PARAMETER_ERROR,
-                        "Invalid P<> value for G82!",
-                        emitter.getLineFromSource(line));
+                        "Invalid P<> value for G82!", 'g');
 
     for (int i = 0; i < l; i++) {
       if (distanceMode == absolute) {
@@ -505,8 +503,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     f64 q = emitter.findParameter(words, 'q');
 
     REQUIRE_CONDITION(!std::isnan(q) && q > 0, ErrorType::PARAMETER_ERROR,
-                      "Missing or invalid Q<> for G83!",
-                      emitter.getLineFromSource(line));
+                      "Missing or invalid Q<> for G83!", 'g');
 
     q *= unitMultiplier(unit);
 
@@ -560,9 +557,9 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     f64 f = emitter.findParameter(words, 'f');
 
     REQUIRE_CONDITION(!std::isnan(r), ErrorType::PARAMETER_ERROR,
-                      "Missing R<> for G84!", emitter.getLineFromSource(line));
+                      "Missing R<> for G84!", 'g');
     REQUIRE_CONDITION(!std::isnan(f), ErrorType::PARAMETER_ERROR,
-                      "Missing F<> for G84!", emitter.getLineFromSource(line));
+                      "Missing F<> for G84!", 'g');
 
     SpindleDirection oldSpindleDirection = spindleDirection;
 
@@ -656,7 +653,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     // f64 $ = emitter.findParameter(words, '$');
 
     REQUIRE_CONDITION(!std::isnan(p), ErrorType::PARAMETER_ERROR,
-                      "Missing P<> for G86!", emitter.getLineFromSource(line));
+                      "Missing P<> for G86!", 'g');
 
     SpindleDirection sd = spindleDirection;
 
@@ -717,7 +714,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
 
     f64 p = emitter.findParameter(words, 'p');
     REQUIRE_CONDITION(!std::isnan(p), ErrorType::PARAMETER_ERROR,
-                      "Missing P<> for G89!", emitter.getLineFromSource(line));
+                      "Missing P<> for G89!", 'g');
 
     for (int i = 0; i < l; i++) {
       if (distanceMode == absolute) {
@@ -765,7 +762,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     // f64 $ = emitter.findParameter(words, '$');
 
     REQUIRE_CONDITION(!std::isnan(p), ErrorType::PARAMETER_ERROR,
-                      "Missing P<> for G86!", emitter.getLineFromSource(line));
+                      "Missing P<> for G86!", 'g');
 
     SpindleDirection sd = spindleDirection;
 
@@ -826,7 +823,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
 
     f64 p = emitter.findParameter(words, 'p');
     REQUIRE_CONDITION(!std::isnan(p), ErrorType::PARAMETER_ERROR,
-                      "Missing P<> for G89!", emitter.getLineFromSource(line));
+                      "Missing P<> for G89!", 'g');
 
     for (int i = 0; i < l; i++) {
       if (distanceMode == absolute) {

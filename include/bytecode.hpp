@@ -1,6 +1,7 @@
 #ifndef smv_gpp_bytecode_hpp
 #define smv_gpp_bytecode_hpp
 
+#include <cmath>
 #include <deque>
 #include <stack>
 #include <string>
@@ -49,6 +50,8 @@ using SafeInstruction = std::variant<gpp::Instruction, gpp::Error>;
 struct gpp::VerboseInstruction {
   char word;
   f64 arg;
+  int line = -1;
+  int column = -1;
   bool commentOrMessage;
   SafeInstruction instruction;
 };
@@ -68,6 +71,10 @@ struct gpp::ExecutionFrame {
   bool continueEncountered = false;
 };
 
+struct StickyArgs {
+  f64 r = NAN, l = NAN, f = NAN, p = NAN, g = NAN;
+};
+
 class gpp::BytecodeEmitter : public parser_antlr4BaseVisitor {
   friend class Machine;
 
@@ -76,6 +83,7 @@ private:
   std::vector<Word> words;
   std::deque<SafeInstruction> bytecode;
   std::deque<VerboseInstruction> verboseInstructions;
+  StickyArgs stickyArgs;
 
   antlr4::ANTLRInputStream inputStream;
   lexer_antlr4 lexer;

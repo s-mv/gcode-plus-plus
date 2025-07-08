@@ -1,8 +1,5 @@
 #include "util.hpp"
 
-#include <cmath>
-#include <cstdarg>
-#include <cstdio>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -23,6 +20,11 @@ std::string readFile(const std::string &filename) {
 
 void prettyPrintError(const std::string message, const std::string code,
                       int line, int column) {
+  if (line == -1) {
+    std::cout << "error: " << message << " (line: unknown)\n";
+    return;
+  }
+
   std::string caretLine(column > 1 ? column - 1 : 0, ' ');
   caretLine += '^';
 

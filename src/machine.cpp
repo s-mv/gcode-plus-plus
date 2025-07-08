@@ -195,8 +195,6 @@ SafeInstruction gpp::Machine::next() {
 
   if (std::holds_alternative<Error>(safeInstruction)) {
     Error &err = std::get<Error>(safeInstruction);
-    std::cout << "error at line " << emitter.line << " column "
-              << emitter.column << "\n";
     return safeInstruction;
   }
   Instruction instruction = std::get<Instruction>(safeInstruction);

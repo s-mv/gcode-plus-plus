@@ -3,7 +3,6 @@
 #include <cstddef>
 #include <cstdlib>
 #include <string>
-#include <variant>
 
 #include "bytecode.hpp"
 #include "machine.hpp"
@@ -113,7 +112,6 @@ bool gpp::BytecodeEmitter::fetchInstructions() {
     if (frame.linePointer >= statements.size()) {
       if (!frame.loopCounterAddress.empty()) {
         f64 value = getMemory(frame.loopCounterAddress) + frame.step;
-        // TODO make an increment/stepBy function for this
         setMemory(frame.loopCounterAddress, value);
 
         if (value < frame.end) {

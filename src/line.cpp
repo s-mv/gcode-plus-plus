@@ -57,6 +57,8 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
     if (std::isnan(word.arg)) {
       verboseInstructions.push_back(
           {.word = 'e',
+           .line = line,
+           .column = column,
            .instruction =
                gpp::Error(ErrorType::PARAMETER_ERROR, "Argument is unspecified",
                           getLineFromSource(line), column)});
@@ -77,6 +79,8 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
 
         verboseInstructions.push_back(
             {.word = 'e',
+             .line = line,
+             .column = column,
              .instruction = gpp::Error(ErrorType::PARAMETER_ERROR, message,
                                        getLineFromSource(line), line, column)});
 
@@ -85,6 +89,32 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
       seenModalGroups.insert(group);
     }
   }
+
+  std::unordered_set<char> uniqueArgs;
+  for (const Word &word : words) {
+    if (word.word == 'g' || word.word == 'm' || word.word == 'o') {
+      uniqueArgs.insert(word.word);
+      continue;
+    }
+
+    if (uniqueArgs.count(word.word) != 0) {
+      verboseInstructions.push_back(
+          {.word = 'e',
+           .line = line,
+           .column = column,
+           .instruction = gpp::Error(ErrorType::PARAMETER_ERROR,
+                                     std::string("Multiple instances of ") +
+                                         word.word + "in the same line!",
+                                     getLineFromSource(line), line, column)});
+
+      return nullptr;
+    }
+
+    uniqueArgs.insert(word.word);
+  }
+
+  if (uniqueArgs.count('g') == 0 && !std::isnan(stickyArgs.g))
+    words.push_back({.word = 'g', .arg = stickyArgs.g});
 
   bool noCode = true;
 
@@ -103,22 +133,33 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
       handle_m(verboseInstructions, word.arg, words, line, column);
       continue;
     } else if (word.word == 'f' || word.word == 's' || word.word == 't') {
-      if (word.word == 'f' && word.arg < 0)
+      if (word.word == 'f' && word.arg < 0) {
+        verboseInstruction.word = 'e';
+        verboseInstruction.line = line;
+        verboseInstruction.column = column;
         verboseInstruction.instruction = gpp::Error(
             ErrorType::PARAMETER_ERROR, "Feedrate cannot be less than zero!",
-            getLineFromSource(line), line);
+            getLineFromSource(line), line, column);
+      }
       if (word.word == 's' && word.arg < 0) {
+        verboseInstruction.word = 'e';
+        verboseInstruction.line = line;
+        verboseInstruction.column = column;
         verboseInstruction.instruction =
             gpp::Error(ErrorType::PARAMETER_ERROR,
                        "Spindle speed cannot be less than zero!",
-                       getLineFromSource(line), line);
+                       getLineFromSource(line), line, column);
       }
       if (word.word == 't') {
-        if (word.arg < 0)
+        if (word.arg < 0) {
+          verboseInstruction.word = 'e';
+          verboseInstruction.line = line;
+          verboseInstruction.column = column;
           verboseInstruction.instruction =
               gpp::Error(ErrorType::PARAMETER_ERROR,
                          "Tool number cannot be less than zero!",
-                         getLineFromSource(line), line);
+                         getLineFromSource(line), line, column);
+        }
       }
 
       verboseInstructions.push_back(verboseInstruction);
