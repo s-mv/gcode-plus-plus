@@ -34,7 +34,7 @@ enum gpp::FeedMode : u8 {
 enum gpp::SpindleMode : u8 { fixed_rpm = 0, constant_surface_speed = 1 };
 
 // this length is temporary
-#define g_command_len (256)
+#define g_command_len (300)
 enum gpp::Command : u8 {
   move_linear = 1,
   move_rapid = 2,
@@ -74,10 +74,10 @@ enum gpp::Command : u8 {
   set_motion_control_mode = 26,
 
   /*** this is temporary ***/
-  write_parameter_to_file = 254,
-  write_parameters_to_file = 255,
+  write_parameter_to_file = 27,
+  write_parameters_to_file = 28,
 
-  no_command = 0, // invalid, wrapped around from 255+1
+  no_command = 0, 
 };
 
 enum gpp::Plane : u8 {
@@ -124,6 +124,8 @@ struct gpp::Machine {
 private:
   std::string input;
   BytecodeEmitter emitter;
+  BytecodeEmitter *emitterStash;
+  bool emitterStashed;
 
   Vec3D position;       // current position relative to (0, 0, 0)
   Vec3D g5xoffset;      // offset from the origin due to g54-g59
@@ -159,7 +161,11 @@ private:
 public:
   std::vector<f64> memory;
 
+  Machine();
   Machine(std::string input);
+  
+  void bind(BytecodeEmitter *tempEmitter);
+  void unbind();
 
   void reset();
 

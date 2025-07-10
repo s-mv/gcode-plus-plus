@@ -79,9 +79,9 @@
     if (!(condition)) {                                                        \
       gpp::VerboseInstruction vInst = emitter.verboseInstructions.front();     \
       if (vInst.line == -1)                                                    \
-        vInst.line = emitter.line;                                                     \
+        vInst.line = emitter.line;                                             \
       if (vInst.column == -1)                                                  \
-        vInst.column = emitter.column;                                                 \
+        vInst.column = emitter.column;                                         \
       emitter.bytecode.push_back(gpp::Error(                                   \
           error_type, message, emitter.getLineFromSource(vInst.line),          \
           vInst.line, vInst.column));                                          \
@@ -232,7 +232,8 @@ void gpp::BytecodeEmitter::handle_g(std::deque<VerboseInstruction> &list,
       .commentOrMessage = false,
       .instruction = Instruction{.command = no_command}};
 
-  if ((0 <= arg && arg <= 3) || (81 <= arg && arg <= 89)) stickyArgs.g = arg;
+  if ((0 <= arg && arg <= 3) || (81 <= arg && arg <= 89))
+    stickyArgs.g = arg;
 
   list.push_back(verboseInstruction);
 }
@@ -297,8 +298,9 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
         !(std::isnan(r) && std::isnan(i) && std::isnan(j) && std::isnan(k)),
         ErrorType::PARAMETER_ERROR, "Neither r not i/j/k are defined!", 'g');
 
-    REQUIRE_CONDITION(!(i != 0 && j != 0 && k != 0), ErrorType::PARAMETER_ERROR,
-                      "All of i, j and k are non-zero!", 'i');
+    REQUIRE_CONDITION(!(!std::isnan(i) && !std::isnan(j) && !std::isnan(k)),
+                      ErrorType::PARAMETER_ERROR,
+                      "All of i, j and k are defined!", 'i');
 
     REQUIRE_CONDITION(
         !(std::isnan(delta.x) && std::isnan(delta.y) && std::isnan(delta.z)),
@@ -317,9 +319,6 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
       j = 0;
     if (std::isnan(k))
       k = 0;
-
-    REQUIRE_CONDITION(!(i == 0 && j == 0 && k == 0), ErrorType::PARAMETER_ERROR,
-                      "All of i, j and k are zero!", 'g');
 
     int rotation = (arg == 2) ? 1 : -1;
 
@@ -350,6 +349,10 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
       perpendicular = perpendicular * (1.0 / perpendicularLen);
       center = midpoint + perpendicular * h * rotation;
     } else {
+      REQUIRE_CONDITION(!(i == 0 && j == 0 && k == 0),
+                        ErrorType::PARAMETER_ERROR,
+                        "All of i, j and k are zero!", 'g');
+
       gpp::Vec2D offset = emitter.getArcCenterOffsets(plane, i, j, k);
 
       center = currentPos + offset;
@@ -439,7 +442,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
   }
 
   case 80: {
-             emitter.stickyArgs.g = NAN;
+    emitter.stickyArgs.g = NAN;
     break;
   }
 

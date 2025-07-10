@@ -104,7 +104,7 @@ private:
 public:
   Machine *machine = nullptr;
 
-  BytecodeEmitter(std::string input);
+  BytecodeEmitter(Machine &machine, std::string input);
   BytecodeEmitter(Machine &machine);
   void preprocess(parser_antlr4::BlockContext *block);
   bool fetchInstructions();

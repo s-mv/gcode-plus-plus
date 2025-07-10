@@ -43,6 +43,9 @@ int main(int argc, char **argv) {
   std::string command;
   bool next_used = false;
 
+  std::string code = "g0 x1\n";
+  gpp::BytecodeEmitter emitter(machine, code);
+
   while (true) {
     std::cout << "> ";
     std::getline(std::cin, command);

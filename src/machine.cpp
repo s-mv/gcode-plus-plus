@@ -11,6 +11,12 @@
 #include "gpp.hpp"
 #include "util.hpp"
 
+gpp::Machine::Machine()
+    : emitter(*this), input("\n"), canvasXY(0, 0), canvasYZ(0, 0),
+      canvasXZ(0, 0) {
+  reset();
+}
+
 gpp::Machine::Machine(std::string input)
     : emitter(*this), input(input), canvasXY(512, 512), canvasYZ(512, 512),
       canvasXZ(512, 512) {
@@ -91,6 +97,7 @@ gpp::Machine::Machine(std::string input)
 }
 
 void gpp::Machine::reset() {
+  emitterStashed = false;
   position = {0, 0, 0};
   g92offset = {0, 0, 0};
   g5xoffset = {0, 0, 0};
@@ -208,6 +215,15 @@ SafeInstruction gpp::Machine::next() {
     saveCanvases();
 
   return instruction;
+}
+
+void gpp::Machine::bind(gpp::BytecodeEmitter *tempEmitter) {
+  emitterStashed = true;
+  emitterStash = tempEmitter;
+}
+
+void gpp::Machine::unbind() {
+  emitterStashed = false;
 }
 
 void gpp::Machine::printSpecs() {

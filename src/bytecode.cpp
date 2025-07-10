@@ -12,6 +12,13 @@
 #include "support/Any.h"
 #include "util.hpp"
 
+gpp::BytecodeEmitter::BytecodeEmitter(gpp::Machine &machine, std::string input)
+    : inputStream(input), machine(&machine), lexer(&inputStream),
+      tokens(&lexer), parser(&tokens) {
+  executionStack.push({.block = parser.block(), .linePointer = 0});
+  preprocess(executionStack.top().block);
+}
+
 gpp::BytecodeEmitter::BytecodeEmitter(gpp::Machine &machine)
     : inputStream(machine.input), machine(&machine), lexer(&inputStream),
       tokens(&lexer), parser(&tokens) {
