@@ -1,5 +1,5 @@
 
-// Generated from parser_antlr4.g4 by ANTLR 4.13.2
+// Generated from /home/smv/code/accelus/linuxcnc/src/emc/sterp/antlr4/parser_antlr4.g4 by ANTLR 4.13.2
 
 
 #include "parser_antlr4Listener.h"
@@ -65,147 +65,157 @@ void parser_antlr4ParserInitialize() {
     },
     std::vector<std::string>{
       "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 
-      "", "", "'$'", "'+'", "'-'", "'.'", "'['", "']'", "'**'", "'/'", "", 
-      "'*'", "", "", "", "", "", "'<'", "'<='", "'>'", "'>='", "", "", "", 
-      "", "", "", "", "", "", "", "", "", "", "'#'", "'='"
+      "'%'", "", "", "'$'", "'+'", "'-'", "'.'", "'['", "']'", "'**'", "'/'", 
+      "", "'*'", "", "", "", "", "", "'<'", "'<='", "'>'", "'>='", "", "", 
+      "", "", "", "", "", "", "", "", "", "", "", "'#'", "'='"
     },
     std::vector<std::string>{
       "", "IF", "THEN", "DO", "WHILE", "FOR", "FROM", "TO", "ELSE", "END", 
       "ENDIF", "ENDWHILE", "ENDFOR", "BREAK", "CONTINUE", "SUBROUTINE", 
-      "M99", "DIGIT", "LETTER", "DOLLAR", "PLUS", "MINUS", "DOT", "LEFT_BRACKET", 
-      "RIGHT_BRACKET", "POWER", "SLASH", "MODULO", "TIMES", "LOGICAL_AND", 
-      "EXCLUSIVE_OR", "NON_EXCLUSIVE_OR", "EQ", "NE", "LT", "LE", "GT", 
-      "GE", "ABSOLUTE_VALUE", "ARC_COSINE", "ARC_SINE", "COSINE", "E_RAISED_TO", 
-      "FIX_DOWN", "FIX_UP", "NATURAL_LOG_OF", "ROUND_OPERATION", "SINE", 
-      "SQUARE_ROOT", "TANGENT", "ARC_TANGENT", "PARAMETER_SIGN", "EQUAL_SIGN", 
-      "COMMENT", "NAMED_PARAMETER", "EOL", "WS"
+      "M99", "PERCENT", "DIGIT", "LETTER", "DOLLAR", "PLUS", "MINUS", "DOT", 
+      "LEFT_BRACKET", "RIGHT_BRACKET", "POWER", "SLASH", "MODULO", "TIMES", 
+      "LOGICAL_AND", "EXCLUSIVE_OR", "NON_EXCLUSIVE_OR", "EQ", "NE", "LT", 
+      "LE", "GT", "GE", "ABSOLUTE_VALUE", "ARC_COSINE", "ARC_SINE", "COSINE", 
+      "E_RAISED_TO", "FIX_DOWN", "FIX_UP", "NATURAL_LOG_OF", "ROUND_OPERATION", 
+      "SINE", "SQUARE_ROOT", "TANGENT", "ARC_TANGENT", "PARAMETER_SIGN", 
+      "EQUAL_SIGN", "COMMENT", "NAMED_PARAMETER", "EOL", "WS"
     }
   );
   static const int32_t serializedATNSegment[] = {
-  	4,1,56,376,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
+  	4,1,57,404,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
   	7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,
   	14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,7,20,2,21,7,
   	21,2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,2,27,7,27,2,28,7,
   	28,2,29,7,29,2,30,7,30,2,31,7,31,2,32,7,32,2,33,7,33,2,34,7,34,2,35,7,
-  	35,1,0,5,0,74,8,0,10,0,12,0,77,9,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,
-  	1,87,8,1,1,2,1,2,1,2,5,2,92,8,2,10,2,12,2,95,9,2,1,2,1,2,1,2,1,3,1,3,
-  	1,4,3,4,103,8,4,1,4,3,4,106,8,4,1,4,5,4,109,8,4,10,4,12,4,112,9,4,1,4,
-  	4,4,115,8,4,11,4,12,4,116,1,5,1,5,1,5,5,5,122,8,5,10,5,12,5,125,9,5,1,
-  	5,1,5,1,5,1,5,1,5,5,5,132,8,5,10,5,12,5,135,9,5,1,5,1,5,5,5,139,8,5,10,
-  	5,12,5,142,9,5,1,5,1,5,1,5,3,5,147,8,5,1,5,1,5,1,6,1,6,1,6,5,6,154,8,
-  	6,10,6,12,6,157,9,6,1,6,1,6,1,6,1,7,1,7,5,7,164,8,7,10,7,12,7,167,9,7,
-  	1,7,1,7,1,7,1,7,1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,5,8,181,8,8,10,8,12,8,
-  	184,9,8,1,8,1,8,1,8,1,9,1,9,1,10,1,10,1,11,1,11,1,12,4,12,196,8,12,11,
-  	12,12,12,197,1,13,1,13,1,13,1,13,3,13,204,8,13,1,14,1,14,1,14,1,15,1,
-  	15,1,16,1,16,1,16,1,16,3,16,215,8,16,1,17,3,17,218,8,17,1,17,4,17,221,
-  	8,17,11,17,12,17,222,1,17,1,17,5,17,227,8,17,10,17,12,17,230,9,17,3,17,
-  	232,8,17,1,17,3,17,235,8,17,1,17,1,17,4,17,239,8,17,11,17,12,17,240,3,
-  	17,243,8,17,1,18,1,18,1,19,1,19,1,19,1,19,1,19,1,19,5,19,253,8,19,10,
-  	19,12,19,256,9,19,1,20,1,20,1,20,1,20,1,20,1,20,5,20,264,8,20,10,20,12,
-  	20,267,9,20,1,21,1,21,1,21,1,21,1,21,1,21,5,21,275,8,21,10,21,12,21,278,
-  	9,21,1,22,1,22,1,22,1,22,1,22,1,22,5,22,286,8,22,10,22,12,22,289,9,22,
-  	1,23,1,23,1,23,1,23,1,23,1,23,5,23,297,8,23,10,23,12,23,300,9,23,1,24,
-  	1,24,1,24,1,24,1,24,1,24,5,24,308,8,24,10,24,12,24,311,9,24,1,25,1,25,
-  	1,25,1,25,1,25,1,25,5,25,319,8,25,10,25,12,25,322,9,25,1,26,1,26,1,26,
-  	1,26,1,26,3,26,329,8,26,1,27,1,27,1,27,1,27,1,27,1,27,3,27,337,8,27,1,
-  	28,1,28,1,28,1,28,1,28,1,28,3,28,345,8,28,1,29,1,29,3,29,349,8,29,1,30,
-  	1,30,1,30,1,31,1,31,1,32,1,32,1,32,1,32,1,32,1,33,1,33,1,33,3,33,364,
-  	8,33,1,33,1,33,1,33,1,34,1,34,1,34,3,34,372,8,34,1,35,1,35,1,35,0,7,38,
-  	40,42,44,46,48,50,36,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,
-  	36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,0,9,1,0,9,10,2,
-  	0,9,9,11,11,2,0,9,9,12,12,1,0,18,19,1,0,20,21,1,0,32,33,1,0,34,37,1,0,
-  	26,28,1,0,38,49,389,0,75,1,0,0,0,2,86,1,0,0,0,4,88,1,0,0,0,6,99,1,0,0,
-  	0,8,102,1,0,0,0,10,118,1,0,0,0,12,150,1,0,0,0,14,161,1,0,0,0,16,172,1,
-  	0,0,0,18,188,1,0,0,0,20,190,1,0,0,0,22,192,1,0,0,0,24,195,1,0,0,0,26,
-  	203,1,0,0,0,28,205,1,0,0,0,30,208,1,0,0,0,32,214,1,0,0,0,34,242,1,0,0,
-  	0,36,244,1,0,0,0,38,246,1,0,0,0,40,257,1,0,0,0,42,268,1,0,0,0,44,279,
-  	1,0,0,0,46,290,1,0,0,0,48,301,1,0,0,0,50,312,1,0,0,0,52,328,1,0,0,0,54,
-  	336,1,0,0,0,56,344,1,0,0,0,58,348,1,0,0,0,60,350,1,0,0,0,62,353,1,0,0,
-  	0,64,355,1,0,0,0,66,363,1,0,0,0,68,371,1,0,0,0,70,373,1,0,0,0,72,74,3,
-  	2,1,0,73,72,1,0,0,0,74,77,1,0,0,0,75,73,1,0,0,0,75,76,1,0,0,0,76,1,1,
-  	0,0,0,77,75,1,0,0,0,78,87,3,8,4,0,79,87,3,10,5,0,80,87,3,12,6,0,81,87,
-  	3,14,7,0,82,87,3,16,8,0,83,87,3,18,9,0,84,87,3,20,10,0,85,87,3,4,2,0,
-  	86,78,1,0,0,0,86,79,1,0,0,0,86,80,1,0,0,0,86,81,1,0,0,0,86,82,1,0,0,0,
-  	86,83,1,0,0,0,86,84,1,0,0,0,86,85,1,0,0,0,87,3,1,0,0,0,88,89,5,15,0,0,
-  	89,93,3,32,16,0,90,92,5,55,0,0,91,90,1,0,0,0,92,95,1,0,0,0,93,91,1,0,
-  	0,0,93,94,1,0,0,0,94,96,1,0,0,0,95,93,1,0,0,0,96,97,3,0,0,0,97,98,3,6,
-  	3,0,98,5,1,0,0,0,99,100,5,16,0,0,100,7,1,0,0,0,101,103,3,22,11,0,102,
-  	101,1,0,0,0,102,103,1,0,0,0,103,105,1,0,0,0,104,106,3,24,12,0,105,104,
-  	1,0,0,0,105,106,1,0,0,0,106,110,1,0,0,0,107,109,3,26,13,0,108,107,1,0,
-  	0,0,109,112,1,0,0,0,110,108,1,0,0,0,110,111,1,0,0,0,111,114,1,0,0,0,112,
-  	110,1,0,0,0,113,115,5,55,0,0,114,113,1,0,0,0,115,116,1,0,0,0,116,114,
-  	1,0,0,0,116,117,1,0,0,0,117,9,1,0,0,0,118,119,5,1,0,0,119,123,3,36,18,
-  	0,120,122,5,55,0,0,121,120,1,0,0,0,122,125,1,0,0,0,123,121,1,0,0,0,123,
-  	124,1,0,0,0,124,126,1,0,0,0,125,123,1,0,0,0,126,140,3,0,0,0,127,128,5,
-  	8,0,0,128,129,5,1,0,0,129,133,3,36,18,0,130,132,5,55,0,0,131,130,1,0,
-  	0,0,132,135,1,0,0,0,133,131,1,0,0,0,133,134,1,0,0,0,134,136,1,0,0,0,135,
-  	133,1,0,0,0,136,137,3,0,0,0,137,139,1,0,0,0,138,127,1,0,0,0,139,142,1,
-  	0,0,0,140,138,1,0,0,0,140,141,1,0,0,0,141,146,1,0,0,0,142,140,1,0,0,0,
-  	143,144,5,8,0,0,144,145,5,55,0,0,145,147,3,0,0,0,146,143,1,0,0,0,146,
-  	147,1,0,0,0,147,148,1,0,0,0,148,149,7,0,0,0,149,11,1,0,0,0,150,151,5,
-  	4,0,0,151,155,3,36,18,0,152,154,5,55,0,0,153,152,1,0,0,0,154,157,1,0,
-  	0,0,155,153,1,0,0,0,155,156,1,0,0,0,156,158,1,0,0,0,157,155,1,0,0,0,158,
-  	159,3,0,0,0,159,160,7,1,0,0,160,13,1,0,0,0,161,165,5,3,0,0,162,164,5,
-  	55,0,0,163,162,1,0,0,0,164,167,1,0,0,0,165,163,1,0,0,0,165,166,1,0,0,
-  	0,166,168,1,0,0,0,167,165,1,0,0,0,168,169,3,0,0,0,169,170,5,4,0,0,170,
-  	171,3,36,18,0,171,15,1,0,0,0,172,173,5,5,0,0,173,174,3,68,34,0,174,175,
-  	5,6,0,0,175,176,3,36,18,0,176,177,5,7,0,0,177,178,3,36,18,0,178,182,5,
-  	3,0,0,179,181,5,55,0,0,180,179,1,0,0,0,181,184,1,0,0,0,182,180,1,0,0,
-  	0,182,183,1,0,0,0,183,185,1,0,0,0,184,182,1,0,0,0,185,186,3,0,0,0,186,
-  	187,7,2,0,0,187,17,1,0,0,0,188,189,5,13,0,0,189,19,1,0,0,0,190,191,5,
-  	14,0,0,191,21,1,0,0,0,192,193,5,26,0,0,193,23,1,0,0,0,194,196,5,17,0,
-  	0,195,194,1,0,0,0,196,197,1,0,0,0,197,195,1,0,0,0,197,198,1,0,0,0,198,
-  	25,1,0,0,0,199,204,3,28,14,0,200,204,3,66,33,0,201,204,3,70,35,0,202,
-  	204,3,6,3,0,203,199,1,0,0,0,203,200,1,0,0,0,203,201,1,0,0,0,203,202,1,
-  	0,0,0,204,27,1,0,0,0,205,206,3,30,15,0,206,207,3,32,16,0,207,29,1,0,0,
-  	0,208,209,7,3,0,0,209,31,1,0,0,0,210,215,3,58,29,0,211,215,3,68,34,0,
-  	212,215,3,36,18,0,213,215,3,34,17,0,214,210,1,0,0,0,214,211,1,0,0,0,214,
-  	212,1,0,0,0,214,213,1,0,0,0,215,33,1,0,0,0,216,218,7,4,0,0,217,216,1,
-  	0,0,0,217,218,1,0,0,0,218,220,1,0,0,0,219,221,5,17,0,0,220,219,1,0,0,
-  	0,221,222,1,0,0,0,222,220,1,0,0,0,222,223,1,0,0,0,223,231,1,0,0,0,224,
-  	228,5,22,0,0,225,227,5,17,0,0,226,225,1,0,0,0,227,230,1,0,0,0,228,226,
-  	1,0,0,0,228,229,1,0,0,0,229,232,1,0,0,0,230,228,1,0,0,0,231,224,1,0,0,
-  	0,231,232,1,0,0,0,232,243,1,0,0,0,233,235,7,4,0,0,234,233,1,0,0,0,234,
-  	235,1,0,0,0,235,236,1,0,0,0,236,238,5,22,0,0,237,239,5,17,0,0,238,237,
-  	1,0,0,0,239,240,1,0,0,0,240,238,1,0,0,0,240,241,1,0,0,0,241,243,1,0,0,
-  	0,242,217,1,0,0,0,242,234,1,0,0,0,243,35,1,0,0,0,244,245,3,38,19,0,245,
-  	37,1,0,0,0,246,247,6,19,-1,0,247,248,3,40,20,0,248,254,1,0,0,0,249,250,
-  	10,2,0,0,250,251,5,31,0,0,251,253,3,40,20,0,252,249,1,0,0,0,253,256,1,
-  	0,0,0,254,252,1,0,0,0,254,255,1,0,0,0,255,39,1,0,0,0,256,254,1,0,0,0,
-  	257,258,6,20,-1,0,258,259,3,42,21,0,259,265,1,0,0,0,260,261,10,2,0,0,
-  	261,262,5,30,0,0,262,264,3,42,21,0,263,260,1,0,0,0,264,267,1,0,0,0,265,
-  	263,1,0,0,0,265,266,1,0,0,0,266,41,1,0,0,0,267,265,1,0,0,0,268,269,6,
-  	21,-1,0,269,270,3,44,22,0,270,276,1,0,0,0,271,272,10,2,0,0,272,273,5,
-  	29,0,0,273,275,3,44,22,0,274,271,1,0,0,0,275,278,1,0,0,0,276,274,1,0,
-  	0,0,276,277,1,0,0,0,277,43,1,0,0,0,278,276,1,0,0,0,279,280,6,22,-1,0,
-  	280,281,3,46,23,0,281,287,1,0,0,0,282,283,10,2,0,0,283,284,7,5,0,0,284,
-  	286,3,46,23,0,285,282,1,0,0,0,286,289,1,0,0,0,287,285,1,0,0,0,287,288,
-  	1,0,0,0,288,45,1,0,0,0,289,287,1,0,0,0,290,291,6,23,-1,0,291,292,3,48,
-  	24,0,292,298,1,0,0,0,293,294,10,2,0,0,294,295,7,6,0,0,295,297,3,48,24,
-  	0,296,293,1,0,0,0,297,300,1,0,0,0,298,296,1,0,0,0,298,299,1,0,0,0,299,
-  	47,1,0,0,0,300,298,1,0,0,0,301,302,6,24,-1,0,302,303,3,50,25,0,303,309,
-  	1,0,0,0,304,305,10,2,0,0,305,306,7,4,0,0,306,308,3,50,25,0,307,304,1,
-  	0,0,0,308,311,1,0,0,0,309,307,1,0,0,0,309,310,1,0,0,0,310,49,1,0,0,0,
-  	311,309,1,0,0,0,312,313,6,25,-1,0,313,314,3,52,26,0,314,320,1,0,0,0,315,
-  	316,10,2,0,0,316,317,7,7,0,0,317,319,3,52,26,0,318,315,1,0,0,0,319,322,
-  	1,0,0,0,320,318,1,0,0,0,320,321,1,0,0,0,321,51,1,0,0,0,322,320,1,0,0,
-  	0,323,324,3,54,27,0,324,325,5,25,0,0,325,326,3,52,26,0,326,329,1,0,0,
-  	0,327,329,3,54,27,0,328,323,1,0,0,0,328,327,1,0,0,0,329,53,1,0,0,0,330,
-  	331,5,20,0,0,331,337,3,54,27,0,332,333,5,21,0,0,333,337,3,54,27,0,334,
-  	337,3,58,29,0,335,337,3,56,28,0,336,330,1,0,0,0,336,332,1,0,0,0,336,334,
-  	1,0,0,0,336,335,1,0,0,0,337,55,1,0,0,0,338,345,3,34,17,0,339,345,3,68,
-  	34,0,340,341,5,23,0,0,341,342,3,36,18,0,342,343,5,24,0,0,343,345,1,0,
-  	0,0,344,338,1,0,0,0,344,339,1,0,0,0,344,340,1,0,0,0,345,57,1,0,0,0,346,
-  	349,3,60,30,0,347,349,3,64,32,0,348,346,1,0,0,0,348,347,1,0,0,0,349,59,
-  	1,0,0,0,350,351,3,62,31,0,351,352,3,36,18,0,352,61,1,0,0,0,353,354,7,
-  	8,0,0,354,63,1,0,0,0,355,356,5,50,0,0,356,357,3,36,18,0,357,358,5,26,
-  	0,0,358,359,3,36,18,0,359,65,1,0,0,0,360,361,5,51,0,0,361,364,3,56,28,
-  	0,362,364,5,54,0,0,363,360,1,0,0,0,363,362,1,0,0,0,364,365,1,0,0,0,365,
-  	366,5,52,0,0,366,367,3,32,16,0,367,67,1,0,0,0,368,369,5,51,0,0,369,372,
-  	3,56,28,0,370,372,5,54,0,0,371,368,1,0,0,0,371,370,1,0,0,0,372,69,1,0,
-  	0,0,373,374,5,53,0,0,374,71,1,0,0,0,37,75,86,93,102,105,110,116,123,133,
-  	140,146,155,165,182,197,203,214,217,222,228,231,234,240,242,254,265,276,
-  	287,298,309,320,328,336,344,348,363,371
+  	35,1,0,1,0,1,0,5,0,76,8,0,10,0,12,0,79,9,0,1,0,1,0,1,0,5,0,84,8,0,10,
+  	0,12,0,87,9,0,1,0,1,0,1,0,1,0,5,0,93,8,0,10,0,12,0,96,9,0,1,0,1,0,5,0,
+  	100,8,0,10,0,12,0,103,9,0,3,0,105,8,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+  	3,1,115,8,1,1,2,1,2,1,2,5,2,120,8,2,10,2,12,2,123,9,2,1,2,1,2,1,2,1,3,
+  	1,3,1,4,3,4,131,8,4,1,4,3,4,134,8,4,1,4,5,4,137,8,4,10,4,12,4,140,9,4,
+  	1,4,4,4,143,8,4,11,4,12,4,144,1,5,1,5,1,5,5,5,150,8,5,10,5,12,5,153,9,
+  	5,1,5,1,5,1,5,1,5,1,5,5,5,160,8,5,10,5,12,5,163,9,5,1,5,1,5,5,5,167,8,
+  	5,10,5,12,5,170,9,5,1,5,1,5,1,5,3,5,175,8,5,1,5,1,5,1,6,1,6,1,6,5,6,182,
+  	8,6,10,6,12,6,185,9,6,1,6,1,6,1,6,1,7,1,7,5,7,192,8,7,10,7,12,7,195,9,
+  	7,1,7,1,7,1,7,1,7,1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,5,8,209,8,8,10,8,12,
+  	8,212,9,8,1,8,1,8,1,8,1,9,1,9,1,10,1,10,1,11,1,11,1,12,4,12,224,8,12,
+  	11,12,12,12,225,1,13,1,13,1,13,1,13,3,13,232,8,13,1,14,1,14,1,14,1,15,
+  	1,15,1,16,1,16,1,16,1,16,3,16,243,8,16,1,17,3,17,246,8,17,1,17,4,17,249,
+  	8,17,11,17,12,17,250,1,17,1,17,5,17,255,8,17,10,17,12,17,258,9,17,3,17,
+  	260,8,17,1,17,3,17,263,8,17,1,17,1,17,4,17,267,8,17,11,17,12,17,268,3,
+  	17,271,8,17,1,18,1,18,1,19,1,19,1,19,1,19,1,19,1,19,5,19,281,8,19,10,
+  	19,12,19,284,9,19,1,20,1,20,1,20,1,20,1,20,1,20,5,20,292,8,20,10,20,12,
+  	20,295,9,20,1,21,1,21,1,21,1,21,1,21,1,21,5,21,303,8,21,10,21,12,21,306,
+  	9,21,1,22,1,22,1,22,1,22,1,22,1,22,5,22,314,8,22,10,22,12,22,317,9,22,
+  	1,23,1,23,1,23,1,23,1,23,1,23,5,23,325,8,23,10,23,12,23,328,9,23,1,24,
+  	1,24,1,24,1,24,1,24,1,24,5,24,336,8,24,10,24,12,24,339,9,24,1,25,1,25,
+  	1,25,1,25,1,25,1,25,5,25,347,8,25,10,25,12,25,350,9,25,1,26,1,26,1,26,
+  	1,26,1,26,3,26,357,8,26,1,27,1,27,1,27,1,27,1,27,1,27,3,27,365,8,27,1,
+  	28,1,28,1,28,1,28,1,28,1,28,3,28,373,8,28,1,29,1,29,3,29,377,8,29,1,30,
+  	1,30,1,30,1,31,1,31,1,32,1,32,1,32,1,32,1,32,1,33,1,33,1,33,3,33,392,
+  	8,33,1,33,1,33,1,33,1,34,1,34,1,34,3,34,400,8,34,1,35,1,35,1,35,1,85,
+  	7,38,40,42,44,46,48,50,36,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,
+  	32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,0,9,1,0,9,
+  	10,2,0,9,9,11,11,2,0,9,9,12,12,1,0,19,20,1,0,21,22,1,0,33,34,1,0,35,38,
+  	1,0,27,29,1,0,39,50,422,0,104,1,0,0,0,2,114,1,0,0,0,4,116,1,0,0,0,6,127,
+  	1,0,0,0,8,130,1,0,0,0,10,146,1,0,0,0,12,178,1,0,0,0,14,189,1,0,0,0,16,
+  	200,1,0,0,0,18,216,1,0,0,0,20,218,1,0,0,0,22,220,1,0,0,0,24,223,1,0,0,
+  	0,26,231,1,0,0,0,28,233,1,0,0,0,30,236,1,0,0,0,32,242,1,0,0,0,34,270,
+  	1,0,0,0,36,272,1,0,0,0,38,274,1,0,0,0,40,285,1,0,0,0,42,296,1,0,0,0,44,
+  	307,1,0,0,0,46,318,1,0,0,0,48,329,1,0,0,0,50,340,1,0,0,0,52,356,1,0,0,
+  	0,54,364,1,0,0,0,56,372,1,0,0,0,58,376,1,0,0,0,60,378,1,0,0,0,62,381,
+  	1,0,0,0,64,383,1,0,0,0,66,391,1,0,0,0,68,399,1,0,0,0,70,401,1,0,0,0,72,
+  	73,5,17,0,0,73,77,5,56,0,0,74,76,3,2,1,0,75,74,1,0,0,0,76,79,1,0,0,0,
+  	77,75,1,0,0,0,77,78,1,0,0,0,78,80,1,0,0,0,79,77,1,0,0,0,80,81,5,17,0,
+  	0,81,85,5,56,0,0,82,84,9,0,0,0,83,82,1,0,0,0,84,87,1,0,0,0,85,86,1,0,
+  	0,0,85,83,1,0,0,0,86,88,1,0,0,0,87,85,1,0,0,0,88,105,5,56,0,0,89,90,5,
+  	17,0,0,90,94,5,56,0,0,91,93,3,2,1,0,92,91,1,0,0,0,93,96,1,0,0,0,94,92,
+  	1,0,0,0,94,95,1,0,0,0,95,97,1,0,0,0,96,94,1,0,0,0,97,105,5,56,0,0,98,
+  	100,3,2,1,0,99,98,1,0,0,0,100,103,1,0,0,0,101,99,1,0,0,0,101,102,1,0,
+  	0,0,102,105,1,0,0,0,103,101,1,0,0,0,104,72,1,0,0,0,104,89,1,0,0,0,104,
+  	101,1,0,0,0,105,1,1,0,0,0,106,115,3,8,4,0,107,115,3,10,5,0,108,115,3,
+  	12,6,0,109,115,3,14,7,0,110,115,3,16,8,0,111,115,3,18,9,0,112,115,3,20,
+  	10,0,113,115,3,4,2,0,114,106,1,0,0,0,114,107,1,0,0,0,114,108,1,0,0,0,
+  	114,109,1,0,0,0,114,110,1,0,0,0,114,111,1,0,0,0,114,112,1,0,0,0,114,113,
+  	1,0,0,0,115,3,1,0,0,0,116,117,5,15,0,0,117,121,3,32,16,0,118,120,5,56,
+  	0,0,119,118,1,0,0,0,120,123,1,0,0,0,121,119,1,0,0,0,121,122,1,0,0,0,122,
+  	124,1,0,0,0,123,121,1,0,0,0,124,125,3,0,0,0,125,126,3,6,3,0,126,5,1,0,
+  	0,0,127,128,5,16,0,0,128,7,1,0,0,0,129,131,3,22,11,0,130,129,1,0,0,0,
+  	130,131,1,0,0,0,131,133,1,0,0,0,132,134,3,24,12,0,133,132,1,0,0,0,133,
+  	134,1,0,0,0,134,138,1,0,0,0,135,137,3,26,13,0,136,135,1,0,0,0,137,140,
+  	1,0,0,0,138,136,1,0,0,0,138,139,1,0,0,0,139,142,1,0,0,0,140,138,1,0,0,
+  	0,141,143,5,56,0,0,142,141,1,0,0,0,143,144,1,0,0,0,144,142,1,0,0,0,144,
+  	145,1,0,0,0,145,9,1,0,0,0,146,147,5,1,0,0,147,151,3,36,18,0,148,150,5,
+  	56,0,0,149,148,1,0,0,0,150,153,1,0,0,0,151,149,1,0,0,0,151,152,1,0,0,
+  	0,152,154,1,0,0,0,153,151,1,0,0,0,154,168,3,0,0,0,155,156,5,8,0,0,156,
+  	157,5,1,0,0,157,161,3,36,18,0,158,160,5,56,0,0,159,158,1,0,0,0,160,163,
+  	1,0,0,0,161,159,1,0,0,0,161,162,1,0,0,0,162,164,1,0,0,0,163,161,1,0,0,
+  	0,164,165,3,0,0,0,165,167,1,0,0,0,166,155,1,0,0,0,167,170,1,0,0,0,168,
+  	166,1,0,0,0,168,169,1,0,0,0,169,174,1,0,0,0,170,168,1,0,0,0,171,172,5,
+  	8,0,0,172,173,5,56,0,0,173,175,3,0,0,0,174,171,1,0,0,0,174,175,1,0,0,
+  	0,175,176,1,0,0,0,176,177,7,0,0,0,177,11,1,0,0,0,178,179,5,4,0,0,179,
+  	183,3,36,18,0,180,182,5,56,0,0,181,180,1,0,0,0,182,185,1,0,0,0,183,181,
+  	1,0,0,0,183,184,1,0,0,0,184,186,1,0,0,0,185,183,1,0,0,0,186,187,3,0,0,
+  	0,187,188,7,1,0,0,188,13,1,0,0,0,189,193,5,3,0,0,190,192,5,56,0,0,191,
+  	190,1,0,0,0,192,195,1,0,0,0,193,191,1,0,0,0,193,194,1,0,0,0,194,196,1,
+  	0,0,0,195,193,1,0,0,0,196,197,3,0,0,0,197,198,5,4,0,0,198,199,3,36,18,
+  	0,199,15,1,0,0,0,200,201,5,5,0,0,201,202,3,68,34,0,202,203,5,6,0,0,203,
+  	204,3,36,18,0,204,205,5,7,0,0,205,206,3,36,18,0,206,210,5,3,0,0,207,209,
+  	5,56,0,0,208,207,1,0,0,0,209,212,1,0,0,0,210,208,1,0,0,0,210,211,1,0,
+  	0,0,211,213,1,0,0,0,212,210,1,0,0,0,213,214,3,0,0,0,214,215,7,2,0,0,215,
+  	17,1,0,0,0,216,217,5,13,0,0,217,19,1,0,0,0,218,219,5,14,0,0,219,21,1,
+  	0,0,0,220,221,5,27,0,0,221,23,1,0,0,0,222,224,5,18,0,0,223,222,1,0,0,
+  	0,224,225,1,0,0,0,225,223,1,0,0,0,225,226,1,0,0,0,226,25,1,0,0,0,227,
+  	232,3,28,14,0,228,232,3,66,33,0,229,232,3,70,35,0,230,232,3,6,3,0,231,
+  	227,1,0,0,0,231,228,1,0,0,0,231,229,1,0,0,0,231,230,1,0,0,0,232,27,1,
+  	0,0,0,233,234,3,30,15,0,234,235,3,32,16,0,235,29,1,0,0,0,236,237,7,3,
+  	0,0,237,31,1,0,0,0,238,243,3,58,29,0,239,243,3,68,34,0,240,243,3,36,18,
+  	0,241,243,3,34,17,0,242,238,1,0,0,0,242,239,1,0,0,0,242,240,1,0,0,0,242,
+  	241,1,0,0,0,243,33,1,0,0,0,244,246,7,4,0,0,245,244,1,0,0,0,245,246,1,
+  	0,0,0,246,248,1,0,0,0,247,249,5,18,0,0,248,247,1,0,0,0,249,250,1,0,0,
+  	0,250,248,1,0,0,0,250,251,1,0,0,0,251,259,1,0,0,0,252,256,5,23,0,0,253,
+  	255,5,18,0,0,254,253,1,0,0,0,255,258,1,0,0,0,256,254,1,0,0,0,256,257,
+  	1,0,0,0,257,260,1,0,0,0,258,256,1,0,0,0,259,252,1,0,0,0,259,260,1,0,0,
+  	0,260,271,1,0,0,0,261,263,7,4,0,0,262,261,1,0,0,0,262,263,1,0,0,0,263,
+  	264,1,0,0,0,264,266,5,23,0,0,265,267,5,18,0,0,266,265,1,0,0,0,267,268,
+  	1,0,0,0,268,266,1,0,0,0,268,269,1,0,0,0,269,271,1,0,0,0,270,245,1,0,0,
+  	0,270,262,1,0,0,0,271,35,1,0,0,0,272,273,3,38,19,0,273,37,1,0,0,0,274,
+  	275,6,19,-1,0,275,276,3,40,20,0,276,282,1,0,0,0,277,278,10,2,0,0,278,
+  	279,5,32,0,0,279,281,3,40,20,0,280,277,1,0,0,0,281,284,1,0,0,0,282,280,
+  	1,0,0,0,282,283,1,0,0,0,283,39,1,0,0,0,284,282,1,0,0,0,285,286,6,20,-1,
+  	0,286,287,3,42,21,0,287,293,1,0,0,0,288,289,10,2,0,0,289,290,5,31,0,0,
+  	290,292,3,42,21,0,291,288,1,0,0,0,292,295,1,0,0,0,293,291,1,0,0,0,293,
+  	294,1,0,0,0,294,41,1,0,0,0,295,293,1,0,0,0,296,297,6,21,-1,0,297,298,
+  	3,44,22,0,298,304,1,0,0,0,299,300,10,2,0,0,300,301,5,30,0,0,301,303,3,
+  	44,22,0,302,299,1,0,0,0,303,306,1,0,0,0,304,302,1,0,0,0,304,305,1,0,0,
+  	0,305,43,1,0,0,0,306,304,1,0,0,0,307,308,6,22,-1,0,308,309,3,46,23,0,
+  	309,315,1,0,0,0,310,311,10,2,0,0,311,312,7,5,0,0,312,314,3,46,23,0,313,
+  	310,1,0,0,0,314,317,1,0,0,0,315,313,1,0,0,0,315,316,1,0,0,0,316,45,1,
+  	0,0,0,317,315,1,0,0,0,318,319,6,23,-1,0,319,320,3,48,24,0,320,326,1,0,
+  	0,0,321,322,10,2,0,0,322,323,7,6,0,0,323,325,3,48,24,0,324,321,1,0,0,
+  	0,325,328,1,0,0,0,326,324,1,0,0,0,326,327,1,0,0,0,327,47,1,0,0,0,328,
+  	326,1,0,0,0,329,330,6,24,-1,0,330,331,3,50,25,0,331,337,1,0,0,0,332,333,
+  	10,2,0,0,333,334,7,4,0,0,334,336,3,50,25,0,335,332,1,0,0,0,336,339,1,
+  	0,0,0,337,335,1,0,0,0,337,338,1,0,0,0,338,49,1,0,0,0,339,337,1,0,0,0,
+  	340,341,6,25,-1,0,341,342,3,52,26,0,342,348,1,0,0,0,343,344,10,2,0,0,
+  	344,345,7,7,0,0,345,347,3,52,26,0,346,343,1,0,0,0,347,350,1,0,0,0,348,
+  	346,1,0,0,0,348,349,1,0,0,0,349,51,1,0,0,0,350,348,1,0,0,0,351,352,3,
+  	54,27,0,352,353,5,26,0,0,353,354,3,52,26,0,354,357,1,0,0,0,355,357,3,
+  	54,27,0,356,351,1,0,0,0,356,355,1,0,0,0,357,53,1,0,0,0,358,359,5,21,0,
+  	0,359,365,3,54,27,0,360,361,5,22,0,0,361,365,3,54,27,0,362,365,3,58,29,
+  	0,363,365,3,56,28,0,364,358,1,0,0,0,364,360,1,0,0,0,364,362,1,0,0,0,364,
+  	363,1,0,0,0,365,55,1,0,0,0,366,373,3,34,17,0,367,373,3,68,34,0,368,369,
+  	5,24,0,0,369,370,3,36,18,0,370,371,5,25,0,0,371,373,1,0,0,0,372,366,1,
+  	0,0,0,372,367,1,0,0,0,372,368,1,0,0,0,373,57,1,0,0,0,374,377,3,60,30,
+  	0,375,377,3,64,32,0,376,374,1,0,0,0,376,375,1,0,0,0,377,59,1,0,0,0,378,
+  	379,3,62,31,0,379,380,3,36,18,0,380,61,1,0,0,0,381,382,7,8,0,0,382,63,
+  	1,0,0,0,383,384,5,51,0,0,384,385,3,36,18,0,385,386,5,27,0,0,386,387,3,
+  	36,18,0,387,65,1,0,0,0,388,389,5,52,0,0,389,392,3,56,28,0,390,392,5,55,
+  	0,0,391,388,1,0,0,0,391,390,1,0,0,0,392,393,1,0,0,0,393,394,5,53,0,0,
+  	394,395,3,32,16,0,395,67,1,0,0,0,396,397,5,52,0,0,397,400,3,56,28,0,398,
+  	400,5,55,0,0,399,396,1,0,0,0,399,398,1,0,0,0,400,69,1,0,0,0,401,402,5,
+  	54,0,0,402,71,1,0,0,0,41,77,85,94,101,104,114,121,130,133,138,144,151,
+  	161,168,174,183,193,210,225,231,242,245,250,256,259,262,268,270,282,293,
+  	304,315,326,337,348,356,364,372,376,391,399
   };
   staticData->serializedATN = antlr4::atn::SerializedATNView(serializedATNSegment, sizeof(serializedATNSegment) / sizeof(serializedATNSegment[0]));
 
@@ -260,6 +270,22 @@ parser_antlr4::BlockContext::BlockContext(ParserRuleContext *parent, size_t invo
   : ParserRuleContext(parent, invokingState) {
 }
 
+std::vector<tree::TerminalNode *> parser_antlr4::BlockContext::PERCENT() {
+  return getTokens(parser_antlr4::PERCENT);
+}
+
+tree::TerminalNode* parser_antlr4::BlockContext::PERCENT(size_t i) {
+  return getToken(parser_antlr4::PERCENT, i);
+}
+
+std::vector<tree::TerminalNode *> parser_antlr4::BlockContext::EOL() {
+  return getTokens(parser_antlr4::EOL);
+}
+
+tree::TerminalNode* parser_antlr4::BlockContext::EOL(size_t i) {
+  return getToken(parser_antlr4::EOL, i);
+}
+
 std::vector<parser_antlr4::StatementContext *> parser_antlr4::BlockContext::statement() {
   return getRuleContexts<parser_antlr4::StatementContext>();
 }
@@ -296,6 +322,7 @@ std::any parser_antlr4::BlockContext::accept(tree::ParseTreeVisitor *visitor) {
 parser_antlr4::BlockContext* parser_antlr4::block() {
   BlockContext *_localctx = _tracker.createInstance<BlockContext>(_ctx, getState());
   enterRule(_localctx, 0, parser_antlr4::RuleBlock);
+  size_t _la = 0;
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -306,18 +333,89 @@ parser_antlr4::BlockContext* parser_antlr4::block() {
   });
   try {
     size_t alt;
-    enterOuterAlt(_localctx, 1);
-    setState(75);
+    setState(104);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 0, _ctx);
-    while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
-      if (alt == 1) {
-        setState(72);
-        statement(); 
-      }
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 4, _ctx)) {
+    case 1: {
+      enterOuterAlt(_localctx, 1);
+      setState(72);
+      match(parser_antlr4::PERCENT);
+      setState(73);
+      match(parser_antlr4::EOL);
       setState(77);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 0, _ctx);
+      _la = _input->LA(1);
+      while ((((_la & ~ 0x3fULL) == 0) &&
+        ((1ULL << _la) & 130604389329920058) != 0)) {
+        setState(74);
+        statement();
+        setState(79);
+        _errHandler->sync(this);
+        _la = _input->LA(1);
+      }
+      setState(80);
+      match(parser_antlr4::PERCENT);
+      setState(81);
+      match(parser_antlr4::EOL);
+      setState(85);
+      _errHandler->sync(this);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 1, _ctx);
+      while (alt != 1 && alt != atn::ATN::INVALID_ALT_NUMBER) {
+        if (alt == 1 + 1) {
+          setState(82);
+          matchWildcard(); 
+        }
+        setState(87);
+        _errHandler->sync(this);
+        alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 1, _ctx);
+      }
+      setState(88);
+      match(parser_antlr4::EOL);
+      break;
+    }
+
+    case 2: {
+      enterOuterAlt(_localctx, 2);
+      setState(89);
+      match(parser_antlr4::PERCENT);
+      setState(90);
+      match(parser_antlr4::EOL);
+      setState(94);
+      _errHandler->sync(this);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 2, _ctx);
+      while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
+        if (alt == 1) {
+          setState(91);
+          statement(); 
+        }
+        setState(96);
+        _errHandler->sync(this);
+        alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 2, _ctx);
+      }
+      setState(97);
+      match(parser_antlr4::EOL);
+      break;
+    }
+
+    case 3: {
+      enterOuterAlt(_localctx, 3);
+      setState(101);
+      _errHandler->sync(this);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 3, _ctx);
+      while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
+        if (alt == 1) {
+          setState(98);
+          statement(); 
+        }
+        setState(103);
+        _errHandler->sync(this);
+        alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 3, _ctx);
+      }
+      break;
+    }
+
+    default:
+      break;
     }
    
   }
@@ -405,7 +503,7 @@ parser_antlr4::StatementContext* parser_antlr4::statement() {
     exitRule();
   });
   try {
-    setState(86);
+    setState(114);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case parser_antlr4::M99:
@@ -418,56 +516,56 @@ parser_antlr4::StatementContext* parser_antlr4::statement() {
       case parser_antlr4::NAMED_PARAMETER:
       case parser_antlr4::EOL: {
         enterOuterAlt(_localctx, 1);
-        setState(78);
+        setState(106);
         line();
         break;
       }
 
       case parser_antlr4::IF: {
         enterOuterAlt(_localctx, 2);
-        setState(79);
+        setState(107);
         if_statement();
         break;
       }
 
       case parser_antlr4::WHILE: {
         enterOuterAlt(_localctx, 3);
-        setState(80);
+        setState(108);
         while_statement();
         break;
       }
 
       case parser_antlr4::DO: {
         enterOuterAlt(_localctx, 4);
-        setState(81);
+        setState(109);
         do_while_statement();
         break;
       }
 
       case parser_antlr4::FOR: {
         enterOuterAlt(_localctx, 5);
-        setState(82);
+        setState(110);
         for_statement();
         break;
       }
 
       case parser_antlr4::BREAK: {
         enterOuterAlt(_localctx, 6);
-        setState(83);
+        setState(111);
         break_statement();
         break;
       }
 
       case parser_antlr4::CONTINUE: {
         enterOuterAlt(_localctx, 7);
-        setState(84);
+        setState(112);
         continue_statement();
         break;
       }
 
       case parser_antlr4::SUBROUTINE: {
         enterOuterAlt(_localctx, 8);
-        setState(85);
+        setState(113);
         subroutine();
         break;
       }
@@ -555,25 +653,25 @@ parser_antlr4::SubroutineContext* parser_antlr4::subroutine() {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(88);
+    setState(116);
     match(parser_antlr4::SUBROUTINE);
-    setState(89);
+    setState(117);
     real_value();
-    setState(93);
+    setState(121);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 2, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 6, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
-        setState(90);
+        setState(118);
         match(parser_antlr4::EOL); 
       }
-      setState(95);
+      setState(123);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 2, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 6, _ctx);
     }
-    setState(96);
+    setState(124);
     block();
-    setState(97);
+    setState(125);
     m99();
    
   }
@@ -634,7 +732,7 @@ parser_antlr4::M99Context* parser_antlr4::m99() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(99);
+    setState(127);
     match(parser_antlr4::M99);
    
   }
@@ -717,40 +815,40 @@ parser_antlr4::LineContext* parser_antlr4::line() {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(102);
+    setState(130);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == parser_antlr4::SLASH) {
-      setState(101);
+      setState(129);
       block_delete();
     }
-    setState(105);
+    setState(133);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == parser_antlr4::DIGIT) {
-      setState(104);
+      setState(132);
       line_number();
     }
-    setState(110);
+    setState(138);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while ((((_la & ~ 0x3fULL) == 0) &&
-      ((1ULL << _la) & 29273397578760192) != 0)) {
-      setState(107);
+      ((1ULL << _la) & 58546795157454848) != 0)) {
+      setState(135);
       segment();
-      setState(112);
+      setState(140);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(114); 
+    setState(142); 
     _errHandler->sync(this);
     alt = 1;
     do {
       switch (alt) {
         case 1: {
-              setState(113);
+              setState(141);
               match(parser_antlr4::EOL);
               break;
             }
@@ -758,9 +856,9 @@ parser_antlr4::LineContext* parser_antlr4::line() {
       default:
         throw NoViableAltException(this);
       }
-      setState(116); 
+      setState(144); 
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 6, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 10, _ctx);
     } while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER);
    
   }
@@ -867,67 +965,67 @@ parser_antlr4::If_statementContext* parser_antlr4::if_statement() {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(118);
+    setState(146);
     match(parser_antlr4::IF);
-    setState(119);
+    setState(147);
     expression();
-    setState(123);
+    setState(151);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 7, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 11, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
-        setState(120);
+        setState(148);
         match(parser_antlr4::EOL); 
       }
-      setState(125);
+      setState(153);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 7, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 11, _ctx);
     }
-    setState(126);
+    setState(154);
     block();
-    setState(140);
+    setState(168);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 9, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 13, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
-        setState(127);
+        setState(155);
         match(parser_antlr4::ELSE);
-        setState(128);
+        setState(156);
         match(parser_antlr4::IF);
-        setState(129);
+        setState(157);
         expression();
-        setState(133);
+        setState(161);
         _errHandler->sync(this);
-        alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 8, _ctx);
+        alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 12, _ctx);
         while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
           if (alt == 1) {
-            setState(130);
+            setState(158);
             match(parser_antlr4::EOL); 
           }
-          setState(135);
+          setState(163);
           _errHandler->sync(this);
-          alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 8, _ctx);
+          alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 12, _ctx);
         }
-        setState(136);
+        setState(164);
         block(); 
       }
-      setState(142);
+      setState(170);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 9, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 13, _ctx);
     }
-    setState(146);
+    setState(174);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == parser_antlr4::ELSE) {
-      setState(143);
+      setState(171);
       match(parser_antlr4::ELSE);
-      setState(144);
+      setState(172);
       match(parser_antlr4::EOL);
-      setState(145);
+      setState(173);
       block();
     }
-    setState(148);
+    setState(176);
     _la = _input->LA(1);
     if (!(_la == parser_antlr4::END
 
@@ -1023,25 +1121,25 @@ parser_antlr4::While_statementContext* parser_antlr4::while_statement() {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(150);
+    setState(178);
     match(parser_antlr4::WHILE);
-    setState(151);
+    setState(179);
     expression();
-    setState(155);
+    setState(183);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 11, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 15, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
-        setState(152);
+        setState(180);
         match(parser_antlr4::EOL); 
       }
-      setState(157);
+      setState(185);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 11, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 15, _ctx);
     }
-    setState(158);
+    setState(186);
     block();
-    setState(159);
+    setState(187);
     _la = _input->LA(1);
     if (!(_la == parser_antlr4::END
 
@@ -1132,25 +1230,25 @@ parser_antlr4::Do_while_statementContext* parser_antlr4::do_while_statement() {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(161);
+    setState(189);
     match(parser_antlr4::DO);
-    setState(165);
+    setState(193);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 12, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 16, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
-        setState(162);
+        setState(190);
         match(parser_antlr4::EOL); 
       }
-      setState(167);
+      setState(195);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 12, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 16, _ctx);
     }
-    setState(168);
+    setState(196);
     block();
-    setState(169);
+    setState(197);
     match(parser_antlr4::WHILE);
-    setState(170);
+    setState(198);
     expression();
    
   }
@@ -1257,35 +1355,35 @@ parser_antlr4::For_statementContext* parser_antlr4::for_statement() {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(172);
+    setState(200);
     match(parser_antlr4::FOR);
-    setState(173);
+    setState(201);
     parameter_value();
-    setState(174);
+    setState(202);
     match(parser_antlr4::FROM);
-    setState(175);
+    setState(203);
     expression();
-    setState(176);
+    setState(204);
     match(parser_antlr4::TO);
-    setState(177);
+    setState(205);
     expression();
-    setState(178);
+    setState(206);
     match(parser_antlr4::DO);
-    setState(182);
+    setState(210);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 13, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 17, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
-        setState(179);
+        setState(207);
         match(parser_antlr4::EOL); 
       }
-      setState(184);
+      setState(212);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 13, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 17, _ctx);
     }
-    setState(185);
+    setState(213);
     block();
-    setState(186);
+    setState(214);
     _la = _input->LA(1);
     if (!(_la == parser_antlr4::END
 
@@ -1355,7 +1453,7 @@ parser_antlr4::Break_statementContext* parser_antlr4::break_statement() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(188);
+    setState(216);
     match(parser_antlr4::BREAK);
    
   }
@@ -1416,7 +1514,7 @@ parser_antlr4::Continue_statementContext* parser_antlr4::continue_statement() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(190);
+    setState(218);
     match(parser_antlr4::CONTINUE);
    
   }
@@ -1477,7 +1575,7 @@ parser_antlr4::Block_deleteContext* parser_antlr4::block_delete() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(192);
+    setState(220);
     match(parser_antlr4::SLASH);
    
   }
@@ -1543,13 +1641,13 @@ parser_antlr4::Line_numberContext* parser_antlr4::line_number() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(195); 
+    setState(223); 
     _errHandler->sync(this);
     _la = _input->LA(1);
     do {
-      setState(194);
+      setState(222);
       match(parser_antlr4::DIGIT);
-      setState(197); 
+      setState(225); 
       _errHandler->sync(this);
       _la = _input->LA(1);
     } while (_la == parser_antlr4::DIGIT);
@@ -1623,13 +1721,13 @@ parser_antlr4::SegmentContext* parser_antlr4::segment() {
     exitRule();
   });
   try {
-    setState(203);
+    setState(231);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case parser_antlr4::LETTER:
       case parser_antlr4::DOLLAR: {
         enterOuterAlt(_localctx, 1);
-        setState(199);
+        setState(227);
         mid_line_word();
         break;
       }
@@ -1637,21 +1735,21 @@ parser_antlr4::SegmentContext* parser_antlr4::segment() {
       case parser_antlr4::PARAMETER_SIGN:
       case parser_antlr4::NAMED_PARAMETER: {
         enterOuterAlt(_localctx, 2);
-        setState(200);
+        setState(228);
         parameter_setting();
         break;
       }
 
       case parser_antlr4::COMMENT: {
         enterOuterAlt(_localctx, 3);
-        setState(201);
+        setState(229);
         comment();
         break;
       }
 
       case parser_antlr4::M99: {
         enterOuterAlt(_localctx, 4);
-        setState(202);
+        setState(230);
         m99();
         break;
       }
@@ -1722,9 +1820,9 @@ parser_antlr4::Mid_line_wordContext* parser_antlr4::mid_line_word() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(205);
+    setState(233);
     mid_line_letter();
-    setState(206);
+    setState(234);
     real_value();
    
   }
@@ -1790,7 +1888,7 @@ parser_antlr4::Mid_line_letterContext* parser_antlr4::mid_line_letter() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(208);
+    setState(236);
     _la = _input->LA(1);
     if (!(_la == parser_antlr4::LETTER
 
@@ -1871,33 +1969,33 @@ parser_antlr4::Real_valueContext* parser_antlr4::real_value() {
     exitRule();
   });
   try {
-    setState(214);
+    setState(242);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 16, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 20, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(210);
+      setState(238);
       unary_combo();
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(211);
+      setState(239);
       parameter_value();
       break;
     }
 
     case 3: {
       enterOuterAlt(_localctx, 3);
-      setState(212);
+      setState(240);
       expression();
       break;
     }
 
     case 4: {
       enterOuterAlt(_localctx, 4);
-      setState(213);
+      setState(241);
       real_number();
       break;
     }
@@ -1981,19 +2079,19 @@ parser_antlr4::Real_numberContext* parser_antlr4::real_number() {
   });
   try {
     size_t alt;
-    setState(242);
+    setState(270);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 23, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 27, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(217);
+      setState(245);
       _errHandler->sync(this);
 
       _la = _input->LA(1);
       if (_la == parser_antlr4::PLUS
 
       || _la == parser_antlr4::MINUS) {
-        setState(216);
+        setState(244);
         _la = _input->LA(1);
         if (!(_la == parser_antlr4::PLUS
 
@@ -2005,13 +2103,13 @@ parser_antlr4::Real_numberContext* parser_antlr4::real_number() {
           consume();
         }
       }
-      setState(220); 
+      setState(248); 
       _errHandler->sync(this);
       alt = 1;
       do {
         switch (alt) {
           case 1: {
-                setState(219);
+                setState(247);
                 match(parser_antlr4::DIGIT);
                 break;
               }
@@ -2019,28 +2117,28 @@ parser_antlr4::Real_numberContext* parser_antlr4::real_number() {
         default:
           throw NoViableAltException(this);
         }
-        setState(222); 
+        setState(250); 
         _errHandler->sync(this);
-        alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 18, _ctx);
+        alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 22, _ctx);
       } while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER);
-      setState(231);
+      setState(259);
       _errHandler->sync(this);
 
-      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 20, _ctx)) {
+      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 24, _ctx)) {
       case 1: {
-        setState(224);
+        setState(252);
         match(parser_antlr4::DOT);
-        setState(228);
+        setState(256);
         _errHandler->sync(this);
-        alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 19, _ctx);
+        alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 23, _ctx);
         while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
           if (alt == 1) {
-            setState(225);
+            setState(253);
             match(parser_antlr4::DIGIT); 
           }
-          setState(230);
+          setState(258);
           _errHandler->sync(this);
-          alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 19, _ctx);
+          alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 23, _ctx);
         }
         break;
       }
@@ -2053,14 +2151,14 @@ parser_antlr4::Real_numberContext* parser_antlr4::real_number() {
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(234);
+      setState(262);
       _errHandler->sync(this);
 
       _la = _input->LA(1);
       if (_la == parser_antlr4::PLUS
 
       || _la == parser_antlr4::MINUS) {
-        setState(233);
+        setState(261);
         _la = _input->LA(1);
         if (!(_la == parser_antlr4::PLUS
 
@@ -2072,15 +2170,15 @@ parser_antlr4::Real_numberContext* parser_antlr4::real_number() {
           consume();
         }
       }
-      setState(236);
+      setState(264);
       match(parser_antlr4::DOT);
-      setState(238); 
+      setState(266); 
       _errHandler->sync(this);
       alt = 1;
       do {
         switch (alt) {
           case 1: {
-                setState(237);
+                setState(265);
                 match(parser_antlr4::DIGIT);
                 break;
               }
@@ -2088,9 +2186,9 @@ parser_antlr4::Real_numberContext* parser_antlr4::real_number() {
         default:
           throw NoViableAltException(this);
         }
-        setState(240); 
+        setState(268); 
         _errHandler->sync(this);
-        alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 22, _ctx);
+        alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 26, _ctx);
       } while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER);
       break;
     }
@@ -2157,7 +2255,7 @@ parser_antlr4::ExpressionContext* parser_antlr4::expression() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(244);
+    setState(272);
     logical_or_expression(0);
    
   }
@@ -2239,12 +2337,12 @@ parser_antlr4::Logical_or_expressionContext* parser_antlr4::logical_or_expressio
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(247);
+    setState(275);
     logical_xor_expression(0);
     _ctx->stop = _input->LT(-1);
-    setState(254);
+    setState(282);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 24, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 28, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
         if (!_parseListeners.empty())
@@ -2252,17 +2350,17 @@ parser_antlr4::Logical_or_expressionContext* parser_antlr4::logical_or_expressio
         previousContext = _localctx;
         _localctx = _tracker.createInstance<Logical_or_expressionContext>(parentContext, parentState);
         pushNewRecursionContext(_localctx, startState, RuleLogical_or_expression);
-        setState(249);
+        setState(277);
 
         if (!(precpred(_ctx, 2))) throw FailedPredicateException(this, "precpred(_ctx, 2)");
-        setState(250);
+        setState(278);
         match(parser_antlr4::NON_EXCLUSIVE_OR);
-        setState(251);
+        setState(279);
         logical_xor_expression(0); 
       }
-      setState(256);
+      setState(284);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 24, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 28, _ctx);
     }
   }
   catch (RecognitionException &e) {
@@ -2342,12 +2440,12 @@ parser_antlr4::Logical_xor_expressionContext* parser_antlr4::logical_xor_express
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(258);
+    setState(286);
     logical_and_expression(0);
     _ctx->stop = _input->LT(-1);
-    setState(265);
+    setState(293);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 25, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 29, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
         if (!_parseListeners.empty())
@@ -2355,17 +2453,17 @@ parser_antlr4::Logical_xor_expressionContext* parser_antlr4::logical_xor_express
         previousContext = _localctx;
         _localctx = _tracker.createInstance<Logical_xor_expressionContext>(parentContext, parentState);
         pushNewRecursionContext(_localctx, startState, RuleLogical_xor_expression);
-        setState(260);
+        setState(288);
 
         if (!(precpred(_ctx, 2))) throw FailedPredicateException(this, "precpred(_ctx, 2)");
-        setState(261);
+        setState(289);
         match(parser_antlr4::EXCLUSIVE_OR);
-        setState(262);
+        setState(290);
         logical_and_expression(0); 
       }
-      setState(267);
+      setState(295);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 25, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 29, _ctx);
     }
   }
   catch (RecognitionException &e) {
@@ -2445,12 +2543,12 @@ parser_antlr4::Logical_and_expressionContext* parser_antlr4::logical_and_express
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(269);
+    setState(297);
     equality_expression(0);
     _ctx->stop = _input->LT(-1);
-    setState(276);
+    setState(304);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 26, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 30, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
         if (!_parseListeners.empty())
@@ -2458,17 +2556,17 @@ parser_antlr4::Logical_and_expressionContext* parser_antlr4::logical_and_express
         previousContext = _localctx;
         _localctx = _tracker.createInstance<Logical_and_expressionContext>(parentContext, parentState);
         pushNewRecursionContext(_localctx, startState, RuleLogical_and_expression);
-        setState(271);
+        setState(299);
 
         if (!(precpred(_ctx, 2))) throw FailedPredicateException(this, "precpred(_ctx, 2)");
-        setState(272);
+        setState(300);
         match(parser_antlr4::LOGICAL_AND);
-        setState(273);
+        setState(301);
         equality_expression(0); 
       }
-      setState(278);
+      setState(306);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 26, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 30, _ctx);
     }
   }
   catch (RecognitionException &e) {
@@ -2552,12 +2650,12 @@ parser_antlr4::Equality_expressionContext* parser_antlr4::equality_expression(in
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(280);
+    setState(308);
     relational_expression(0);
     _ctx->stop = _input->LT(-1);
-    setState(287);
+    setState(315);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 27, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 31, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
         if (!_parseListeners.empty())
@@ -2565,10 +2663,10 @@ parser_antlr4::Equality_expressionContext* parser_antlr4::equality_expression(in
         previousContext = _localctx;
         _localctx = _tracker.createInstance<Equality_expressionContext>(parentContext, parentState);
         pushNewRecursionContext(_localctx, startState, RuleEquality_expression);
-        setState(282);
+        setState(310);
 
         if (!(precpred(_ctx, 2))) throw FailedPredicateException(this, "precpred(_ctx, 2)");
-        setState(283);
+        setState(311);
         _la = _input->LA(1);
         if (!(_la == parser_antlr4::EQ
 
@@ -2579,12 +2677,12 @@ parser_antlr4::Equality_expressionContext* parser_antlr4::equality_expression(in
           _errHandler->reportMatch(this);
           consume();
         }
-        setState(284);
+        setState(312);
         relational_expression(0); 
       }
-      setState(289);
+      setState(317);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 27, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 31, _ctx);
     }
   }
   catch (RecognitionException &e) {
@@ -2676,12 +2774,12 @@ parser_antlr4::Relational_expressionContext* parser_antlr4::relational_expressio
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(291);
+    setState(319);
     additive_expression(0);
     _ctx->stop = _input->LT(-1);
-    setState(298);
+    setState(326);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 28, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 32, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
         if (!_parseListeners.empty())
@@ -2689,25 +2787,25 @@ parser_antlr4::Relational_expressionContext* parser_antlr4::relational_expressio
         previousContext = _localctx;
         _localctx = _tracker.createInstance<Relational_expressionContext>(parentContext, parentState);
         pushNewRecursionContext(_localctx, startState, RuleRelational_expression);
-        setState(293);
+        setState(321);
 
         if (!(precpred(_ctx, 2))) throw FailedPredicateException(this, "precpred(_ctx, 2)");
-        setState(294);
+        setState(322);
         _la = _input->LA(1);
         if (!((((_la & ~ 0x3fULL) == 0) &&
-          ((1ULL << _la) & 257698037760) != 0))) {
+          ((1ULL << _la) & 515396075520) != 0))) {
         _errHandler->recoverInline(this);
         }
         else {
           _errHandler->reportMatch(this);
           consume();
         }
-        setState(295);
+        setState(323);
         additive_expression(0); 
       }
-      setState(300);
+      setState(328);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 28, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 32, _ctx);
     }
   }
   catch (RecognitionException &e) {
@@ -2791,12 +2889,12 @@ parser_antlr4::Additive_expressionContext* parser_antlr4::additive_expression(in
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(302);
+    setState(330);
     multiplicative_expression(0);
     _ctx->stop = _input->LT(-1);
-    setState(309);
+    setState(337);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 29, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 33, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
         if (!_parseListeners.empty())
@@ -2804,10 +2902,10 @@ parser_antlr4::Additive_expressionContext* parser_antlr4::additive_expression(in
         previousContext = _localctx;
         _localctx = _tracker.createInstance<Additive_expressionContext>(parentContext, parentState);
         pushNewRecursionContext(_localctx, startState, RuleAdditive_expression);
-        setState(304);
+        setState(332);
 
         if (!(precpred(_ctx, 2))) throw FailedPredicateException(this, "precpred(_ctx, 2)");
-        setState(305);
+        setState(333);
         _la = _input->LA(1);
         if (!(_la == parser_antlr4::PLUS
 
@@ -2818,12 +2916,12 @@ parser_antlr4::Additive_expressionContext* parser_antlr4::additive_expression(in
           _errHandler->reportMatch(this);
           consume();
         }
-        setState(306);
+        setState(334);
         multiplicative_expression(0); 
       }
-      setState(311);
+      setState(339);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 29, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 33, _ctx);
     }
   }
   catch (RecognitionException &e) {
@@ -2911,12 +3009,12 @@ parser_antlr4::Multiplicative_expressionContext* parser_antlr4::multiplicative_e
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(313);
+    setState(341);
     power_expression();
     _ctx->stop = _input->LT(-1);
-    setState(320);
+    setState(348);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 30, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 34, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
         if (!_parseListeners.empty())
@@ -2924,25 +3022,25 @@ parser_antlr4::Multiplicative_expressionContext* parser_antlr4::multiplicative_e
         previousContext = _localctx;
         _localctx = _tracker.createInstance<Multiplicative_expressionContext>(parentContext, parentState);
         pushNewRecursionContext(_localctx, startState, RuleMultiplicative_expression);
-        setState(315);
+        setState(343);
 
         if (!(precpred(_ctx, 2))) throw FailedPredicateException(this, "precpred(_ctx, 2)");
-        setState(316);
+        setState(344);
         _la = _input->LA(1);
         if (!((((_la & ~ 0x3fULL) == 0) &&
-          ((1ULL << _la) & 469762048) != 0))) {
+          ((1ULL << _la) & 939524096) != 0))) {
         _errHandler->recoverInline(this);
         }
         else {
           _errHandler->reportMatch(this);
           consume();
         }
-        setState(317);
+        setState(345);
         power_expression(); 
       }
-      setState(322);
+      setState(350);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 30, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 34, _ctx);
     }
   }
   catch (RecognitionException &e) {
@@ -3008,23 +3106,23 @@ parser_antlr4::Power_expressionContext* parser_antlr4::power_expression() {
     exitRule();
   });
   try {
-    setState(328);
+    setState(356);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 31, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 35, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(323);
+      setState(351);
       unary_expression();
-      setState(324);
+      setState(352);
       match(parser_antlr4::POWER);
-      setState(325);
+      setState(353);
       power_expression();
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(327);
+      setState(355);
       unary_expression();
       break;
     }
@@ -3106,37 +3204,37 @@ parser_antlr4::Unary_expressionContext* parser_antlr4::unary_expression() {
     exitRule();
   });
   try {
-    setState(336);
+    setState(364);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 32, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 36, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(330);
+      setState(358);
       match(parser_antlr4::PLUS);
-      setState(331);
+      setState(359);
       unary_expression();
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(332);
+      setState(360);
       match(parser_antlr4::MINUS);
-      setState(333);
+      setState(361);
       unary_expression();
       break;
     }
 
     case 3: {
       enterOuterAlt(_localctx, 3);
-      setState(334);
+      setState(362);
       unary_combo();
       break;
     }
 
     case 4: {
       enterOuterAlt(_localctx, 4);
-      setState(335);
+      setState(363);
       primary();
       break;
     }
@@ -3218,7 +3316,7 @@ parser_antlr4::PrimaryContext* parser_antlr4::primary() {
     exitRule();
   });
   try {
-    setState(344);
+    setState(372);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case parser_antlr4::DIGIT:
@@ -3226,7 +3324,7 @@ parser_antlr4::PrimaryContext* parser_antlr4::primary() {
       case parser_antlr4::MINUS:
       case parser_antlr4::DOT: {
         enterOuterAlt(_localctx, 1);
-        setState(338);
+        setState(366);
         real_number();
         break;
       }
@@ -3234,18 +3332,18 @@ parser_antlr4::PrimaryContext* parser_antlr4::primary() {
       case parser_antlr4::PARAMETER_SIGN:
       case parser_antlr4::NAMED_PARAMETER: {
         enterOuterAlt(_localctx, 2);
-        setState(339);
+        setState(367);
         parameter_value();
         break;
       }
 
       case parser_antlr4::LEFT_BRACKET: {
         enterOuterAlt(_localctx, 3);
-        setState(340);
+        setState(368);
         match(parser_antlr4::LEFT_BRACKET);
-        setState(341);
+        setState(369);
         expression();
-        setState(342);
+        setState(370);
         match(parser_antlr4::RIGHT_BRACKET);
         break;
       }
@@ -3315,7 +3413,7 @@ parser_antlr4::Unary_comboContext* parser_antlr4::unary_combo() {
     exitRule();
   });
   try {
-    setState(348);
+    setState(376);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case parser_antlr4::ABSOLUTE_VALUE:
@@ -3331,14 +3429,14 @@ parser_antlr4::Unary_comboContext* parser_antlr4::unary_combo() {
       case parser_antlr4::SQUARE_ROOT:
       case parser_antlr4::TANGENT: {
         enterOuterAlt(_localctx, 1);
-        setState(346);
+        setState(374);
         ordinary_unary_combo();
         break;
       }
 
       case parser_antlr4::ARC_TANGENT: {
         enterOuterAlt(_localctx, 2);
-        setState(347);
+        setState(375);
         arc_tangent_combo();
         break;
       }
@@ -3409,9 +3507,9 @@ parser_antlr4::Ordinary_unary_comboContext* parser_antlr4::ordinary_unary_combo(
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(350);
+    setState(378);
     ordinary_unary_operation();
-    setState(351);
+    setState(379);
     expression();
    
   }
@@ -3517,10 +3615,10 @@ parser_antlr4::Ordinary_unary_operationContext* parser_antlr4::ordinary_unary_op
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(353);
+    setState(381);
     _la = _input->LA(1);
     if (!((((_la & ~ 0x3fULL) == 0) &&
-      ((1ULL << _la) & 1125625028935680) != 0))) {
+      ((1ULL << _la) & 2251250057871360) != 0))) {
     _errHandler->recoverInline(this);
     }
     else {
@@ -3598,13 +3696,13 @@ parser_antlr4::Arc_tangent_comboContext* parser_antlr4::arc_tangent_combo() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(355);
+    setState(383);
     match(parser_antlr4::ARC_TANGENT);
-    setState(356);
+    setState(384);
     expression();
-    setState(357);
+    setState(385);
     match(parser_antlr4::SLASH);
-    setState(358);
+    setState(386);
     expression();
    
   }
@@ -3681,19 +3779,19 @@ parser_antlr4::Parameter_settingContext* parser_antlr4::parameter_setting() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(363);
+    setState(391);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case parser_antlr4::PARAMETER_SIGN: {
-        setState(360);
+        setState(388);
         match(parser_antlr4::PARAMETER_SIGN);
-        setState(361);
+        setState(389);
         primary();
         break;
       }
 
       case parser_antlr4::NAMED_PARAMETER: {
-        setState(362);
+        setState(390);
         match(parser_antlr4::NAMED_PARAMETER);
         break;
       }
@@ -3701,9 +3799,9 @@ parser_antlr4::Parameter_settingContext* parser_antlr4::parameter_setting() {
     default:
       throw NoViableAltException(this);
     }
-    setState(365);
+    setState(393);
     match(parser_antlr4::EQUAL_SIGN);
-    setState(366);
+    setState(394);
     real_value();
    
   }
@@ -3771,21 +3869,21 @@ parser_antlr4::Parameter_valueContext* parser_antlr4::parameter_value() {
     exitRule();
   });
   try {
-    setState(371);
+    setState(399);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case parser_antlr4::PARAMETER_SIGN: {
         enterOuterAlt(_localctx, 1);
-        setState(368);
+        setState(396);
         match(parser_antlr4::PARAMETER_SIGN);
-        setState(369);
+        setState(397);
         primary();
         break;
       }
 
       case parser_antlr4::NAMED_PARAMETER: {
         enterOuterAlt(_localctx, 2);
-        setState(370);
+        setState(398);
         match(parser_antlr4::NAMED_PARAMETER);
         break;
       }
@@ -3852,7 +3950,7 @@ parser_antlr4::CommentContext* parser_antlr4::comment() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(373);
+    setState(401);
     match(parser_antlr4::COMMENT);
    
   }

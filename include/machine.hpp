@@ -7,6 +7,7 @@
 #include "util.hpp"
 
 #include <functional>
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
@@ -77,7 +78,7 @@ enum gpp::Command : u8 {
   write_parameter_to_file = 27,
   write_parameters_to_file = 28,
 
-  no_command = 0, 
+  no_command = 0,
 };
 
 enum gpp::Plane : u8 {
@@ -123,8 +124,8 @@ struct gpp::Machine {
 
 private:
   std::string input;
-  BytecodeEmitter emitter;
-  BytecodeEmitter *emitterStash;
+  std::shared_ptr<BytecodeEmitter> emitter;
+  std::shared_ptr<BytecodeEmitter> emitterStash;
   bool emitterStashed;
 
   Vec3D position;       // current position relative to (0, 0, 0)
@@ -163,11 +164,12 @@ public:
 
   Machine();
   Machine(std::string input);
-  
-  void bind(BytecodeEmitter *tempEmitter);
+
+  void bind(std::shared_ptr<BytecodeEmitter> tempEmitter);
   void unbind();
 
   void reset();
+  void reset(std::string code);
 
   void setMemory(i64 address, f64 value);
   f64 getMemory(i64 address);

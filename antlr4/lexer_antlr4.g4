@@ -26,6 +26,8 @@ M99: M '0'* '9' '9' (DOT '0'+)?;
 
 // <<< language extensions
 
+PERCENT : '%' ;
+
 DIGIT : '0' .. '9' ;
 LETTER
     : 'A' .. 'Z'

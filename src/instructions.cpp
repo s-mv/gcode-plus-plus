@@ -8,16 +8,16 @@
 
 #define GCODE_ERROR(message, source)                                           \
   do {                                                                         \
-    emitter.bytecode.push_back(                                                \
+    emitter->bytecode.push_back(                                                \
         gpp::Error(ErrorType::GENERAL_ERROR, message, source, line, column));  \
     return;                                                                    \
   } while (0)
 
 #define EXTRACT_CANNED_CYCLE_PARAMS()                                          \
   f64 x, y, z;                                                                 \
-  f64 r = emitter.findParameter(words, 'r');                                   \
-  f64 l_real = emitter.findParameter(words, 'l');                              \
-  emitter.extractCoordinates(words, x, y, z);                                  \
+  f64 r = emitter->findParameter(words, 'r');                                   \
+  f64 l_real = emitter->findParameter(words, 'l');                              \
+  emitter->extractCoordinates(words, x, y, z);                                  \
   r *= unitMultiplier(unit);                                                   \
   if (std::isnan(l_real))                                                      \
     l_real = 1;                                                                \
@@ -50,14 +50,14 @@
 #define MOVE_TO_RETRACT_PLANE()                                                \
   if (distanceMode == absolute) {                                              \
     if (old_z < r) {                                                           \
-      emitter.bytecode.push_back(                                              \
+      emitter->bytecode.push_back(                                              \
           Instruction{.command = gpp::move_rapid,                              \
                       .arguments = {current.x, current.y, r}});                \
       current.z = r;                                                           \
     }                                                                          \
   } else {                                                                     \
     if (r > 0) {                                                               \
-      emitter.bytecode.push_back(                                              \
+      emitter->bytecode.push_back(                                              \
           Instruction{.command = gpp::move_rapid, .arguments = {0, 0, r}});    \
       current.z = r;                                                           \
     }                                                                          \
@@ -65,11 +65,11 @@
 
 #define FINAL_RETRACT_MOVE()                                                   \
   if (distanceMode == absolute) {                                              \
-    emitter.bytecode.push_back(Instruction{                                    \
+    emitter->bytecode.push_back(Instruction{                                    \
         .command = gpp::move_rapid,                                            \
         .arguments = {x, y, (retractMode == gpp::old_z) ? old_z : r}});        \
   } else {                                                                     \
-    emitter.bytecode.push_back(Instruction{                                    \
+    emitter->bytecode.push_back(Instruction{                                    \
         .command = gpp::move_rapid,                                            \
         .arguments = {0, 0, (retractMode == gpp::old_z) ? old_z - r : 0}});    \
   }
@@ -77,13 +77,13 @@
 #define REQUIRE_CONDITION(condition, error_type, message, word_)               \
   do {                                                                         \
     if (!(condition)) {                                                        \
-      gpp::VerboseInstruction vInst = emitter.verboseInstructions.front();     \
+      gpp::VerboseInstruction vInst = emitter->verboseInstructions.front();     \
       if (vInst.line == -1)                                                    \
-        vInst.line = emitter.line;                                             \
+        vInst.line = emitter->line;                                             \
       if (vInst.column == -1)                                                  \
-        vInst.column = emitter.column;                                         \
-      emitter.bytecode.push_back(gpp::Error(                                   \
-          error_type, message, emitter.getLineFromSource(vInst.line),          \
+        vInst.column = emitter->column;                                         \
+      emitter->bytecode.push_back(gpp::Error(                                   \
+          error_type, message, emitter->getLineFromSource(vInst.line),          \
           vInst.line, vInst.column));                                          \
       return;                                                                  \
     }                                                                          \
@@ -261,20 +261,20 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
   case 1:
   case 92: {
     Vec3D delta;
-    emitter.extractCoordinates(words, delta.x, delta.y, delta.z);
+    emitter->extractCoordinates(words, delta.x, delta.y, delta.z);
 
     REQUIRE_CONDITION(
         !(std::isnan(delta.x) && std::isnan(delta.y) && std::isnan(delta.z)),
         ErrorType::PARAMETER_ERROR,
         "All axes missing for G" + std::to_string(arg_i) + "!", 'g');
 
-    emitter.applyCurrentPositionDefaults(delta);
+    emitter->applyCurrentPositionDefaults(delta);
 
     Command command = (arg == 0)   ? gpp::move_rapid
                       : (arg == 1) ? gpp::move_linear
                                    : gpp::set_origin_offsets;
 
-    emitter.bytecode.push_back(Instruction{
+    emitter->bytecode.push_back(Instruction{
         .command = command, .arguments = {delta.x, delta.y, delta.z}});
     break;
   }
@@ -283,7 +283,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
   case 3: {
     Vec3D delta;
     f64 i, j, k, r;
-    emitter.extractArcParams(words, delta.x, delta.y, delta.z, i, j, k, r);
+    emitter->extractArcParams(words, delta.x, delta.y, delta.z, i, j, k, r);
 
     REQUIRE_CONDITION(feedRate != 0, ErrorType::MACHINE_ERROR,
                       "Feed rate should be non-zero for feed_arc to run!", 'g');
@@ -307,12 +307,12 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
         ErrorType::PARAMETER_ERROR, "No axes mentioned (x/y/z).", 'g');
 
     REQUIRE_CONDITION(
-        emitter.arcOffetsAligned(plane, i, j, k), ErrorType::MACHINE_ERROR,
+        emitter->arcOffetsAligned(plane, i, j, k), ErrorType::MACHINE_ERROR,
         std::string("Arc isn't aligned to the current plane, i.e. the ") +
             planeToString(plane) + " plane.",
         'g');
 
-    emitter.applyCurrentPositionDefaults(delta);
+    emitter->applyCurrentPositionDefaults(delta);
     if (std::isnan(i))
       i = 0;
     if (std::isnan(j))
@@ -322,8 +322,8 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
 
     int rotation = (arg == 2) ? 1 : -1;
 
-    gpp::Vec2D currentPos = emitter.getCurrentPlanePosition(plane, position);
-    gpp::Vec2D targetPos = emitter.getPlaneCoordinates(plane, delta);
+    gpp::Vec2D currentPos = emitter->getCurrentPlanePosition(plane, position);
+    gpp::Vec2D targetPos = emitter->getPlaneCoordinates(plane, delta);
     gpp::Vec2D center;
 
     if (!std::isnan(r)) {
@@ -353,7 +353,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
                         ErrorType::PARAMETER_ERROR,
                         "All of i, j and k are zero!", 'g');
 
-      gpp::Vec2D offset = emitter.getArcCenterOffsets(plane, i, j, k);
+      gpp::Vec2D offset = emitter->getArcCenterOffsets(plane, i, j, k);
 
       center = currentPos + offset;
     }
@@ -367,22 +367,22 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
             .arguments = {targetPos.x, targetPos.y, center.x, center.y,
                           static_cast<f64>(rotation), delta.z}}};
 
-    emitter.bytecode.push_back(activeInstruction.instruction);
+    emitter->bytecode.push_back(activeInstruction.instruction);
     break;
   }
 
   case 4: {
-    f64 p = emitter.findParameter(words, 'p');
-    emitter.bytecode.push_back(
+    f64 p = emitter->findParameter(words, 'p');
+    emitter->bytecode.push_back(
         Instruction{.command = gpp::dwell, .arguments = {p}});
     break;
   }
 
   case 10: {
-    f64 l = emitter.findParameter(words, 'l');
-    f64 p = emitter.findParameter(words, 'p');
+    f64 l = emitter->findParameter(words, 'l');
+    f64 p = emitter->findParameter(words, 'p');
     f64 x, y, z;
-    emitter.extractCoordinates(words, x, y, z);
+    emitter->extractCoordinates(words, x, y, z);
     if (std::isnan(x))
       x = 0;
     if (std::isnan(y))
@@ -391,42 +391,42 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
       z = 0;
 
     if (l == 1) {
-      emitter.bytecode.push_back(Instruction{
+      emitter->bytecode.push_back(Instruction{
           .command = gpp::set_tool_length_offset, .arguments = {p, z}});
     } else if (l == 2) {
       int pi = static_cast<int>(p);
       REQUIRE_CONDITION(pi >= 1 && pi <= 6, ErrorType::PARAMETER_ERROR,
                         "Invalid coordinate system number", 'l');
 
-      emitter.bytecode.push_back(Instruction{
+      emitter->bytecode.push_back(Instruction{
           .command = gpp::set_wcs_coordinates, .arguments = {p, x, y, z}});
     }
     break;
   }
 
   case 17:
-    emitter.bytecode.push_back(
+    emitter->bytecode.push_back(
         Instruction{.command = gpp::select_plane, .arguments = {plane_xy}});
     break;
   case 18:
-    emitter.bytecode.push_back(
+    emitter->bytecode.push_back(
         Instruction{.command = gpp::select_plane, .arguments = {plane_xz}});
     break;
   case 19:
-    emitter.bytecode.push_back(
+    emitter->bytecode.push_back(
         Instruction{.command = gpp::select_plane, .arguments = {plane_yz}});
     break;
   case 20:
-    emitter.bytecode.push_back(Instruction{.command = gpp::use_length_units,
+    emitter->bytecode.push_back(Instruction{.command = gpp::use_length_units,
                                            .arguments = {Unit::inch}});
     break;
   case 21:
-    emitter.bytecode.push_back(
+    emitter->bytecode.push_back(
         Instruction{.command = gpp::use_length_units, .arguments = {Unit::mm}});
     break;
 
   case 43: {
-    f64 h = emitter.findParameter(words, 'h');
+    f64 h = emitter->findParameter(words, 'h');
 
     if (h == 0 || std::isnan(h))
       h = currentTool;
@@ -436,13 +436,13 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
 
     h = tools.at(h).tlo;
 
-    emitter.bytecode.push_back(
+    emitter->bytecode.push_back(
         Instruction{.command = gpp::use_tool_length_offset, .arguments = {h}});
     break;
   }
 
   case 80: {
-    emitter.stickyArgs.g = NAN;
+    emitter->stickyArgs.g = NAN;
     break;
   }
 
@@ -453,7 +453,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     SETUP_CANNED_CYCLE_POSITION();
     MOVE_TO_RETRACT_PLANE();
 
-    f64 p = emitter.findParameter(words, 'p');
+    f64 p = emitter->findParameter(words, 'p');
 
     if (arg_i == 82)
       REQUIRE_CONDITION(!std::isnan(p) && p >= 0, ErrorType::PARAMETER_ERROR,
@@ -461,34 +461,34 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
 
     for (int i = 0; i < l; i++) {
       if (distanceMode == absolute) {
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_linear,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_linear,
                                                .arguments = {x, y, current.z}});
 
         if (current.z != r)
-          emitter.bytecode.push_back(
+          emitter->bytecode.push_back(
               Instruction{.command = gpp::move_rapid, .arguments = {x, y, r}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_linear, .arguments = {x, y, z}});
 
         if (arg_i == 82)
-          emitter.bytecode.push_back(
+          emitter->bytecode.push_back(
               Instruction{.command = gpp::dwell, .arguments = {p}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_rapid, .arguments = {x, y, r}});
       } else {
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_rapid, .arguments = {x, y, 0}});
 
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_linear,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_linear,
                                                .arguments = {0, 0, z - r}});
 
         if (arg_i == 82)
-          emitter.bytecode.push_back(
+          emitter->bytecode.push_back(
               Instruction{.command = gpp::dwell, .arguments = {p}});
 
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_rapid,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_rapid,
                                                .arguments = {0, 0, r - z}});
       }
     }
@@ -503,7 +503,7 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     SETUP_CANNED_CYCLE_POSITION();
     MOVE_TO_RETRACT_PLANE();
 
-    f64 q = emitter.findParameter(words, 'q');
+    f64 q = emitter->findParameter(words, 'q');
 
     REQUIRE_CONDITION(!std::isnan(q) && q > 0, ErrorType::PARAMETER_ERROR,
                       "Missing or invalid Q<> for G83!", 'g');
@@ -514,32 +514,32 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
 
     for (int i = 0; i < l; i++) {
       if (distanceMode == absolute) {
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_linear, .arguments = {x, y, r}});
 
         while (current.z > z) {
           f64 next_depth = std::max(current.z - q, z);
-          emitter.bytecode.push_back(Instruction{
+          emitter->bytecode.push_back(Instruction{
               .command = gpp::move_linear, .arguments = {x, y, next_depth}});
           current.z = next_depth;
         }
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_rapid, .arguments = {x, y, r}});
         current.z = r;
       } else {
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_linear, .arguments = {x, y, 0}});
 
         while (current.z > z) {
           f64 next_depth = std::max(current.z - q, z);
           f64 increment = next_depth - current.z;
-          emitter.bytecode.push_back(Instruction{
+          emitter->bytecode.push_back(Instruction{
               .command = gpp::move_linear, .arguments = {0, 0, increment}});
           current.z = next_depth;
         }
 
-        emitter.bytecode.push_back(Instruction{
+        emitter->bytecode.push_back(Instruction{
             .command = gpp::move_rapid, .arguments = {0, 0, r - current.z}});
         current.z = r;
       }
@@ -556,8 +556,8 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     SETUP_CANNED_CYCLE_POSITION();
     MOVE_TO_RETRACT_PLANE();
 
-    f64 p = emitter.findParameter(words, 'p');
-    f64 f = emitter.findParameter(words, 'f');
+    f64 p = emitter->findParameter(words, 'p');
+    f64 f = emitter->findParameter(words, 'f');
 
     REQUIRE_CONDITION(!std::isnan(r), ErrorType::PARAMETER_ERROR,
                       "Missing R<> for G84!", 'g');
@@ -567,43 +567,43 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     SpindleDirection oldSpindleDirection = spindleDirection;
 
     for (int i = 0; i < l; ++i) {
-      emitter.bytecode.push_back(
+      emitter->bytecode.push_back(
           Instruction{.command = gpp::start_spindle_clockwise});
 
       if (distanceMode == absolute) {
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_linear,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_linear,
                                                .arguments = {x, y, current.z}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_linear, .arguments = {x, y, z}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::start_spindle_counterclockwise});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::dwell, .arguments = {p}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_rapid, .arguments = {x, y, r}});
       } else {
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_linear, .arguments = {x, y, 0}});
 
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_linear,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_linear,
                                                .arguments = {0, 0, z - r}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::start_spindle_counterclockwise});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::dwell, .arguments = {p}});
 
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_rapid,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_rapid,
                                                .arguments = {0, 0, r - z}});
       }
     }
 
-    emitter.bytecode.push_back(
+    emitter->bytecode.push_back(
         Instruction{.command = (oldSpindleDirection == gpp::clockwise
                                     ? gpp::start_spindle_clockwise
                                     : gpp::start_spindle_counterclockwise)});
@@ -621,22 +621,22 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
 
     for (int i = 0; i < l; i++) {
       if (distanceMode == absolute) {
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_rapid,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_rapid,
                                                .arguments = {x, y, current.z}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_linear, .arguments = {x, y, z}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_linear, .arguments = {x, y, r}});
       } else {
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_rapid, .arguments = {x, y, 0}});
 
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_linear,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_linear,
                                                .arguments = {0, 0, z - r}});
 
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_linear,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_linear,
                                                .arguments = {0, 0, r - z}});
       }
     }
@@ -652,8 +652,8 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     SETUP_CANNED_CYCLE_POSITION();
     MOVE_TO_RETRACT_PLANE();
 
-    f64 p = emitter.findParameter(words, 'p');
-    // f64 $ = emitter.findParameter(words, '$');
+    f64 p = emitter->findParameter(words, 'p');
+    // f64 $ = emitter->findParameter(words, '$');
 
     REQUIRE_CONDITION(!std::isnan(p), ErrorType::PARAMETER_ERROR,
                       "Missing P<> for G86!", 'g');
@@ -662,42 +662,42 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
 
     for (int i = 0; i < l; i++) {
       if (distanceMode == absolute) {
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_rapid,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_rapid,
                                                .arguments = {x, y, current.z}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_linear, .arguments = {x, y, z}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::dwell, .arguments = {p}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::stop_spindle_turning});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_rapid, .arguments = {x, y, r}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = sd == gpp::clockwise
                                        ? gpp::start_spindle_clockwise
                                        : gpp::start_spindle_counterclockwise});
       } else {
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_rapid, .arguments = {x, y, 0}});
 
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_linear,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_linear,
                                                .arguments = {0, 0, z - r}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::dwell, .arguments = {p}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::stop_spindle_turning});
 
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_rapid,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_rapid,
                                                .arguments = {0, 0, r - z}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = sd == gpp::clockwise
                                        ? gpp::start_spindle_clockwise
                                        : gpp::start_spindle_counterclockwise});
@@ -715,37 +715,37 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     SETUP_CANNED_CYCLE_POSITION();
     MOVE_TO_RETRACT_PLANE();
 
-    f64 p = emitter.findParameter(words, 'p');
+    f64 p = emitter->findParameter(words, 'p');
     REQUIRE_CONDITION(!std::isnan(p), ErrorType::PARAMETER_ERROR,
                       "Missing P<> for G89!", 'g');
 
     for (int i = 0; i < l; i++) {
       if (distanceMode == absolute) {
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_linear,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_linear,
                                                .arguments = {x, y, current.z}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_rapid, .arguments = {x, y, r}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_linear, .arguments = {x, y, z}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::dwell, .arguments = {p}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_linear, .arguments = {x, y, r}});
       } else {
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_linear, .arguments = {x, y, 0}});
 
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_linear,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_linear,
                                                .arguments = {0, 0, z - r}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::dwell, .arguments = {p}});
 
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_linear,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_linear,
                                                .arguments = {0, 0, r - z}});
       }
     }
@@ -761,8 +761,8 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     SETUP_CANNED_CYCLE_POSITION();
     MOVE_TO_RETRACT_PLANE();
 
-    f64 p = emitter.findParameter(words, 'p');
-    // f64 $ = emitter.findParameter(words, '$');
+    f64 p = emitter->findParameter(words, 'p');
+    // f64 $ = emitter->findParameter(words, '$');
 
     REQUIRE_CONDITION(!std::isnan(p), ErrorType::PARAMETER_ERROR,
                       "Missing P<> for G86!", 'g');
@@ -771,42 +771,42 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
 
     for (int i = 0; i < l; i++) {
       if (distanceMode == absolute) {
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_rapid,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_rapid,
                                                .arguments = {x, y, current.z}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_linear, .arguments = {x, y, z}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::dwell, .arguments = {p}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::stop_spindle_turning});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::optional_program_stop});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = sd == gpp::clockwise
                                        ? gpp::start_spindle_clockwise
                                        : gpp::start_spindle_counterclockwise});
       } else {
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_rapid, .arguments = {x, y, 0}});
 
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_linear,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_linear,
                                                .arguments = {0, 0, z - r}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::dwell, .arguments = {p}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::stop_spindle_turning});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::optional_program_stop});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = sd == gpp::clockwise
                                        ? gpp::start_spindle_clockwise
                                        : gpp::start_spindle_counterclockwise});
@@ -824,37 +824,37 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
     SETUP_CANNED_CYCLE_POSITION();
     MOVE_TO_RETRACT_PLANE();
 
-    f64 p = emitter.findParameter(words, 'p');
+    f64 p = emitter->findParameter(words, 'p');
     REQUIRE_CONDITION(!std::isnan(p), ErrorType::PARAMETER_ERROR,
                       "Missing P<> for G89!", 'g');
 
     for (int i = 0; i < l; i++) {
       if (distanceMode == absolute) {
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_linear,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_linear,
                                                .arguments = {x, y, current.z}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_rapid, .arguments = {x, y, r}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_linear, .arguments = {x, y, z}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::dwell, .arguments = {p}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_linear, .arguments = {x, y, r}});
       } else {
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::move_linear, .arguments = {x, y, 0}});
 
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_linear,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_linear,
                                                .arguments = {0, 0, z - r}});
 
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::dwell, .arguments = {p}});
 
-        emitter.bytecode.push_back(Instruction{.command = gpp::move_linear,
+        emitter->bytecode.push_back(Instruction{.command = gpp::move_linear,
                                                .arguments = {0, 0, r - z}});
       }
     }
@@ -865,80 +865,80 @@ void gpp::Machine::handle_g(std::deque<gpp::VerboseInstruction> &list, f64 arg,
   }
 
   case 90:
-    emitter.bytecode.push_back(Instruction{.command = gpp::use_distance_mode,
+    emitter->bytecode.push_back(Instruction{.command = gpp::use_distance_mode,
                                            .arguments = {absolute}});
     break;
   case 91:
-    emitter.bytecode.push_back(Instruction{.command = gpp::use_distance_mode,
+    emitter->bytecode.push_back(Instruction{.command = gpp::use_distance_mode,
                                            .arguments = {relative}});
     break;
 
   case 93:
-    emitter.bytecode.push_back(Instruction{.command = gpp::set_feed_mode,
+    emitter->bytecode.push_back(Instruction{.command = gpp::set_feed_mode,
                                            .arguments = {inverse_time}});
     break;
   case 94:
-    emitter.bytecode.push_back(Instruction{.command = gpp::set_feed_mode,
+    emitter->bytecode.push_back(Instruction{.command = gpp::set_feed_mode,
                                            .arguments = {units_per_minute}});
     break;
   case 95:
-    emitter.bytecode.push_back(Instruction{
+    emitter->bytecode.push_back(Instruction{
         .command = gpp::set_feed_mode, .arguments = {units_per_revolution}});
     break;
 
   case 96: {
-    f64 d = emitter.findParameter(words, 'd');
-    f64 s = emitter.findParameter(words, 's');
+    // f64 d = emitter->findParameter(words, 'd');
+    f64 s = emitter->findParameter(words, 's');
 
     if (std ::isnan(s)) {
-      emitter.bytecode.push_back(gpp::Error(
+      emitter->bytecode.push_back(gpp::Error(
           ErrorType::PARAMETER_ERROR, "Missing parameter S<> for G96 command!",
-          emitter.getLineFromSource(line), line, column));
+          emitter->getLineFromSource(line), line, column));
       break;
     }
 
-    emitter.bytecode.push_back(
+    emitter->bytecode.push_back(
         Instruction{.command = gpp::set_spindle_mode,
                     .arguments = {constant_surface_speed}});
     break;
   }
 
   case 97: {
-    f64 s = emitter.findParameter(words, 's');
+    f64 s = emitter->findParameter(words, 's');
 
     if (std ::isnan(s)) {
-      emitter.bytecode.push_back(gpp::Error(
+      emitter->bytecode.push_back(gpp::Error(
           ErrorType::PARAMETER_ERROR, "Missing parameter S<> for G97 command!",
-          emitter.getLineFromSource(line), line, column));
+          emitter->getLineFromSource(line), line, column));
       break;
     }
 
-    emitter.bytecode.push_back(Instruction{.command = gpp::set_spindle_mode,
+    emitter->bytecode.push_back(Instruction{.command = gpp::set_spindle_mode,
                                            .arguments = {fixed_rpm}});
     break;
   }
 
   case 98: {
-    emitter.bytecode.push_back(
+    emitter->bytecode.push_back(
         Instruction{.command = gpp::set_retract_mode, .arguments = {old_z}});
     break;
   }
 
   case 99: {
-    emitter.bytecode.push_back(
+    emitter->bytecode.push_back(
         Instruction{.command = gpp::set_retract_mode, .arguments = {r_plane}});
     break;
   }
 
   default:
     if (arg >= 54 && arg <= 59) {
-      emitter.bytecode.push_back(
+      emitter->bytecode.push_back(
           Instruction{.command = gpp::use_workspace, .arguments = {arg - 53}});
     } else {
-      emitter.bytecode.push_back(
+      emitter->bytecode.push_back(
           gpp::Error(ErrorType::PARAMETER_ERROR,
                      "Unsupported G-code: G" + std::to_string(arg_i),
-                     emitter.getLineFromSource(line), line, column));
+                     emitter->getLineFromSource(line), line, column));
     }
     break;
   }
@@ -951,63 +951,63 @@ void gpp::Machine::handle_m(std::deque<gpp::VerboseInstruction> &list, f64 arg,
 
   switch (m_code) {
   case 0: {
-    emitter.bytecode.push_back(Instruction{.command = gpp::program_stop});
+    emitter->bytecode.push_back(Instruction{.command = gpp::program_stop});
     break;
   }
   case 1: {
-    emitter.bytecode.push_back(
+    emitter->bytecode.push_back(
         Instruction{.command = gpp::optional_program_stop});
     break;
   }
   case 2: {
-    emitter.bytecode.push_back(Instruction{.command = gpp::set_origin_offsets,
+    emitter->bytecode.push_back(Instruction{.command = gpp::set_origin_offsets,
                                            .arguments = {0, 0, 0}});
-    emitter.bytecode.push_back(
+    emitter->bytecode.push_back(
         Instruction{.command = gpp::stop_spindle_turning});
-    emitter.bytecode.push_back(Instruction{.command = gpp::program_end});
+    emitter->bytecode.push_back(Instruction{.command = gpp::program_end});
     break;
   }
   case 3: {
-    emitter.bytecode.push_back(
+    emitter->bytecode.push_back(
         Instruction{.command = gpp::start_spindle_clockwise});
     break;
   }
   case 4: {
-    emitter.bytecode.push_back(
+    emitter->bytecode.push_back(
         Instruction{.command = gpp::start_spindle_counterclockwise});
     break;
   }
   case 5: {
-    emitter.bytecode.push_back(
+    emitter->bytecode.push_back(
         Instruction{.command = gpp::stop_spindle_turning});
     break;
   }
   case 6: {
-    emitter.bytecode.push_back(Instruction{.command = gpp::change_tool});
+    emitter->bytecode.push_back(Instruction{.command = gpp::change_tool});
     break;
   }
   case 98: {
-    u64 p = emitter.findParameter(words, 'p');
+    u64 p = emitter->findParameter(words, 'p');
     ExecutionFrame frame;
-    emitter.executionStack.push({
-        .block = emitter.subroutines.at(p)->block(),
+    emitter->executionStack.push({
+        .block = emitter->subroutines.at(p)->block(),
         .linePointer = 0,
     });
     break;
   }
   case 99: {
-    emitter.executionStack.pop();
+    emitter->executionStack.pop();
     break;
   }
   case 100: {
-    emitter.bytecode.push_back(
+    emitter->bytecode.push_back(
         Instruction{.command = gpp::write_parameters_to_file});
     break;
   }
 
   default: {
     if (m_code > 100) {
-      emitter.bytecode.push_back(
+      emitter->bytecode.push_back(
           Instruction{.command = gpp::write_parameter_to_file,
                       .arguments = {static_cast<double>(m_code - 100)}});
     }

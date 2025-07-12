@@ -78,6 +78,14 @@ struct StickyArgs {
 class gpp::BytecodeEmitter : public parser_antlr4BaseVisitor {
   friend class Machine;
 
+public:
+  Machine *machine = nullptr;
+
+  BytecodeEmitter(Machine &machine, std::string input);
+  BytecodeEmitter(Machine &machine);
+  void preprocess(parser_antlr4::BlockContext *block);
+  bool fetchInstructions();
+
 private:
   char word;
   std::vector<Word> words;
@@ -100,14 +108,6 @@ private:
 
   int line = 0;
   int column = 0;
-
-public:
-  Machine *machine = nullptr;
-
-  BytecodeEmitter(Machine &machine, std::string input);
-  BytecodeEmitter(Machine &machine);
-  void preprocess(parser_antlr4::BlockContext *block);
-  bool fetchInstructions();
 
 private:
   void setMemory(std::string address, f64 value);

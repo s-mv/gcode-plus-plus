@@ -6,14 +6,10 @@ parser grammar parser_antlr4;
 
 options { tokenVocab=lexer_antlr4; }
 
-// ngcfile
-//    : '%' EOL program '%' EOL .*? EOL
-//    | '%' EOL program EOL
-//    | program EOL
-//    ;
-
 block
-    : statement*
+    : PERCENT EOL statement* PERCENT EOL .*? EOL
+    | PERCENT EOL statement* EOL
+    | statement*
     ;
 
 statement

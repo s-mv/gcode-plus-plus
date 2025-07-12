@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <variant>
 #include <vector>
@@ -12,20 +13,62 @@
 #include "util.hpp"
 
 gpp::Machine::Machine()
-    : emitter(*this), input("\n"), canvasXY(0, 0), canvasYZ(0, 0),
-      canvasXZ(0, 0) {
+    : emitter(std::make_shared<gpp::BytecodeEmitter>(*this)), input("\n"),
+      canvasXY(0, 0), canvasYZ(0, 0), canvasXZ(0, 0) {
   reset();
 }
 
 gpp::Machine::Machine(std::string input)
-    : emitter(*this), input(input), canvasXY(512, 512), canvasYZ(512, 512),
-      canvasXZ(512, 512) {
+    : emitter(std::make_shared<gpp::BytecodeEmitter>(*this)), input(input),
+      canvasXY(512, 512), canvasYZ(512, 512), canvasXZ(512, 512) {
   reset();
 
   initTools("config/tools.txt");
 
   std::cout << "Initialized machine!\n";
   // printSpecs();
+}
+
+void gpp::Machine::reset(std::string code) {
+  emitter = std::make_shared<BytecodeEmitter>(*this, code);
+
+  reset();
+}
+
+void gpp::Machine::reset() {
+  emitterStashed = false;
+  position = {0, 0, 0};
+  g92offset = {0, 0, 0};
+  g5xoffset = {0, 0, 0};
+  toolOffset = 0;
+
+  for (Vec3D &offset : workOffsets)
+    offset = {0, 0, 0};
+
+  unit = Unit::mm;
+  distanceMode = absolute;
+  plane = plane_xy;
+
+  feedRate = 0;
+  rawFeedRate = 0;
+  feedMode = units_per_minute;
+
+  spindleDirection = off;
+  spindleMode = fixed_rpm;
+  spindleSpeed = 0;
+  rawSpindleSpeed = 0;
+
+  retractMode = old_z;
+  motionControlMode = exact_stop;
+
+  selectedTool = 0;
+  currentTool = 1;
+  tools.clear();
+
+  activeInstruction = {.word = '0'};
+  memory.clear();
+
+  plotToCanvas = false;
 
   handlers[Command::move_linear] =
       std::bind(&Machine::move_linear, this, std::placeholders::_1);
@@ -96,42 +139,6 @@ gpp::Machine::Machine(std::string input)
       &gpp::Machine::write_parameters_to_file, this, std::placeholders::_1);
 }
 
-void gpp::Machine::reset() {
-  emitterStashed = false;
-  position = {0, 0, 0};
-  g92offset = {0, 0, 0};
-  g5xoffset = {0, 0, 0};
-  toolOffset = 0;
-
-  for (Vec3D &offset : workOffsets)
-    offset = {0, 0, 0};
-
-  unit = Unit::mm;
-  distanceMode = absolute;
-  plane = plane_xy;
-
-  feedRate = 0;
-  rawFeedRate = 0;
-  feedMode = units_per_minute;
-
-  spindleDirection = off;
-  spindleMode = fixed_rpm;
-  spindleSpeed = 0;
-  rawSpindleSpeed = 0;
-
-  retractMode = old_z;
-  motionControlMode = exact_stop;
-
-  selectedTool = 0;
-  currentTool = 1;
-  tools.clear();
-
-  activeInstruction = {.word = '0'};
-  memory.clear();
-
-  plotToCanvas = false;
-}
-
 f64 gpp::Machine::getMemory(i64 address) {
   if (address < 0 || address >= memory.size()) {
     return NAN; // TODO replace with error later
@@ -151,63 +158,72 @@ void gpp::Machine::setMemory(i64 address, f64 value) {
 }
 
 std::string gpp::Machine::getCurrentLine() {
-  int line = emitter.executionStack.empty()
+  int line = emitter->executionStack.empty()
                  ? 0
-                 : emitter.executionStack.top().linePointer;
-  return emitter.getLineFromSource(line);
+                 : emitter->executionStack.top().linePointer;
+  return emitter->getLineFromSource(line);
 }
 
 SafeInstruction gpp::Machine::next() {
-  while (emitter.bytecode.empty()) {
-    if (!emitter.fetchInstructions())
+  while (emitter->bytecode.empty()) {
+    if (!emitter->fetchInstructions())
       return Instruction{no_command};
 
-    VerboseInstruction vi = emitter.verboseInstructions.front();
-    emitter.verboseInstructions.pop_front();
+    VerboseInstruction vi = emitter->verboseInstructions.front();
+    emitter->verboseInstructions.pop_front();
 
     if (vi.word == 'e') {
       gpp::Error error = std::get<gpp::Error>(vi.instruction);
-      emitter.bytecode.push_back(gpp::Error(error));
+      emitter->bytecode.push_back(gpp::Error(error));
     }
 
     if (vi.word == 'c') {
-      emitter.words.clear();
+      emitter->words.clear();
     } else if (vi.word == 'g') {
-      handle_g(emitter.verboseInstructions, vi.arg, emitter.words, 0, 0);
+      handle_g(emitter->verboseInstructions, vi.arg, emitter->words, 0, 0);
     } else if (vi.word == 'f') {
-      f64 f = emitter.findParameter(emitter.words, 'f');
-      emitter.bytecode.push_back(
+      f64 f = emitter->findParameter(emitter->words, 'f');
+      emitter->bytecode.push_back(
           Instruction{.command = gpp::set_feed_rate, .arguments = {f}});
     } else if (vi.word == 'm') {
-      handle_m(emitter.verboseInstructions, vi.arg, emitter.words, 0, 0);
+      handle_m(emitter->verboseInstructions, vi.arg, emitter->words, 0, 0);
     } else if (vi.word == 's') {
-      f64 s = emitter.findParameter(emitter.words, 's');
-      emitter.bytecode.push_back(
+      f64 s = emitter->findParameter(emitter->words, 's');
+      emitter->bytecode.push_back(
           Instruction{.command = gpp::set_spindle_speed, .arguments = {s}});
     } else if (vi.word == 't') {
-      f64 t = emitter.findParameter(emitter.words, 't');
+      f64 t = emitter->findParameter(emitter->words, 't');
 
       if (tools.find(t) == tools.end())
-        emitter.bytecode.push_back(
-            gpp::Error(ErrorType::MACHINE_ERROR, "Tool does not exist!",
-                       emitter.getLineFromSource(emitter.line), emitter.line));
+        emitter->bytecode.push_back(gpp::Error(
+            ErrorType::MACHINE_ERROR, "Tool does not exist!",
+            emitter->getLineFromSource(emitter->line), emitter->line));
       else
-        emitter.bytecode.push_back(
+        emitter->bytecode.push_back(
             Instruction{.command = gpp::select_tool, .arguments = {t}});
     }
   }
 
-  SafeInstruction safeInstruction = emitter.bytecode.front();
-  emitter.bytecode.pop_front();
+  SafeInstruction safeInstruction = emitter->bytecode.front();
+  emitter->bytecode.pop_front();
 
   if (std::holds_alternative<Error>(safeInstruction)) {
     Error &err = std::get<Error>(safeInstruction);
     return safeInstruction;
   }
+
   Instruction instruction = std::get<Instruction>(safeInstruction);
 
   if (instruction.command == no_command)
     return instruction;
+
+  std::cout << "Machine: Instruction " << instruction.command << " being run\n";
+  std::cout << "Machine: Instruction arguments -> ";
+  for (auto &i : instruction.arguments)
+    std::cout << i << " ";
+  std::cout << std::endl;
+
+  // std::cout << "Machine: Function call: " << handlers[instruction.command];
 
   handlers[instruction.command](instruction.arguments);
 
@@ -217,12 +233,14 @@ SafeInstruction gpp::Machine::next() {
   return instruction;
 }
 
-void gpp::Machine::bind(gpp::BytecodeEmitter *tempEmitter) {
+void gpp::Machine::bind(std::shared_ptr<gpp::BytecodeEmitter> tempEmitter) {
   emitterStashed = true;
+  emitterStash = emitter;
   emitterStash = tempEmitter;
 }
 
 void gpp::Machine::unbind() {
+  emitter = emitterStash;
   emitterStashed = false;
 }
 

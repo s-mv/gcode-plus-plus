@@ -30,7 +30,7 @@ TEST_CASE("[calculation] basic arithmetic") {
     parser_antlr4::ExpressionContext *tree = parser.expression();
 
     gpp::Machine machine(input);
-    f64 result = std::any_cast<f64>(machine.emitter.visit(tree));
+    f64 result = std::any_cast<f64>(machine.emitter->visit(tree));
 
     CHECK(result == doctest::Approx(expected_results[i]));
   }
@@ -55,7 +55,7 @@ TEST_CASE("[calculation] trigonometric functions") {
     parser_antlr4::ExpressionContext *tree = parser.expression();
 
     gpp::Machine machine(input);
-    f64 result = std::any_cast<f64>(machine.emitter.visit(tree));
+    f64 result = std::any_cast<f64>(machine.emitter->visit(tree));
 
     CHECK(result == doctest::Approx(expected_results[i]));
   }
