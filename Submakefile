@@ -33,7 +33,7 @@ UNIT_TEST_FILES = tests/unit.cpp tests/testutil.cpp \
 LDFLAGS  = -L $(ANTLR4_LIB) -lantlr4-runtime
 CXXFLAGS = -std=c++17 -fPIC -g -I $(THISDIR)include/ $(ANTLR4_INCLUDE) $(STB_INCLUDE)
 
-CXXFLAGS += -Wno-overloaded-virtual -Wno-reorder -Wno-sign-comparison -Wno-unused-variable 
+CXXFLAGS += -Wno-overloaded-virtual -Wno-reorder -Wno-sign-compare -Wno-unused-variable 
 
 .PHONY: all dev clean new antlr test regression unit
 
@@ -43,8 +43,6 @@ $(call TOOBJSDEPS, $(STERPSRCS)) : EXTRAFLAGS=-fPIC
 ../lib/linuxcnc/sterp.so: $(ANTLR4_OBJECTS) $(OBJECTS) $(patsubst %.cc,objects/%.o,$(STERPSRCS)) ../lib/liblinuxcncini.so ../lib/librs274.so
 	cp $(EXTERN)antlr4/lib/libantlr4-runtime.so.4.13.2 ../lib/libantlr4-runtime.so.4.13.2
 	mkdir -p build out
-	cd $(EXTERN)antlr4 && java -jar $(EXTERN)antlr4/antlr-4.13.2-complete.jar -Dlanguage=Cpp \
-		-visitor -o $(EXTERN)antlr4/gen $(THISDIR)antlr4/lexer_antlr4.g4 $(THISDIR)antlr4/parser_antlr4.g4
 	$(ECHO) Linking $(notdir $@)
 	$(Q)mkdir -p ../lib/linuxcnc
 	$(Q)rm -f $@
@@ -84,11 +82,18 @@ install: $(OBJECTS) $(ANTLR4_OBJECTS)
 	sudo $(CXX) src/main.cpp $(OBJECTS) $(ANTLR4_OBJECTS) -o $(DIR)/$(TITLE) \
 		$(CXXFLAGS) $(LDFLAGS)
 
+$(THISDIR)build/lexer_antlr4.o: $(EXTERN)antlr4/gen/lexer_antlr4.cpp
+	$(CXX) -c $< -o $@ $(CXXFLAGS)
+
+$(THISDIR)build/parser_antlr4.o: $(EXTERN)antlr4/gen/parser_antlr4.cpp
+	$(CXX) -c $< -o $@ $(CXXFLAGS)
+
 $(THISDIR)build/parser_antlr4BaseVisitor.o: $(EXTERN)antlr4/gen/parser_antlr4BaseVisitor.cpp
 	$(CXX) -c $< -o $@ $(CXXFLAGS)
 
-$(THISDIR)build/%_antlr4.o: $(EXTERN)antlr4/gen/%_antlr4.cpp
-	$(CXX) -c $< -o $@ $(CXXFLAGS)
+$(EXTERN)antlr4/gen/%.cpp: $(THISDIR)antlr4/lexer_antlr4.g4 $(THISDIR)antlr4/parser_antlr4.g4
+	cd $(EXTERN)antlr4 && java -jar $(EXTERN)antlr4/antlr-4.13.2-complete.jar -Dlanguage=Cpp \
+		-visitor -o $(EXTERN)antlr4/gen $(THISDIR)antlr4/lexer_antlr4.g4 $(THISDIR)antlr4/parser_antlr4.g4
 
 $(THISDIR)build/%.o: $(THISDIR)src/%.cpp
 	$(CXX) -c $< -o $@ $(CXXFLAGS)

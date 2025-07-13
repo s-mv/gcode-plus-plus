@@ -25,17 +25,16 @@
 
 extern "C" void force_antlr4_lexer_rtti() { (void)typeid(antlr4::Lexer); }
 
-gpp::Machine machine;
+gpp::Machine machine = gpp::Machine();
 
 class Sterp : public InterpBase {
+  friend class gpp::Machine;
+
 public:
   Sterp() : f(0) {
     std::cout << "STERP: Constructor called\n";
     force_antlr4_lexer_rtti();
-    machine = gpp::Machine();
   }
-
-  std::queue<std::string> lineQueue;
 
   char *error_text(int errcode, char *buf, size_t buflen);
   char *stack_name(int index, char *buf, size_t buflen);
@@ -110,10 +109,6 @@ int Sterp::read() {
   std::cout << "STERP: Read buffer = \"" << line
             << "\" (length = " << line.length() << ")\n";
 
-  if (!line.empty() && line.find_first_not_of(" \t\n\r") != std::string::npos) {
-    lineQueue.push(line);
-  }
-
   return INTERP_OK;
 }
 
@@ -123,17 +118,9 @@ int Sterp::execute(const char *line) {
   std::string lineStr;
 
   if (!line) {
-    std::cout << "STERP: Null line passed. Checking lineQueue...\n";
-
-    if (lineQueue.empty()) {
-      std::cout << "STERP: No lines left to execute\n";
-      return INTERP_OK;
-    }
-
-    lineStr = lineQueue.front();
-    lineQueue.pop();
-
-    std::cout << "STERP: Fallback to queued line: \"" << lineStr << "\"\n";
+    std::cout << "STERP: Null line passed. "
+                 "Exiting Sterp::execute with no error...\n";
+    return INTERP_OK;
   } else {
     lineStr = line;
   }
@@ -149,109 +136,195 @@ int Sterp::execute(const char *line) {
   std::cout << "STERP: line is not empty or null.\n";
 
   std::cout << "STERP: Parsing line: " << lineStr << "\n";
-  
+
   lineStr += "\n";
+
+  // return INTERP_OK;
 
   auto emitter = std::make_shared<gpp::BytecodeEmitter>(machine, lineStr);
 
+  std::string inputStash = machine.input;
+  machine.input = lineStr;
   machine.bind(emitter);
-  SafeInstruction safeInstruction = machine.next();
 
-  if (std::holds_alternative<gpp::Error>(safeInstruction)) {
-    std::cout << "Something is fishy here\n";
-    return INTERP_ERROR;
-  }
-
-  gpp::Instruction instruction = std::get<gpp::Instruction>(safeInstruction);
-  std::cout << "STERP: Instruction: " << instruction.command << "\n";
   int line_num = 0;
-  std::vector<f64> args = instruction.arguments;
 
-  switch (instruction.command) {
-  case gpp::move_linear:
-    STRAIGHT_FEED(line_num, args.at(0), args.at(1), args.at(2), 0, 0, 0, 0, 0,
-                  0);
-    break;
-  case gpp::move_rapid:
-    STRAIGHT_TRAVERSE(line_num, args.at(0), args.at(1), args.at(2), 0, 0, 0, 0,
-                      0, 0);
-    break;
+  while (true) {
+    SafeInstruction safeInstruction = machine.next();
 
-  case gpp::set_feed_rate:
-    SET_FEED_RATE(args.at(0));
-    break;
-  case gpp::set_feed_mode:
-    SET_FEED_MODE(0, args.at(0));
-    break;
+    if (std::holds_alternative<gpp::Error>(safeInstruction)) {
+      std::cout << "STERP: Error while parsing line\n";
+      machine.unbind();
+      machine.input = inputStash;
+      return INTERP_ERROR;
+    }
 
-  case gpp::use_length_units:
-    break;
-  case gpp::use_distance_mode:
+    gpp::Instruction instruction = std::get<gpp::Instruction>(safeInstruction);
 
-    break;
-  case gpp::select_plane:
-    break;
+    if (instruction.command == gpp::no_command) {
+      std::cout << "STERP: Reached end of instruction stream\n";
+      break;
+    }
 
-  case gpp::arc_feed:
-    break;
+    const std::vector<f64> &args = instruction.arguments;
 
-  case gpp::dwell:
-    break;
-  case gpp::set_origin_offsets:
-    break;
+    std::cout << "STERP: Instruction command -> " << instruction.command
+              << "\n";
+    std::cout << "STERP: Args -> ";
+    for (f64 arg : args)
+      std::cout << arg << " ";
+    std::cout << "\n";
+    std::cout << "STERP: Machine pos -> " << machine.position << "\n";
 
-  case gpp::start_spindle_clockwise:
-    break;
-  case gpp::start_spindle_counterclockwise:
-    break;
-  case gpp::stop_spindle_turning:
-    break;
-  case gpp::set_spindle_speed:
-    break;
-  case gpp::set_spindle_mode:
-    break;
+    switch (instruction.command) {
+    case gpp::move_linear: {
+      std::cout << "STERP: move linear\n";
+      STRAIGHT_FEED(line_num, machine.position.x, machine.position.y,
+                    machine.position.z, 0, 0, 0, 0, 0, 0);
+      break;
+    }
+    case gpp::move_rapid: {
+      std::cout << "STERP: move rapid\n";
+      STRAIGHT_TRAVERSE(line_num, machine.position.x, machine.position.y,
+                        machine.position.z, 0, 0, 0, 0, 0, 0);
+      break;
+    }
 
-  case gpp::select_tool:
-    break;
-  case gpp::change_tool:
-    break;
+    case gpp::set_feed_rate: {
+      SET_FEED_RATE(args.at(0));
+      break;
+    }
+    case gpp::set_feed_mode: {
+      break;
+    }
 
-  case gpp::program_stop:
-    break;
-  case gpp::optional_program_stop:
-    break;
-  case gpp::program_end:
-    break;
+    case gpp::use_length_units: {
+      if (machine.unit == gpp::Unit::mm)
+        USE_LENGTH_UNITS(CANON_UNITS::CANON_UNITS_MM);
+      else if (machine.unit == gpp::Unit::inch)
+        USE_LENGTH_UNITS(CANON_UNITS::CANON_UNITS_INCHES);
+      break;
+    }
+    case gpp::use_distance_mode: {
+      break;
+    }
+    case gpp::select_plane: {
+      CANON_PLANE plane = CANON_PLANE_XZ;
+      if (machine.plane == gpp::plane_xy)
+        plane = CANON_PLANE_XY;
+      if (machine.plane == gpp::plane_yz)
+        plane = CANON_PLANE_YZ;
+      if (machine.plane == gpp::plane_xz)
+        plane = CANON_PLANE_XZ;
 
-  case gpp::use_tool_length_offset:
-    break;
-  case gpp::set_tool_length_offset:
-    break;
+      SELECT_PLANE(plane);
+      break;
+    }
 
-  case gpp::set_wcs_coordinates:
-    break;
-  case gpp::use_workspace:
-    break;
+    case gpp::arc_feed: {
+      break;
+    }
 
-  case gpp::set_retract_mode:
-    break;
-  case gpp::set_motion_control_mode:
-    break;
+    case gpp::dwell: {
+      DWELL(args.at(0));
+      break;
+    }
+    case gpp::set_origin_offsets: {
+      break;
+    }
 
-  /*** this is temporary ***/
-  case gpp::write_parameter_to_file:
-    break;
-  case gpp::write_parameters_to_file:
-    break;
+    case gpp::start_spindle_clockwise: {
+      START_SPINDLE_CLOCKWISE(0);
+      break;
+    }
+    case gpp::start_spindle_counterclockwise: {
+      break;
+      START_SPINDLE_COUNTERCLOCKWISE(0);
+    }
+    case gpp::stop_spindle_turning: {
+      STOP_SPINDLE_TURNING(0);
+      break;
+    }
+    case gpp::set_spindle_speed: {
+      SET_SPINDLE_SPEED(0, args.at(0));
+      break;
+    }
+    case gpp::set_spindle_mode: {
+      break;
+    }
 
-  case gpp::no_command:
-    break;
+    case gpp::select_tool: {
+      SELECT_TOOL(args.at(0));
+      break;
+    }
+    case gpp::change_tool: {
+      CHANGE_TOOL_NUMBER(machine.currentTool);
+      break;
+    }
 
-  default:
-    return INTERP_ERROR;
+    case gpp::program_stop: {
+      PROGRAM_STOP();
+      break;
+    }
+    case gpp::optional_program_stop: {
+      OPTIONAL_PROGRAM_STOP();
+      break;
+    }
+    case gpp::program_end: {
+      PROGRAM_END();
+      break;
+    }
+
+    case gpp::use_tool_length_offset: {
+      // USE_TOOL_LENGTH_OFFSET(); // TODO
+      break;
+    }
+    case gpp::set_tool_length_offset: {
+      // TODO
+      break;
+    }
+
+    case gpp::set_wcs_coordinates: {
+      break;
+    }
+    case gpp::use_workspace: {
+      break;
+    }
+
+    case gpp::set_retract_mode: {
+      break;
+    }
+    case gpp::set_motion_control_mode: {
+      CANON_MOTION_MODE mode = CANON_CONTINUOUS;
+      if (machine.motionControlMode == gpp::exact_stop)
+        mode = CANON_EXACT_STOP;
+      if (machine.motionControlMode == gpp::exact_path)
+        mode = CANON_EXACT_PATH;
+      if (machine.motionControlMode == gpp::continuous)
+        mode = CANON_CONTINUOUS;
+      SET_MOTION_CONTROL_MODE(mode, 0);
+      break;
+    }
+
+    /*** this is temporary ***/
+    case gpp::write_parameter_to_file: {
+      break;
+    }
+    case gpp::write_parameters_to_file: {
+      break;
+    }
+
+    case gpp::no_command: {
+      std::cout << "STERP: No Command! This shouldn't even be printed.\n";
+      break;
+    }
+
+    default:
+      return INTERP_ERROR;
+    }
   }
-
   machine.unbind();
+  machine.input = inputStash;
 
   return INTERP_OK;
 }
@@ -263,16 +336,7 @@ int Sterp::execute(const char *line, int line_number) {
 
 int Sterp::execute() {
   std::cout << "STERP: execute() [no-arg]\n";
-
-  if (lineQueue.empty()) {
-    std::cout << "STERP: No lines to execute\n";
-    return INTERP_OK;
-  }
-
-  std::string nextLine = lineQueue.front();
-  lineQueue.pop();
-
-  return execute(nextLine.c_str());
+  return execute(nullptr);
 }
 
 int Sterp::open(const char *newfilename) {

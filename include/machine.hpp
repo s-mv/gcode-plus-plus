@@ -35,7 +35,7 @@ enum gpp::FeedMode : u8 {
 enum gpp::SpindleMode : u8 { fixed_rpm = 0, constant_surface_speed = 1 };
 
 // this length is temporary
-#define g_command_len (300)
+#define g_command_len (100)
 enum gpp::Command : u8 {
   move_linear = 1,
   move_rapid = 2,
@@ -121,13 +121,14 @@ struct gpp::Vec2D {
 // constant work in progress
 struct gpp::Machine {
   friend class BytecodeEmitter;
+  friend class Sterp;
 
 private:
-  std::string input;
   std::shared_ptr<BytecodeEmitter> emitter;
   std::shared_ptr<BytecodeEmitter> emitterStash;
   bool emitterStashed;
 
+public:
   Vec3D position;       // current position relative to (0, 0, 0)
   Vec3D g5xoffset;      // offset from the origin due to g54-g59
   Vec3D g92offset;      // offset from the origin due to g92/g52
@@ -149,8 +150,10 @@ private:
   u64 selectedTool;
   u64 currentTool;
 
+  std::string input;
   std::unordered_map<int, Tool> tools;
 
+private:
   VerboseInstruction activeInstruction = {.word = '0'};
 
   std::function<void(std::vector<f64>)> handlers[g_command_len];

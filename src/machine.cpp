@@ -217,14 +217,6 @@ SafeInstruction gpp::Machine::next() {
   if (instruction.command == no_command)
     return instruction;
 
-  std::cout << "Machine: Instruction " << instruction.command << " being run\n";
-  std::cout << "Machine: Instruction arguments -> ";
-  for (auto &i : instruction.arguments)
-    std::cout << i << " ";
-  std::cout << std::endl;
-
-  // std::cout << "Machine: Function call: " << handlers[instruction.command];
-
   handlers[instruction.command](instruction.arguments);
 
   if (spindleDirection != off)
@@ -236,7 +228,7 @@ SafeInstruction gpp::Machine::next() {
 void gpp::Machine::bind(std::shared_ptr<gpp::BytecodeEmitter> tempEmitter) {
   emitterStashed = true;
   emitterStash = emitter;
-  emitterStash = tempEmitter;
+  emitter = tempEmitter;
 }
 
 void gpp::Machine::unbind() {
