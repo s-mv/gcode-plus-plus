@@ -46,9 +46,21 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
   line = context->getStart()->getLine();
   column = context->getStart()->getCharPositionInLine();
 
+  bool onlyParameterSettings = true;
+
+  for (parser_antlr4::SegmentContext *segment : context->segment()) {
+    if (!segment->parameter_setting()) {
+      onlyParameterSettings = false;
+      break;
+    }
+  }
+
   for (parser_antlr4::SegmentContext *segment : context->segment()) {
     visit(segment);
   }
+
+  if (onlyParameterSettings)
+    return nullptr;
 
   std::unordered_set<f64> seenModalGroups;
 

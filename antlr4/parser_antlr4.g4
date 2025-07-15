@@ -7,9 +7,9 @@ parser grammar parser_antlr4;
 options { tokenVocab=lexer_antlr4; }
 
 block
-    : PERCENT EOL statement* PERCENT EOL .*? EOL
-    | PERCENT EOL statement* EOL
-    | statement*
+    : PERCENT EOL (statement | EOL)* PERCENT EOL .*? EOL
+    | PERCENT EOL (statement | EOL)*
+    | (statement | EOL)*
     ;
 
 statement
@@ -38,21 +38,21 @@ line
 if_statement
     : IF expression EOL* block
       (ELSE IF expression EOL* block)*
-      (ELSE EOL block)? (ENDIF | END)
+      (ELSE EOL block)? (ENDIF | END) EOL+
     ;
 
 while_statement
-    : WHILE expression EOL* block (ENDWHILE | END)
+    : WHILE expression EOL* block (ENDWHILE | END) EOL+
     ;
 
 do_while_statement
-    : DO EOL* block WHILE expression
+    : DO EOL* block WHILE expression EOL+
     ;
 
 for_statement
     : FOR parameter_value
-      FROM expression TO expression DO EOL*
-      block (ENDFOR | END)
+      FROM expression TO expression EOL*
+      block (ENDFOR | END) EOL+
     ; 
 
 break_statement: BREAK;

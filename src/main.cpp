@@ -2,6 +2,8 @@
 #include <string>
 #include <variant>
 
+#include "ANTLRInputStream.h"
+#include "CommonTokenStream.h"
 #include "bytecode.hpp"
 #include "machine.hpp"
 #include "util.hpp"

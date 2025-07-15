@@ -13,14 +13,14 @@
 #include "util.hpp"
 
 gpp::Machine::Machine()
-    : emitter(std::make_shared<gpp::BytecodeEmitter>(*this)), input("\n"),
-      canvasXY(0, 0), canvasYZ(0, 0), canvasXZ(0, 0) {
+    : input("\n"), canvasXY(0, 0), canvasYZ(0, 0), canvasXZ(0, 0) {
+  emitter = std::make_shared<BytecodeEmitter>(*this);
   reset();
 }
 
 gpp::Machine::Machine(std::string input)
-    : emitter(std::make_shared<gpp::BytecodeEmitter>(*this)), input(input),
-      canvasXY(512, 512), canvasYZ(512, 512), canvasXZ(512, 512) {
+    : input(input), canvasXY(512, 512), canvasYZ(512, 512), canvasXZ(512, 512) {
+  emitter = std::make_shared<BytecodeEmitter>(*this);
   reset();
 
   initTools("config/tools.txt");
@@ -165,6 +165,7 @@ std::string gpp::Machine::getCurrentLine() {
 }
 
 SafeInstruction gpp::Machine::next() {
+
   while (emitter->bytecode.empty()) {
     if (!emitter->fetchInstructions())
       return Instruction{no_command};

@@ -15,8 +15,10 @@
 #include <limits.h>
 #include <memory>
 #include <queue>
+#include <stack>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 #include <variant>
 
 #include "bytecode.hpp"
@@ -71,6 +73,30 @@ public:
   FILE *f;
   char filename[PATH_MAX];
 };
+
+enum ControlToken {
+  control_if,
+  control_while,
+  control_for,
+  control_do,
+  control_end,
+};
+
+using ControlStack = std::stack<ControlToken>;
+
+ControlStack controlStack;
+
+std::string controlSequence;
+
+bool startsWith(const std::string &str, const std::string &pre) {
+  return str.compare(0, pre.size(), pre) == 0;
+}
+
+bool endsWith(const std::string &str, const std::string &suf) {
+  if (suf.size() > str.size())
+    return false;
+  return std::equal(suf.rbegin(), suf.rend(), str.rbegin());
+}
 
 char *Sterp::error_text(int errcode, char *buf, size_t buflen) {
   std::cout << "STERP: error_text(" << errcode << ")\n";
@@ -134,12 +160,38 @@ int Sterp::execute(const char *line) {
   }
 
   std::cout << "STERP: line is not empty or null.\n";
-
-  std::cout << "STERP: Parsing line: " << lineStr << "\n";
-
   lineStr += "\n";
 
-  // return INTERP_OK;
+  if (startsWith(lineStr, "if")) {
+    controlStack.push(control_if);
+    controlSequence += lineStr;
+    return INTERP_OK;
+  } else if (startsWith(lineStr, "for")) {
+    std::cout << "lmao this line actually is a for loop\n";
+    controlStack.push(control_for);
+    controlSequence += lineStr;
+    return INTERP_OK;
+  } else if (startsWith(lineStr, "while")) {
+    controlStack.push(control_while);
+    controlSequence += lineStr;
+    return INTERP_OK;
+  }
+
+  if (startsWith(lineStr, "end")) {
+    std::cout << "yay this works lmao lesgo\n";
+    if (!controlStack.empty())
+      controlStack.pop();
+    controlSequence += lineStr;
+    lineStr = controlSequence;
+    controlSequence.clear();
+  }
+
+  if (!controlStack.empty()) {
+    controlSequence += lineStr;
+    return INTERP_OK;
+  }
+
+  std::cout << "STERP: Parsing line: " << lineStr << "\n";
 
   auto emitter = std::make_shared<gpp::BytecodeEmitter>(machine, lineStr);
 
@@ -153,7 +205,9 @@ int Sterp::execute(const char *line) {
     SafeInstruction safeInstruction = machine.next();
 
     if (std::holds_alternative<gpp::Error>(safeInstruction)) {
+      gpp::Error error = std::get<gpp::Error>(safeInstruction);
       std::cout << "STERP: Error while parsing line\n";
+      error.print();
       machine.unbind();
       machine.input = inputStash;
       return INTERP_ERROR;

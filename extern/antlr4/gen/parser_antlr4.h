@@ -266,7 +266,6 @@ public:
     std::vector<ExpressionContext *> expression();
     ExpressionContext* expression(size_t i);
     antlr4::tree::TerminalNode *TO();
-    antlr4::tree::TerminalNode *DO();
     BlockContext *block();
     antlr4::tree::TerminalNode *ENDFOR();
     antlr4::tree::TerminalNode *END();

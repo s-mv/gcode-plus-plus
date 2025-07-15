@@ -76583,6 +76583,661 @@ namespace std __attribute__ ((__visibility__ ("default")))
 }
 # 73 "/usr/include/c++/15.1.1/queue" 2 3
 # 18 "emc/sterp/sterp.cc" 2
+# 1 "/usr/include/c++/15.1.1/stack" 1 3
+# 56 "/usr/include/c++/15.1.1/stack" 3
+#define _GLIBCXX_STACK 1
+
+
+
+
+
+
+
+#define __glibcxx_want_adaptor_iterator_pair_constructor 
+#define __glibcxx_want_containers_ranges 
+# 1 "/usr/include/c++/15.1.1/bits/version.h" 1 3
+# 61 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_incomplete_container_elements
+# 71 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_uncaught_exceptions
+# 81 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_allocator_traits_is_always_equal
+# 91 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_is_null_pointer
+# 101 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_result_of_sfinae
+# 116 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_shared_ptr_arrays
+# 126 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_is_swappable
+# 136 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_void_t
+# 146 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_enable_shared_from_this
+
+
+
+#define __glibcxx_math_spec_funcs 201003L
+
+
+
+
+
+#undef __glibcxx_want_math_spec_funcs
+# 166 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_coroutine
+# 176 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_exchange_function
+# 186 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_integer_sequence
+# 196 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_integral_constant_callable
+# 206 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_is_final
+# 216 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_make_reverse_iterator
+# 226 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_null_iterators
+# 236 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_transformation_trait_aliases
+# 246 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_transparent_operators
+# 256 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_tuple_element_t
+# 266 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_tuples_by_type
+# 276 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_robust_nonmodifying_seq_ops
+# 291 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_to_chars
+# 301 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_chrono_udls
+# 311 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_complex_udls
+# 321 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_generic_associative_lookup
+# 331 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_make_unique
+# 341 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_quoted_string_io
+# 351 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_shared_timed_mutex
+# 361 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_string_udls
+# 371 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_addressof_constexpr
+# 381 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_any
+# 391 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_apply
+# 401 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_as_const
+# 411 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_atomic_is_always_lock_free
+# 421 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_bool_constant
+# 431 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_byte
+# 441 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_has_unique_object_representations
+# 451 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_hardware_interference_size
+# 461 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_invoke
+# 471 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_is_aggregate
+# 481 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_is_invocable
+# 491 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_launder
+# 501 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_logical_traits
+# 511 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_make_from_tuple
+# 521 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_not_fn
+# 531 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_type_trait_variable_templates
+# 551 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_variant
+# 561 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_lcm
+# 571 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_gcd
+# 581 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_gcd_lcm
+# 596 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_raw_memory_algorithms
+# 611 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_array_constexpr
+# 621 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_nonmember_container_access
+# 631 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_clamp
+# 641 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_sample
+# 651 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_boyer_moore_searcher
+# 666 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_chrono
+# 676 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_execution
+# 686 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_filesystem
+# 696 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_hypot
+# 706 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_map_try_emplace
+# 716 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_math_special_functions
+# 731 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_memory_resource
+# 741 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_node_extract
+# 751 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_parallel_algorithm
+# 761 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_scoped_lock
+# 771 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_shared_mutex
+# 781 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_shared_ptr_weak_type
+# 796 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_string_view
+# 806 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_unordered_map_try_emplace
+# 816 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_assume_aligned
+# 826 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_atomic_flag_test
+# 836 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_atomic_float
+# 846 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_atomic_lock_free_type_aliases
+# 856 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_atomic_ref
+# 866 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_atomic_value_initialization
+# 876 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_bind_front
+# 886 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_bind_back
+# 896 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_starts_ends_with
+# 906 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_bit_cast
+# 916 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_bitops
+# 926 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_bounded_array_traits
+# 936 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_concepts
+# 956 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_optional
+# 966 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_destroying_delete
+# 976 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_string_view
+# 986 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_endian
+# 996 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_int_pow2
+# 1006 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_integer_comparison_functions
+# 1016 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_is_constant_evaluated
+# 1031 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_char_traits
+# 1041 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_is_layout_compatible
+# 1051 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_is_nothrow_convertible
+# 1061 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_is_pointer_interconvertible
+# 1071 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_math_constants
+# 1081 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_make_obj_using_allocator
+# 1091 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_remove_cvref
+# 1101 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_source_location
+# 1116 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_span
+# 1126 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ssize
+# 1136 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_three_way_comparison
+# 1146 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_to_address
+# 1156 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_to_array
+# 1166 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_type_identity
+# 1176 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_unwrap_ref
+# 1186 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_iterator
+# 1196 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_interpolate
+# 1206 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_utility
+# 1216 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_shift
+# 1236 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges
+# 1246 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_numeric
+# 1256 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_functional
+# 1271 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_algorithms
+# 1281 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_tuple
+# 1296 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_memory
+# 1306 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_atomic_shared_ptr
+# 1321 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_atomic_wait
+# 1331 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_barrier
+# 1346 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_format
+# 1356 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_format_uchar
+# 1366 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_complex
+# 1376 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_dynamic_alloc
+# 1396 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_string
+# 1406 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_vector
+# 1421 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constrained_equality
+# 1431 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_erase_if
+# 1441 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_generic_unordered_lookup
+# 1451 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_jthread
+# 1461 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_latch
+# 1471 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_list_remove_return_type
+# 1481 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_polymorphic_allocator
+# 1491 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_move_iterator_concept
+# 1501 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_semaphore
+# 1511 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_smart_ptr_for_overwrite
+# 1521 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_syncbuf
+# 1531 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_byteswap
+# 1541 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_charconv
+# 1551 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_typeinfo
+# 1561 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_expected
+# 1571 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_format_ranges
+# 1581 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_freestanding_algorithm
+# 1591 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_freestanding_array
+# 1601 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_freestanding_cstring
+# 1611 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_freestanding_expected
+# 1621 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_freestanding_optional
+# 1631 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_freestanding_string_view
+# 1641 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_freestanding_variant
+# 1651 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_invoke_r
+# 1661 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_is_scoped_enum
+# 1671 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_reference_from_temporary
+# 1681 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_containers_ranges
+# 1691 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_to_container
+# 1701 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_zip
+# 1711 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_chunk
+# 1721 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_slide
+# 1731 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_chunk_by
+# 1741 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_join_with
+# 1751 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_repeat
+# 1761 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_stride
+# 1771 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_cartesian_product
+# 1781 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_as_rvalue
+# 1791 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_as_const
+# 1801 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_enumerate
+# 1811 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_fold
+# 1821 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_contains
+# 1831 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_iota
+# 1841 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_find_last
+# 1851 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_bitset
+# 1861 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_stdatomic_h
+# 1871 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_adaptor_iterator_pair_constructor
+# 1881 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_flat_map
+# 1891 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_flat_set
+# 1901 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_formatters
+# 1911 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_forward_like
+# 1921 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_generator
+# 1931 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ios_noreplace
+# 1941 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_move_only_function
+# 1951 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_out_ptr
+# 1961 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_print
+# 1971 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_spanstream
+# 1981 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_stacktrace
+# 1991 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_string_contains
+# 2001 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_string_resize_and_overwrite
+# 2011 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_to_underlying
+# 2026 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_tuple_like
+# 2036 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_unreachable
+# 2046 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_algorithm_default_value_type
+# 2056 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_constexpr_new
+# 2066 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_fstream_native_handle
+# 2076 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_is_virtual_base_of
+# 2086 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_cache_latest
+# 2096 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_concat
+# 2106 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ratio
+# 2116 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_reference_wrapper
+# 2126 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_saturation_arithmetic
+# 2136 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_span_initializer_list
+# 2146 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_text_encoding
+# 2156 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_ranges_to_input
+# 2166 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_to_string
+# 2176 "/usr/include/c++/15.1.1/bits/version.h" 3
+#undef __glibcxx_want_modules
+
+#undef __glibcxx_want_all
+# 67 "/usr/include/c++/15.1.1/stack" 2 3
+
+
+# 1 "/usr/include/c++/15.1.1/bits/stl_stack.h" 1 3
+# 57 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
+#define _STL_STACK_H 1
+# 69 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
+namespace std __attribute__ ((__visibility__ ("default")))
+{
+
+# 106 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
+  template<typename _Tp, typename _Sequence = deque<_Tp> >
+    class stack
+    {
+# 119 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
+      template<typename _Tp1, typename _Seq1>
+ friend bool
+ operator==(const stack<_Tp1, _Seq1>&, const stack<_Tp1, _Seq1>&);
+
+      template<typename _Tp1, typename _Seq1>
+ friend bool
+ operator<(const stack<_Tp1, _Seq1>&, const stack<_Tp1, _Seq1>&);
+# 134 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
+      template<typename _Alloc>
+ using _Uses = typename
+   enable_if<uses_allocator<_Sequence, _Alloc>::value>::type;
+
+
+
+
+
+      static_assert(is_same<_Tp, typename _Sequence::value_type>::value,
+   "value_type must be the same as the underlying container");
+
+
+
+    public:
+      typedef typename _Sequence::value_type value_type;
+      typedef typename _Sequence::reference reference;
+      typedef typename _Sequence::const_reference const_reference;
+      typedef typename _Sequence::size_type size_type;
+      typedef _Sequence container_type;
+
+    protected:
+
+      _Sequence c;
+
+    public:
+# 168 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
+      template<typename _Seq = _Sequence, typename _Requires = typename
+        enable_if<is_default_constructible<_Seq>::value>::type>
+ stack()
+ : c() { }
+
+      explicit
+      stack(const _Sequence& __c)
+      : c(__c) { }
+
+      explicit
+      stack(_Sequence&& __c)
+      : c(std::move(__c)) { }
+# 209 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
+      template<typename _Alloc, typename _Requires = _Uses<_Alloc>>
+ explicit
+ stack(const _Alloc& __a)
+ : c(__a) { }
+
+      template<typename _Alloc, typename _Requires = _Uses<_Alloc>>
+ stack(const _Sequence& __c, const _Alloc& __a)
+ : c(__c, __a) { }
+
+      template<typename _Alloc, typename _Requires = _Uses<_Alloc>>
+ stack(_Sequence&& __c, const _Alloc& __a)
+ : c(std::move(__c), __a) { }
+
+      template<typename _Alloc, typename _Requires = _Uses<_Alloc>>
+ stack(const stack& __q, const _Alloc& __a)
+ : c(__q.c, __a) { }
+
+      template<typename _Alloc, typename _Requires = _Uses<_Alloc>>
+ stack(stack&& __q, const _Alloc& __a)
+ : c(std::move(__q.c), __a) { }
+# 242 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
+      [[__nodiscard__]] bool
+      empty() const
+      { return c.empty(); }
+
+
+      [[__nodiscard__]]
+      size_type
+      size() const
+      { return c.size(); }
+
+
+
+
+
+      [[__nodiscard__]]
+      reference
+      top()
+      {
+ do { if (std::__is_constant_evaluated() && !bool(!this->empty())) std::__glibcxx_assert_fail(); } while (false);
+ return c.back();
+      }
+
+
+
+
+
+      [[__nodiscard__]]
+      const_reference
+      top() const
+      {
+ do { if (std::__is_constant_evaluated() && !bool(!this->empty())) std::__glibcxx_assert_fail(); } while (false);
+ return c.back();
+      }
+# 285 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
+      void
+      push(const value_type& __x)
+      { c.push_back(__x); }
+
+
+      void
+      push(value_type&& __x)
+      { c.push_back(std::move(__x)); }
+
+
+      template<typename... _Args>
+ decltype(auto)
+ emplace(_Args&&... __args)
+ { return c.emplace_back(std::forward<_Args>(__args)...); }
+# 330 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
+      void
+      pop()
+      {
+ do { if (std::__is_constant_evaluated() && !bool(!this->empty())) std::__glibcxx_assert_fail(); } while (false);
+ c.pop_back();
+      }
+
+
+      void
+      swap(stack& __s)
+
+      noexcept(__is_nothrow_swappable<_Sequence>::value)
+
+
+
+      {
+ using std::swap;
+ swap(c, __s.c);
+      }
+
+
+
+
+
+
+    };
+
+
+  template<typename _Container,
+    typename = _RequireNotAllocator<_Container>>
+    stack(_Container) -> stack<typename _Container::value_type, _Container>;
+
+  template<typename _Container, typename _Allocator,
+    typename = _RequireNotAllocator<_Container>>
+    stack(_Container, _Allocator)
+    -> stack<typename _Container::value_type, _Container>;
+# 406 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
+  template<typename _Tp, typename _Seq>
+    [[__nodiscard__]]
+    inline bool
+    operator==(const stack<_Tp, _Seq>& __x, const stack<_Tp, _Seq>& __y)
+    { return __x.c == __y.c; }
+# 425 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
+  template<typename _Tp, typename _Seq>
+    [[__nodiscard__]]
+    inline bool
+    operator<(const stack<_Tp, _Seq>& __x, const stack<_Tp, _Seq>& __y)
+    { return __x.c < __y.c; }
+
+
+  template<typename _Tp, typename _Seq>
+    [[__nodiscard__]]
+    inline bool
+    operator!=(const stack<_Tp, _Seq>& __x, const stack<_Tp, _Seq>& __y)
+    { return !(__x == __y); }
+
+
+  template<typename _Tp, typename _Seq>
+    [[__nodiscard__]]
+    inline bool
+    operator>(const stack<_Tp, _Seq>& __x, const stack<_Tp, _Seq>& __y)
+    { return __y < __x; }
+
+
+  template<typename _Tp, typename _Seq>
+    [[__nodiscard__]]
+    inline bool
+    operator<=(const stack<_Tp, _Seq>& __x, const stack<_Tp, _Seq>& __y)
+    { return !(__y < __x); }
+
+
+  template<typename _Tp, typename _Seq>
+    [[__nodiscard__]]
+    inline bool
+    operator>=(const stack<_Tp, _Seq>& __x, const stack<_Tp, _Seq>& __y)
+    { return !(__x < __y); }
+# 468 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
+  template<typename _Tp, typename _Seq>
+    inline
+
+
+    typename enable_if<__is_swappable<_Seq>::value>::type
+
+
+
+    swap(stack<_Tp, _Seq>& __x, stack<_Tp, _Seq>& __y)
+    noexcept(noexcept(__x.swap(__y)))
+    { __x.swap(__y); }
+
+  template<typename _Tp, typename _Seq, typename _Alloc>
+    struct uses_allocator<stack<_Tp, _Seq>, _Alloc>
+    : public uses_allocator<_Seq, _Alloc>::type { };
+
+
+
+}
+# 70 "/usr/include/c++/15.1.1/stack" 2 3
+# 19 "emc/sterp/sterp.cc" 2
 
 # 1 "/usr/include/string.h" 1 3 4
 # 23 "/usr/include/string.h" 3 4
@@ -77379,7 +78034,8 @@ __attribute__ ((__leaf__)) strlcat (char * __restrict __dest, const char *__rest
 
 
 }
-# 20 "emc/sterp/sterp.cc" 2
+# 21 "emc/sterp/sterp.cc" 2
+
 # 1 "/usr/include/c++/15.1.1/variant" 1 3
 # 30 "/usr/include/c++/15.1.1/variant" 3
 #define _GLIBCXX_VARIANT 1
@@ -80609,7 +81265,7 @@ namespace __detail::__variant
 
 
 }
-# 21 "emc/sterp/sterp.cc" 2
+# 23 "emc/sterp/sterp.cc" 2
 
 # 1 "/home/smv/code/accelus/linuxcnc/src/emc/sterp/include/bytecode.hpp" 1
 
@@ -93472,661 +94128,7 @@ namespace __gnu_cxx __attribute__ ((__visibility__ ("default")))
 }
 # 5 "/home/smv/code/accelus/linuxcnc/src/emc/sterp/include/bytecode.hpp" 2
 
-# 1 "/usr/include/c++/15.1.1/stack" 1 3
-# 56 "/usr/include/c++/15.1.1/stack" 3
-#define _GLIBCXX_STACK 1
 
-
-
-
-
-
-
-#define __glibcxx_want_adaptor_iterator_pair_constructor 
-#define __glibcxx_want_containers_ranges 
-# 1 "/usr/include/c++/15.1.1/bits/version.h" 1 3
-# 61 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_incomplete_container_elements
-# 71 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_uncaught_exceptions
-# 81 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_allocator_traits_is_always_equal
-# 91 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_is_null_pointer
-# 101 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_result_of_sfinae
-# 116 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_shared_ptr_arrays
-# 126 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_is_swappable
-# 136 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_void_t
-# 146 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_enable_shared_from_this
-
-
-
-#define __glibcxx_math_spec_funcs 201003L
-
-
-
-
-
-#undef __glibcxx_want_math_spec_funcs
-# 166 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_coroutine
-# 176 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_exchange_function
-# 186 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_integer_sequence
-# 196 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_integral_constant_callable
-# 206 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_is_final
-# 216 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_make_reverse_iterator
-# 226 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_null_iterators
-# 236 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_transformation_trait_aliases
-# 246 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_transparent_operators
-# 256 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_tuple_element_t
-# 266 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_tuples_by_type
-# 276 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_robust_nonmodifying_seq_ops
-# 291 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_to_chars
-# 301 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_chrono_udls
-# 311 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_complex_udls
-# 321 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_generic_associative_lookup
-# 331 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_make_unique
-# 341 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_quoted_string_io
-# 351 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_shared_timed_mutex
-# 361 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_string_udls
-# 371 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_addressof_constexpr
-# 381 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_any
-# 391 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_apply
-# 401 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_as_const
-# 411 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_atomic_is_always_lock_free
-# 421 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_bool_constant
-# 431 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_byte
-# 441 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_has_unique_object_representations
-# 451 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_hardware_interference_size
-# 461 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_invoke
-# 471 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_is_aggregate
-# 481 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_is_invocable
-# 491 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_launder
-# 501 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_logical_traits
-# 511 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_make_from_tuple
-# 521 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_not_fn
-# 531 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_type_trait_variable_templates
-# 551 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_variant
-# 561 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_lcm
-# 571 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_gcd
-# 581 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_gcd_lcm
-# 596 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_raw_memory_algorithms
-# 611 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_array_constexpr
-# 621 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_nonmember_container_access
-# 631 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_clamp
-# 641 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_sample
-# 651 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_boyer_moore_searcher
-# 666 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_chrono
-# 676 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_execution
-# 686 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_filesystem
-# 696 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_hypot
-# 706 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_map_try_emplace
-# 716 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_math_special_functions
-# 731 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_memory_resource
-# 741 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_node_extract
-# 751 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_parallel_algorithm
-# 761 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_scoped_lock
-# 771 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_shared_mutex
-# 781 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_shared_ptr_weak_type
-# 796 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_string_view
-# 806 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_unordered_map_try_emplace
-# 816 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_assume_aligned
-# 826 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_atomic_flag_test
-# 836 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_atomic_float
-# 846 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_atomic_lock_free_type_aliases
-# 856 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_atomic_ref
-# 866 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_atomic_value_initialization
-# 876 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_bind_front
-# 886 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_bind_back
-# 896 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_starts_ends_with
-# 906 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_bit_cast
-# 916 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_bitops
-# 926 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_bounded_array_traits
-# 936 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_concepts
-# 956 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_optional
-# 966 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_destroying_delete
-# 976 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_string_view
-# 986 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_endian
-# 996 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_int_pow2
-# 1006 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_integer_comparison_functions
-# 1016 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_is_constant_evaluated
-# 1031 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_char_traits
-# 1041 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_is_layout_compatible
-# 1051 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_is_nothrow_convertible
-# 1061 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_is_pointer_interconvertible
-# 1071 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_math_constants
-# 1081 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_make_obj_using_allocator
-# 1091 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_remove_cvref
-# 1101 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_source_location
-# 1116 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_span
-# 1126 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ssize
-# 1136 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_three_way_comparison
-# 1146 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_to_address
-# 1156 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_to_array
-# 1166 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_type_identity
-# 1176 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_unwrap_ref
-# 1186 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_iterator
-# 1196 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_interpolate
-# 1206 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_utility
-# 1216 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_shift
-# 1236 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges
-# 1246 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_numeric
-# 1256 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_functional
-# 1271 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_algorithms
-# 1281 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_tuple
-# 1296 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_memory
-# 1306 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_atomic_shared_ptr
-# 1321 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_atomic_wait
-# 1331 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_barrier
-# 1346 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_format
-# 1356 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_format_uchar
-# 1366 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_complex
-# 1376 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_dynamic_alloc
-# 1396 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_string
-# 1406 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_vector
-# 1421 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constrained_equality
-# 1431 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_erase_if
-# 1441 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_generic_unordered_lookup
-# 1451 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_jthread
-# 1461 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_latch
-# 1471 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_list_remove_return_type
-# 1481 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_polymorphic_allocator
-# 1491 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_move_iterator_concept
-# 1501 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_semaphore
-# 1511 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_smart_ptr_for_overwrite
-# 1521 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_syncbuf
-# 1531 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_byteswap
-# 1541 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_charconv
-# 1551 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_typeinfo
-# 1561 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_expected
-# 1571 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_format_ranges
-# 1581 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_freestanding_algorithm
-# 1591 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_freestanding_array
-# 1601 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_freestanding_cstring
-# 1611 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_freestanding_expected
-# 1621 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_freestanding_optional
-# 1631 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_freestanding_string_view
-# 1641 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_freestanding_variant
-# 1651 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_invoke_r
-# 1661 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_is_scoped_enum
-# 1671 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_reference_from_temporary
-# 1681 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_containers_ranges
-# 1691 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_to_container
-# 1701 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_zip
-# 1711 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_chunk
-# 1721 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_slide
-# 1731 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_chunk_by
-# 1741 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_join_with
-# 1751 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_repeat
-# 1761 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_stride
-# 1771 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_cartesian_product
-# 1781 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_as_rvalue
-# 1791 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_as_const
-# 1801 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_enumerate
-# 1811 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_fold
-# 1821 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_contains
-# 1831 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_iota
-# 1841 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_find_last
-# 1851 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_bitset
-# 1861 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_stdatomic_h
-# 1871 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_adaptor_iterator_pair_constructor
-# 1881 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_flat_map
-# 1891 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_flat_set
-# 1901 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_formatters
-# 1911 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_forward_like
-# 1921 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_generator
-# 1931 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ios_noreplace
-# 1941 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_move_only_function
-# 1951 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_out_ptr
-# 1961 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_print
-# 1971 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_spanstream
-# 1981 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_stacktrace
-# 1991 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_string_contains
-# 2001 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_string_resize_and_overwrite
-# 2011 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_to_underlying
-# 2026 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_tuple_like
-# 2036 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_unreachable
-# 2046 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_algorithm_default_value_type
-# 2056 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_constexpr_new
-# 2066 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_fstream_native_handle
-# 2076 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_is_virtual_base_of
-# 2086 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_cache_latest
-# 2096 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_concat
-# 2106 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ratio
-# 2116 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_reference_wrapper
-# 2126 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_saturation_arithmetic
-# 2136 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_span_initializer_list
-# 2146 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_text_encoding
-# 2156 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_ranges_to_input
-# 2166 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_to_string
-# 2176 "/usr/include/c++/15.1.1/bits/version.h" 3
-#undef __glibcxx_want_modules
-
-#undef __glibcxx_want_all
-# 67 "/usr/include/c++/15.1.1/stack" 2 3
-
-
-# 1 "/usr/include/c++/15.1.1/bits/stl_stack.h" 1 3
-# 57 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
-#define _STL_STACK_H 1
-# 69 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
-namespace std __attribute__ ((__visibility__ ("default")))
-{
-
-# 106 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
-  template<typename _Tp, typename _Sequence = deque<_Tp> >
-    class stack
-    {
-# 119 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
-      template<typename _Tp1, typename _Seq1>
- friend bool
- operator==(const stack<_Tp1, _Seq1>&, const stack<_Tp1, _Seq1>&);
-
-      template<typename _Tp1, typename _Seq1>
- friend bool
- operator<(const stack<_Tp1, _Seq1>&, const stack<_Tp1, _Seq1>&);
-# 134 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
-      template<typename _Alloc>
- using _Uses = typename
-   enable_if<uses_allocator<_Sequence, _Alloc>::value>::type;
-
-
-
-
-
-      static_assert(is_same<_Tp, typename _Sequence::value_type>::value,
-   "value_type must be the same as the underlying container");
-
-
-
-    public:
-      typedef typename _Sequence::value_type value_type;
-      typedef typename _Sequence::reference reference;
-      typedef typename _Sequence::const_reference const_reference;
-      typedef typename _Sequence::size_type size_type;
-      typedef _Sequence container_type;
-
-    protected:
-
-      _Sequence c;
-
-    public:
-# 168 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
-      template<typename _Seq = _Sequence, typename _Requires = typename
-        enable_if<is_default_constructible<_Seq>::value>::type>
- stack()
- : c() { }
-
-      explicit
-      stack(const _Sequence& __c)
-      : c(__c) { }
-
-      explicit
-      stack(_Sequence&& __c)
-      : c(std::move(__c)) { }
-# 209 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
-      template<typename _Alloc, typename _Requires = _Uses<_Alloc>>
- explicit
- stack(const _Alloc& __a)
- : c(__a) { }
-
-      template<typename _Alloc, typename _Requires = _Uses<_Alloc>>
- stack(const _Sequence& __c, const _Alloc& __a)
- : c(__c, __a) { }
-
-      template<typename _Alloc, typename _Requires = _Uses<_Alloc>>
- stack(_Sequence&& __c, const _Alloc& __a)
- : c(std::move(__c), __a) { }
-
-      template<typename _Alloc, typename _Requires = _Uses<_Alloc>>
- stack(const stack& __q, const _Alloc& __a)
- : c(__q.c, __a) { }
-
-      template<typename _Alloc, typename _Requires = _Uses<_Alloc>>
- stack(stack&& __q, const _Alloc& __a)
- : c(std::move(__q.c), __a) { }
-# 242 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
-      [[__nodiscard__]] bool
-      empty() const
-      { return c.empty(); }
-
-
-      [[__nodiscard__]]
-      size_type
-      size() const
-      { return c.size(); }
-
-
-
-
-
-      [[__nodiscard__]]
-      reference
-      top()
-      {
- do { if (std::__is_constant_evaluated() && !bool(!this->empty())) std::__glibcxx_assert_fail(); } while (false);
- return c.back();
-      }
-
-
-
-
-
-      [[__nodiscard__]]
-      const_reference
-      top() const
-      {
- do { if (std::__is_constant_evaluated() && !bool(!this->empty())) std::__glibcxx_assert_fail(); } while (false);
- return c.back();
-      }
-# 285 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
-      void
-      push(const value_type& __x)
-      { c.push_back(__x); }
-
-
-      void
-      push(value_type&& __x)
-      { c.push_back(std::move(__x)); }
-
-
-      template<typename... _Args>
- decltype(auto)
- emplace(_Args&&... __args)
- { return c.emplace_back(std::forward<_Args>(__args)...); }
-# 330 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
-      void
-      pop()
-      {
- do { if (std::__is_constant_evaluated() && !bool(!this->empty())) std::__glibcxx_assert_fail(); } while (false);
- c.pop_back();
-      }
-
-
-      void
-      swap(stack& __s)
-
-      noexcept(__is_nothrow_swappable<_Sequence>::value)
-
-
-
-      {
- using std::swap;
- swap(c, __s.c);
-      }
-
-
-
-
-
-
-    };
-
-
-  template<typename _Container,
-    typename = _RequireNotAllocator<_Container>>
-    stack(_Container) -> stack<typename _Container::value_type, _Container>;
-
-  template<typename _Container, typename _Allocator,
-    typename = _RequireNotAllocator<_Container>>
-    stack(_Container, _Allocator)
-    -> stack<typename _Container::value_type, _Container>;
-# 406 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
-  template<typename _Tp, typename _Seq>
-    [[__nodiscard__]]
-    inline bool
-    operator==(const stack<_Tp, _Seq>& __x, const stack<_Tp, _Seq>& __y)
-    { return __x.c == __y.c; }
-# 425 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
-  template<typename _Tp, typename _Seq>
-    [[__nodiscard__]]
-    inline bool
-    operator<(const stack<_Tp, _Seq>& __x, const stack<_Tp, _Seq>& __y)
-    { return __x.c < __y.c; }
-
-
-  template<typename _Tp, typename _Seq>
-    [[__nodiscard__]]
-    inline bool
-    operator!=(const stack<_Tp, _Seq>& __x, const stack<_Tp, _Seq>& __y)
-    { return !(__x == __y); }
-
-
-  template<typename _Tp, typename _Seq>
-    [[__nodiscard__]]
-    inline bool
-    operator>(const stack<_Tp, _Seq>& __x, const stack<_Tp, _Seq>& __y)
-    { return __y < __x; }
-
-
-  template<typename _Tp, typename _Seq>
-    [[__nodiscard__]]
-    inline bool
-    operator<=(const stack<_Tp, _Seq>& __x, const stack<_Tp, _Seq>& __y)
-    { return !(__y < __x); }
-
-
-  template<typename _Tp, typename _Seq>
-    [[__nodiscard__]]
-    inline bool
-    operator>=(const stack<_Tp, _Seq>& __x, const stack<_Tp, _Seq>& __y)
-    { return !(__x < __y); }
-# 468 "/usr/include/c++/15.1.1/bits/stl_stack.h" 3
-  template<typename _Tp, typename _Seq>
-    inline
-
-
-    typename enable_if<__is_swappable<_Seq>::value>::type
-
-
-
-    swap(stack<_Tp, _Seq>& __x, stack<_Tp, _Seq>& __y)
-    noexcept(noexcept(__x.swap(__y)))
-    { __x.swap(__y); }
-
-  template<typename _Tp, typename _Seq, typename _Alloc>
-    struct uses_allocator<stack<_Tp, _Seq>, _Alloc>
-    : public uses_allocator<_Seq, _Alloc>::type { };
-
-
-
-}
-# 70 "/usr/include/c++/15.1.1/stack" 2 3
-# 7 "/home/smv/code/accelus/linuxcnc/src/emc/sterp/include/bytecode.hpp" 2
 
 # 1 "/usr/include/c++/15.1.1/unordered_map" 1 3
 # 30 "/usr/include/c++/15.1.1/unordered_map" 3
@@ -143619,7 +143621,6 @@ public:
     std::vector<ExpressionContext *> expression();
     ExpressionContext* expression(size_t i);
     antlr4::tree::TerminalNode *TO();
-    antlr4::tree::TerminalNode *DO();
     BlockContext *block();
     antlr4::tree::TerminalNode *ENDFOR();
     antlr4::tree::TerminalNode *END();
@@ -144702,9 +144703,9 @@ private:
                                        const Vec3D &position);
   inline Vec2D getArcCenterOffsets(const gpp::Plane plane, f64 i, f64 j, f64 k);
 };
-# 23 "emc/sterp/sterp.cc" 2
+# 25 "emc/sterp/sterp.cc" 2
 # 1 "/home/smv/code/accelus/linuxcnc/src/emc/sterp/include/gpp.hpp" 1
-# 24 "emc/sterp/sterp.cc" 2
+# 26 "emc/sterp/sterp.cc" 2
 # 1 "/home/smv/code/accelus/linuxcnc/src/emc/sterp/include/machine.hpp" 1
 
 #define smv_gpp_machine_hpp 
@@ -148300,7 +148301,7 @@ private:
   void drawLineOnPlane(Canvas &canvas, Plane plane, Vec3D from, Vec3D to);
   void drawLinesOnPlanes(Vec3D from, Vec3D to);
 };
-# 25 "emc/sterp/sterp.cc" 2
+# 27 "emc/sterp/sterp.cc" 2
 
 extern "C" void force_antlr4_lexer_rtti() { (void)typeid(antlr4::Lexer); }
 
@@ -148349,11 +148350,35 @@ public:
   void set_loop_on_main_m99(bool state);
   FILE *f;
   char filename[
-# 72 "emc/sterp/sterp.cc" 3 4
+# 74 "emc/sterp/sterp.cc" 3 4
                4096
-# 72 "emc/sterp/sterp.cc"
+# 74 "emc/sterp/sterp.cc"
                        ];
 };
+
+enum ControlToken {
+  control_if,
+  control_while,
+  control_for,
+  control_do,
+  control_end,
+};
+
+using ControlStack = std::stack<ControlToken>;
+
+ControlStack controlStack;
+
+std::string controlSequence;
+
+bool startsWith(const std::string &str, const std::string &pre) {
+  return str.compare(0, pre.size(), pre) == 0;
+}
+
+bool endsWith(const std::string &str, const std::string &suf) {
+  if (suf.size() > str.size())
+    return false;
+  return std::equal(suf.rbegin(), suf.rend(), str.rbegin());
+}
 
 char *Sterp::error_text(int errcode, char *buf, size_t buflen) {
   std::cout << "STERP: error_text(" << errcode << ")\n";
@@ -148417,12 +148442,38 @@ int Sterp::execute(const char *line) {
   }
 
   std::cout << "STERP: line is not empty or null.\n";
-
-  std::cout << "STERP: Parsing line: " << lineStr << "\n";
-
   lineStr += "\n";
 
+  if (startsWith(lineStr, "if")) {
+    controlStack.push(control_if);
+    controlSequence += lineStr;
+    return INTERP_OK;
+  } else if (startsWith(lineStr, "for")) {
+    std::cout << "lmao this line actually is a for loop\n";
+    controlStack.push(control_for);
+    controlSequence += lineStr;
+    return INTERP_OK;
+  } else if (startsWith(lineStr, "while")) {
+    controlStack.push(control_while);
+    controlSequence += lineStr;
+    return INTERP_OK;
+  }
 
+  if (startsWith(lineStr, "end")) {
+    std::cout << "yay this works lmao lesgo\n";
+    if (!controlStack.empty())
+      controlStack.pop();
+    controlSequence += lineStr;
+    lineStr = controlSequence;
+    controlSequence.clear();
+  }
+
+  if (!controlStack.empty()) {
+    controlSequence += lineStr;
+    return INTERP_OK;
+  }
+
+  std::cout << "STERP: Parsing line: " << lineStr << "\n";
 
   auto emitter = std::make_shared<gpp::BytecodeEmitter>(machine, lineStr);
 
@@ -148436,7 +148487,9 @@ int Sterp::execute(const char *line) {
     SafeInstruction safeInstruction = machine.next();
 
     if (std::holds_alternative<gpp::Error>(safeInstruction)) {
+      gpp::Error error = std::get<gpp::Error>(safeInstruction);
       std::cout << "STERP: Error while parsing line\n";
+      error.print();
       machine.unbind();
       machine.input = inputStash;
       return INTERP_ERROR;
