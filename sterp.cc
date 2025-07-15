@@ -28,6 +28,7 @@
 extern "C" void force_antlr4_lexer_rtti() { (void)typeid(antlr4::Lexer); }
 
 gpp::Machine machine = gpp::Machine();
+std::string currentLine;
 
 class Sterp : public InterpBase {
   friend class gpp::Machine;
@@ -120,6 +121,9 @@ int Sterp::ini_load(const char *inifile) {
 
 int Sterp::read(const char *line) {
   std::cout << "STERP: read(line=" << line << ")\n";
+
+  currentLine = line;
+
   return INTERP_OK;
 }
 
@@ -135,6 +139,8 @@ int Sterp::read() {
   std::cout << "STERP: Read buffer = \"" << line
             << "\" (length = " << line.length() << ")\n";
 
+  currentLine = line;
+
   return INTERP_OK;
 }
 
@@ -143,12 +149,15 @@ int Sterp::execute(const char *line) {
 
   std::string lineStr;
 
-  if (!line) {
+  if (!line)
+    lineStr = currentLine;
+  else
+    lineStr = line;
+
+  if (lineStr.empty()) {
     std::cout << "STERP: Null line passed. "
                  "Exiting Sterp::execute with no error...\n";
     return INTERP_OK;
-  } else {
-    lineStr = line;
   }
 
   lineStr.erase(0, lineStr.find_first_not_of(" \t\r\n"));
@@ -385,12 +394,14 @@ int Sterp::execute(const char *line) {
 
 int Sterp::execute(const char *line, int line_number) {
   std::cout << "STERP: execute(line, line_number=" << line_number << ")\n";
+  if (!line)
+    return execute(currentLine.c_str());
   return execute(line);
 }
 
 int Sterp::execute() {
   std::cout << "STERP: execute() [no-arg]\n";
-  return execute(nullptr);
+  return execute(currentLine.c_str());
 }
 
 int Sterp::open(const char *newfilename) {
