@@ -176,7 +176,6 @@ int Sterp::execute(const char *line) {
     controlSequence += lineStr;
     return INTERP_OK;
   } else if (startsWith(lineStr, "for")) {
-    std::cout << "lmao this line actually is a for loop\n";
     controlStack.push(control_for);
     controlSequence += lineStr;
     return INTERP_OK;
@@ -184,10 +183,13 @@ int Sterp::execute(const char *line) {
     controlStack.push(control_while);
     controlSequence += lineStr;
     return INTERP_OK;
+  } else if (startsWith(lineStr, "do")) {
+    controlStack.push(control_do);
+    controlSequence += lineStr;
   }
 
-  if (startsWith(lineStr, "end")) {
-    std::cout << "yay this works lmao lesgo\n";
+  if (endsWith(lineStr, "end\n") || endsWith(lineStr, "endif\n") ||
+      endsWith(lineStr, "endfor\n") || endsWith(lineStr, "endwhile\n")) {
     if (!controlStack.empty())
       controlStack.pop();
     controlSequence += lineStr;
@@ -285,6 +287,8 @@ int Sterp::execute(const char *line) {
     }
 
     case gpp::arc_feed: {
+      ARC_FEED(line_num, args.at(0), args.at(1), args.at(2), args.at(3),
+               -args.at(4), args.at(5), 0, 0, 0, 0, 0, 0);
       break;
     }
 

@@ -46,7 +46,7 @@ while_statement
     ;
 
 do_while_statement
-    : DO EOL* block WHILE expression EOL+
+    : DO EOL* block WHILE expression (END | ENDWHILE) EOL+
     ;
 
 for_statement

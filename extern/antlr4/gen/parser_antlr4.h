@@ -244,6 +244,8 @@ public:
     BlockContext *block();
     antlr4::tree::TerminalNode *WHILE();
     ExpressionContext *expression();
+    antlr4::tree::TerminalNode *END();
+    antlr4::tree::TerminalNode *ENDWHILE();
     std::vector<antlr4::tree::TerminalNode *> EOL();
     antlr4::tree::TerminalNode* EOL(size_t i);
 
