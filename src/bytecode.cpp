@@ -91,8 +91,8 @@ bool gpp::BytecodeEmitter::fetchInstructions() {
 
           if (!currentFrame.loopCounterAddress.empty()) {
             f64 value =
-                getMemory(currentFrame.loopCounterAddress) + currentFrame.step;
-            setMemory(currentFrame.loopCounterAddress, value);
+                machine->getMemory(currentFrame.loopCounterAddress) + currentFrame.step;
+            machine->setMemory(currentFrame.loopCounterAddress, value);
 
             if (value < currentFrame.end) {
               currentFrame.linePointer = 0;
@@ -118,8 +118,8 @@ bool gpp::BytecodeEmitter::fetchInstructions() {
 
     if (frame.linePointer >= statements.size()) {
       if (!frame.loopCounterAddress.empty()) {
-        f64 value = getMemory(frame.loopCounterAddress) + frame.step;
-        setMemory(frame.loopCounterAddress, value);
+        f64 value = machine->getMemory(frame.loopCounterAddress) + frame.step;
+        machine->setMemory(frame.loopCounterAddress, value);
 
         if (value < frame.end) {
           frame.linePointer = 0;
@@ -270,7 +270,7 @@ antlrcpp::Any gpp::BytecodeEmitter::visitFor_statement(
   f64 start = std::any_cast<f64>(visit(context->expression().at(0)));
   f64 end = std::any_cast<f64>(visit(context->expression().at(1)));
 
-  setMemory(address, start);
+  machine->setMemory(address, start);
 
   executionStack.push({
       .block = context->block(),
@@ -280,7 +280,7 @@ antlrcpp::Any gpp::BytecodeEmitter::visitFor_statement(
       .end = end,
   });
 
-  setMemory(address, start);
+  machine->setMemory(address, start);
 
   return nullptr;
 }
@@ -329,34 +329,6 @@ antlrcpp::Any gpp::BytecodeEmitter::visitReal_number(
   return std::stod(context->getText());
 }
 
-void gpp::BytecodeEmitter::setMemory(std::string address, f64 value) {
-  if (address.empty()) {
-    return; // TODO, add an error
-  }
-
-  if (parameterAddresses.find(address) == parameterAddresses.end()) {
-    parameterAddresses[address] = parameterAddresses.size();
-  }
-
-  int index = parameterAddresses.at(address);
-
-  machine->setMemory(index, value);
-}
-
-f64 gpp::BytecodeEmitter::getMemory(std::string address) {
-  if (address.empty()) {
-    return NAN; // TODO, add an error
-  }
-
-  if (parameterAddresses.find(address) == parameterAddresses.end()) {
-    return NAN;
-  }
-
-  int index = parameterAddresses.at(address);
-
-  return machine->getMemory(index);
-}
-
 antlrcpp::Any gpp::BytecodeEmitter::visitParameter_value(
     parser_antlr4::Parameter_valueContext *context) {
   std::string address;
@@ -367,7 +339,7 @@ antlrcpp::Any gpp::BytecodeEmitter::visitParameter_value(
     address = std::to_string((int)address_value);
   }
 
-  f64 value = getMemory(address);
+  f64 value = machine->getMemory(address);
 
   return value;
 }
@@ -384,7 +356,7 @@ antlrcpp::Any gpp::BytecodeEmitter::visitParameter_setting(
 
   f64 value = std::any_cast<f64>(visit(context->real_value()));
 
-  setMemory(address, value);
+  machine->setMemory(address, value);
 
   return nullptr;
 }

@@ -139,12 +139,35 @@ void gpp::Machine::reset() {
       &gpp::Machine::write_parameters_to_file, this, std::placeholders::_1);
 }
 
+f64 gpp::Machine::getMemory(std::string address) {
+  if (address.empty())
+    return NAN; // TODO, error
+
+  if (parameterAddresses.find(address) == parameterAddresses.end())
+    return NAN;
+
+  int index = parameterAddresses.at(address);
+  return getMemory(index);
+}
+
 f64 gpp::Machine::getMemory(i64 address) {
   if (address < 0 || address >= memory.size()) {
     return NAN; // TODO replace with error later
   }
 
   return memory.at(address);
+}
+
+void gpp::Machine::setMemory(std::string address, f64 value) {
+  if (address.empty()) {
+    return; // TODO, add an error
+  }
+
+  if (parameterAddresses.find(address) == parameterAddresses.end()) {
+    parameterAddresses.emplace(address, memory.size());
+    memory.push_back(value);
+  } else
+    memory.at(parameterAddresses.at(address)) = value;
 }
 
 void gpp::Machine::setMemory(i64 address, f64 value) {

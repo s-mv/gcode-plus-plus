@@ -110,9 +110,6 @@ private:
   int column = 0;
 
 private:
-  void setMemory(std::string address, f64 value);
-  f64 getMemory(std::string address);
-
   antlrcpp::Any visitBlock(parser_antlr4::BlockContext *context) override;
   antlrcpp::Any
   visitIf_statement(parser_antlr4::If_statementContext *context) override;

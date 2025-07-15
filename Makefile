@@ -33,7 +33,7 @@ UNIT_TEST_FILES = tests/unit.cpp tests/testutil.cpp \
 LDFLAGS  = -L $(ANTLR4_LIB) -lantlr4-runtime
 CXXFLAGS = -std=c++17 -fPIC -g -I $(THISDIR)include/ $(ANTLR4_INCLUDE) $(STB_INCLUDE)
 
-CXXFLAGS += -Wno-overloaded-virtual -Wno-reorder -Wno-sign-comparison -Wno-unused-variable 
+CXXFLAGS += -Wno-overloaded-virtual -Wno-reorder -Wno-sign-compare -Wno-unused-variable 
 
 .PHONY: all dev clean new antlr test regression unit
 

@@ -164,6 +164,7 @@ private:
 
 public:
   std::vector<f64> memory;
+  std::unordered_map<std::string, u64> parameterAddresses;
 
   Machine();
   Machine(std::string input);
@@ -174,7 +175,9 @@ public:
   void reset();
   void reset(std::string code);
 
+  void setMemory(std::string address, f64 value);
   void setMemory(i64 address, f64 value);
+  f64 getMemory(std::string address);
   f64 getMemory(i64 address);
   std::string getCurrentLine();
   SafeInstruction next();
