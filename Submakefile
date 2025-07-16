@@ -42,7 +42,7 @@ default: linuxcnc
 $(call TOOBJSDEPS, $(STERPSRCS)) : EXTRAFLAGS=-fPIC
 ../lib/linuxcnc/sterp.so: $(ANTLR4_OBJECTS) $(OBJECTS) $(patsubst %.cc,objects/%.o,$(STERPSRCS)) ../lib/liblinuxcncini.so ../lib/librs274.so
 	cp $(EXTERN)antlr4/lib/libantlr4-runtime.so.4.13.2 ../lib/libantlr4-runtime.so.4.13.2
-	mkdir -p build out
+		mkdir -p $(THISDIR)build $(THISDIR)out
 	$(ECHO) Linking $(notdir $@)
 	$(Q)mkdir -p ../lib/linuxcnc
 	$(Q)rm -f $@
@@ -57,6 +57,7 @@ test:
 	$(MAKE) --no-print-directory $(TEST_TYPE)
 
 unit: $(OBJECTS) $(ANTLR4_OBJECTS) $(UNIT_TEST_FILES)
+		mkdir -p $(THISDIR)build $(THISDIR)out
 	echo "Building unit tests..."
 	$(CXX) $(UNIT_TEST_FILES) \
 		$(OBJECTS) $(ANTLR4_OBJECTS) -o $(THISDIR)build/unit $(CXXFLAGS) $(LDFLAGS) $(TEST_INCLUDE)
@@ -64,16 +65,19 @@ unit: $(OBJECTS) $(ANTLR4_OBJECTS) $(UNIT_TEST_FILES)
 	./$(THISDIR)build/unit
 
 regression: $(OBJECTS) $(ANTLR4_OBJECTS)
+		mkdir -p $(THISDIR)build $(THISDIR)out
 	echo "Building regression tests..."
 	$(CXX) tests/regression.cpp $(TEST_INCLUDE) \
 		$(OBJECTS) $(ANTLR4_OBJECTS) -o $(THISDIR)build/regression $(CXXFLAGS) $(LDFLAGS)
 	./$(THISDIR)build/regression -s
 
 antlr:
+		mkdir -p $(THISDIR)build $(THISDIR)out
 	cd $(EXTERN)antlr4 && java -jar $(EXTERN)antlr4/antlr-4.13.2-complete.jar -Dlanguage=Cpp \
 		-visitor -o $(EXTERN)antlr4/gen $(THISDIR)antlr4/lexer_antlr4.g4 $(THISDIR)antlr4/parser_antlr4.g4
 
 dev: $(OBJECTS) $(ANTLR4_OBJECTS)
+		mkdir -p $(THISDIR)build $(THISDIR)out
 	$(CXX) src/main.cpp $(OBJECTS) $(ANTLR4_OBJECTS) -o $(THISDIR)build/$(TITLE) \
 		$(CXXFLAGS) $(LDFLAGS)
 
@@ -83,19 +87,24 @@ install: $(OBJECTS) $(ANTLR4_OBJECTS)
 		$(CXXFLAGS) $(LDFLAGS)
 
 $(THISDIR)build/lexer_antlr4.o: $(EXTERN)antlr4/gen/lexer_antlr4.cpp
+		mkdir -p $(THISDIR)build $(THISDIR)out
 	$(CXX) -c $< -o $@ $(CXXFLAGS)
 
 $(THISDIR)build/parser_antlr4.o: $(EXTERN)antlr4/gen/parser_antlr4.cpp
+		mkdir -p $(THISDIR)build $(THISDIR)out
 	$(CXX) -c $< -o $@ $(CXXFLAGS)
 
 $(THISDIR)build/parser_antlr4BaseVisitor.o: $(EXTERN)antlr4/gen/parser_antlr4BaseVisitor.cpp
+		mkdir -p $(THISDIR)build $(THISDIR)out
 	$(CXX) -c $< -o $@ $(CXXFLAGS)
 
 $(EXTERN)antlr4/gen/%.cpp: $(THISDIR)antlr4/lexer_antlr4.g4 $(THISDIR)antlr4/parser_antlr4.g4
+		mkdir -p $(THISDIR)build $(THISDIR)out
 	cd $(EXTERN)antlr4 && java -jar $(EXTERN)antlr4/antlr-4.13.2-complete.jar -Dlanguage=Cpp \
 		-visitor -o $(EXTERN)antlr4/gen $(THISDIR)antlr4/lexer_antlr4.g4 $(THISDIR)antlr4/parser_antlr4.g4
 
 $(THISDIR)build/%.o: $(THISDIR)src/%.cpp
+		mkdir -p $(THISDIR)build $(THISDIR)out
 	$(CXX) -c $< -o $@ $(CXXFLAGS)
 
 clean:

@@ -1,4 +1,4 @@
-cp linuxcnc/sterp_example.can ../../../configs/sim/axis/sterp_examples.can
+cp linuxcnc/sterp_example.can ../../../configs/sim/axis/sterp_example.can
 cp linuxcnc/sterp_cmds.hal ../../../configs/sim/axis/sterp_cmds.hal
 cp linuxcnc/sterp.ini ../../../configs/sim/axis/sterp.ini
 
