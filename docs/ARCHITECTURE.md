@@ -42,6 +42,7 @@ This interpreter processes G-code in the following stages:
                          | - feedRate, spindle   |
                          | - handlers[]          |
                          | - canvasXY/YZ/XZ      |
+                         | - memory              |
                          +-----------------------+
                                     |
                          runs       |

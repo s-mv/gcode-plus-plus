@@ -5,9 +5,13 @@ A lightweight G-code interpreter written in C++ inspired by the
 
 The output of the interpreter may be used to drive 3-axis machines.
 
+[Watch it in action:](https://youtu.be/emDbqLHw67c)
+
+[![YouTube](https://img.youtube.com/vi/emDbqLHw67c/0.jpg)](https://youtu.be/emDbqLHw67c)
+
 ## Documentation
 - Architecture - [docs/ARCHITECTURE.md](/docs/ARCHITECTURE.md)
-- Instructions - [docs/INSTRUCTIONS.md](/docs/INSTRUCTIONS.md)
+- Integration into LinuxCNC - [/docs/INTEGRATION.md](/docs/INTEGRATION.md)
 
 ## Build and Install
 
