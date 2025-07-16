@@ -102,32 +102,6 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
     }
   }
 
-  std::unordered_set<char> uniqueArgs;
-  for (const Word &word : words) {
-    if (word.word == 'g' || word.word == 'm' || word.word == 'o') {
-      uniqueArgs.insert(word.word);
-      continue;
-    }
-
-    if (uniqueArgs.count(word.word) != 0) {
-      verboseInstructions.push_back(
-          {.word = 'e',
-           .line = line,
-           .column = column,
-           .instruction = gpp::Error(ErrorType::PARAMETER_ERROR,
-                                     std::string("Multiple instances of ") +
-                                         word.word + "in the same line!",
-                                     getLineFromSource(line), line, column)});
-
-      return nullptr;
-    }
-
-    uniqueArgs.insert(word.word);
-  }
-
-  if (uniqueArgs.count('g') == 0 && !std::isnan(stickyArgs.g))
-    words.push_back({.word = 'g', .arg = stickyArgs.g});
-
   bool noCode = true;
 
   for (const Word &word : words) {
@@ -142,9 +116,11 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
       handle_g(verboseInstructions, word.arg, words, line, column);
       continue;
     } else if (word.word == 'm') {
+      noCode = false;
       handle_m(verboseInstructions, word.arg, words, line, column);
       continue;
     } else if (word.word == 'f' || word.word == 's' || word.word == 't') {
+      noCode = false;
       if (word.word == 'f' && word.arg < 0) {
         verboseInstruction.word = 'e';
         verboseInstruction.line = line;
@@ -177,6 +153,32 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
       verboseInstructions.push_back(verboseInstruction);
     }
   }
+
+  std::unordered_set<char> uniqueArgs;
+  for (const Word &word : words) {
+    if (word.word == 'g' || word.word == 'm' || word.word == 'o') {
+      uniqueArgs.insert(word.word);
+      continue;
+    }
+
+    if (uniqueArgs.count(word.word) != 0) {
+      verboseInstructions.push_back(
+          {.word = 'e',
+           .line = line,
+           .column = column,
+           .instruction = gpp::Error(ErrorType::PARAMETER_ERROR,
+                                     std::string("Multiple instances of ") +
+                                         word.word + "in the same line!",
+                                     getLineFromSource(line), line, column)});
+
+      return nullptr;
+    }
+
+    uniqueArgs.insert(word.word);
+  }
+
+  if (uniqueArgs.count('g') == 0 && !std::isnan(stickyArgs.g))
+    words.push_back({.word = 'g', .arg = stickyArgs.g});
 
   if (machine->activeInstruction.word != '0' && noCode &&
       machine->activeInstruction.arg >= 0 &&

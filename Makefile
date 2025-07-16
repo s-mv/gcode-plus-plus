@@ -63,13 +63,13 @@ unit: $(OBJECTS) $(ANTLR4_OBJECTS) $(UNIT_TEST_FILES)
 	$(CXX) $(UNIT_TEST_FILES) \
 		$(OBJECTS) $(ANTLR4_OBJECTS) -o $(THISDIR)build/unit $(CXXFLAGS) $(LDFLAGS) $(TEST_INCLUDE)
 	echo "Running unit tests..."
-	./$(THISDIR)build/unit
+	$(THISDIR)build/unit
 
 regression: $(OBJECTS) $(ANTLR4_OBJECTS)
 	echo "Building regression tests..."
 	$(CXX) tests/regression.cpp $(TEST_INCLUDE) \
 		$(OBJECTS) $(ANTLR4_OBJECTS) -o $(THISDIR)build/regression $(CXXFLAGS) $(LDFLAGS)
-	./$(THISDIR)build/regression -s
+	$(THISDIR)build/regression -s
 
 antlr:
 	cd $(EXTERN)antlr4 && java -jar $(EXTERN)antlr4/antlr-4.13.2-complete.jar -Dlanguage=Cpp \

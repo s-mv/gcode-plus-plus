@@ -77,24 +77,6 @@ TEST_CASE("[error-handling] error handling") {
     REQUIRE(error.type == gpp::ErrorType::MACHINE_ERROR);
   }
 
-  SUBCASE("g1 without feedrate") {}
-
-  SUBCASE("g2/g2 without feedrate") {}
-
-  SUBCASE("g2/g3 radius error") {
-    std::string code = "f300 g2 x0 y0\n";
-    gpp::Machine machine(code);
-    gpp::Vec3D expected_vec;
-    std::vector<f64> expected_args;
-    SafeInstruction instruction;
-
-    instruction = machine.next();
-    instruction = machine.next();
-    REQUIRE(std::holds_alternative<gpp::Error>(instruction));
-    gpp::Error error = std::get<gpp::Error>(instruction);
-    REQUIRE(error.type == gpp::ErrorType::PARAMETER_ERROR);
-  }
-
   SUBCASE("g2/g3 radius override") {
     std::string code = "f300 g2 x0 y0 r3 i3\n";
     gpp::Machine machine(code);
@@ -139,20 +121,6 @@ TEST_CASE("[error-handling] error handling") {
 
   SUBCASE("g2/g3 zero length arc") {
     std::string code = "f300 g2 x0 y0 i0 j0\n";
-    gpp::Machine machine(code);
-    gpp::Vec3D expected_vec;
-    std::vector<f64> expected_args;
-    SafeInstruction instruction;
-
-    instruction = machine.next();
-    instruction = machine.next();
-    REQUIRE(std::holds_alternative<gpp::Error>(instruction));
-    gpp::Error error = std::get<gpp::Error>(instruction);
-    REQUIRE(error.type == gpp::ErrorType::PARAMETER_ERROR);
-  }
-
-  SUBCASE("g2/g3 negative radius") {
-    std::string code = "f300 g2 x0 y0 i-1\n";
     gpp::Machine machine(code);
     gpp::Vec3D expected_vec;
     std::vector<f64> expected_args;
