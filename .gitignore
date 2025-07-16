@@ -8,3 +8,6 @@ output/*
 compile_commands.json
 .data.txt
 examples/test.cnc
+
+sterp.ii
+

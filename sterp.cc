@@ -21,6 +21,9 @@
 #include <string>
 #include <variant>
 
+#include "hal.h"
+#include "rtapi_mutex.h"
+
 #include "bytecode.hpp"
 #include "gpp.hpp"
 #include "machine.hpp"
@@ -29,6 +32,9 @@ extern "C" void force_antlr4_lexer_rtti() { (void)typeid(antlr4::Lexer); }
 
 gpp::Machine machine = gpp::Machine();
 std::string currentLine;
+
+// inspired by rs274ngc (interp_namedparams.cc)
+int fetchHALParameter(const char *nameBuf, double *value);
 
 class Sterp : public InterpBase {
   friend class gpp::Machine;
@@ -539,4 +545,84 @@ void Sterp::set_loop_on_main_m99(bool state) {
 extern "C" InterpBase *makeInterp() {
   std::cout << "STERP: makeInterp() called\n";
   return new Sterp;
+}
+
+int fetchHALParameter(const char *nameBuf, double *value) {
+  static int comp_id;
+  int retval;
+  hal_type_t type = HAL_TYPE_UNINITIALIZED;
+  hal_data_u *ptr;
+  bool conn;
+  char hal_name[HAL_NAME_LEN];
+
+  if (!comp_id) {
+    char hal_comp[HAL_NAME_LEN];
+    snprintf(hal_comp, sizeof(hal_comp), "interp%d", getpid());
+    comp_id = hal_init(hal_comp);
+    if (comp_id < 0) {
+      // TODO HANDLE THIS
+      return 0;
+    }
+
+    retval = hal_ready(comp_id);
+    if (retval != 0) {
+      // TODO HANDLE THIS
+      return 0;
+    }
+  }
+
+  char *s;
+  int n = strlen(nameBuf);
+
+  if ((n > 6) && ((s = (char *)strchr(&nameBuf[5], ']')) != NULL)) {
+
+    int closeBracket = s - nameBuf;
+
+    strncpy(hal_name, &nameBuf[5], closeBracket);
+    hal_name[closeBracket - 5] = '\0';
+    if (nameBuf[closeBracket + 1]) {
+      // TODO SOME KIND OF ERROR HANDLING
+    std::cout << "HAL -> ERROR\n";
+    }
+
+    if (hal_get_pin_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
+      if (!conn)
+        printf("%s: no signal connected", hal_name);
+      goto assign;
+    }
+    if (hal_get_signal_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
+      if (!conn)
+        printf("%s: signal has no writer", hal_name);
+      goto assign;
+    }
+    if (hal_get_param_value_by_name(hal_name, &type, &ptr) == 0) {
+      goto assign;
+    }
+    std::cout << "HAL -> ERROR\n";
+    // TODO ERROR HERE
+    // akin to -> ERS("Named hal parameter #<%s> not found", nameBuf);
+  }
+  return INTERP_OK;
+
+  // I don't like this
+  // TODO, don't use a label
+assign:
+  switch (type) {
+  case HAL_BIT:
+    *value = (double)(ptr->b);
+    break;
+  case HAL_U32:
+    *value = (double)(ptr->u);
+    break;
+  case HAL_S32:
+    *value = (double)(ptr->s);
+    break;
+  case HAL_FLOAT:
+    *value = (double)(ptr->f);
+    break;
+  default:
+    return -1;
+  }
+  printf("%s: value=%f", hal_name, *value);
+  return INTERP_OK;
 }

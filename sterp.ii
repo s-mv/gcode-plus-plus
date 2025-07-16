@@ -81267,6 +81267,2851 @@ namespace __detail::__variant
 }
 # 23 "emc/sterp/sterp.cc" 2
 
+# 1 "hal/hal.h" 1
+
+#define HAL_H 
+# 126 "hal/hal.h"
+# 1 "rtapi/rtapi.h" 1
+
+#define RTAPI_H 
+# 69 "rtapi/rtapi.h"
+# 1 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stddef.h" 1 3 4
+# 70 "rtapi/rtapi.h" 2
+
+
+#define RTAPI_NAME_LEN 31
+
+
+#define RTAPI_BEGIN_DECLS extern "C" {
+#define RTAPI_END_DECLS }
+
+
+
+
+
+
+# 82 "rtapi/rtapi.h"
+extern "C" {
+# 101 "rtapi/rtapi.h"
+    extern int rtapi_init(const char *modname);
+# 113 "rtapi/rtapi.h"
+    extern int rtapi_exit(int module_id);
+# 124 "rtapi/rtapi.h"
+    extern int rtapi_snprintf(char *buf, unsigned long int size,
+ const char *fmt, ...)
+     __attribute__((format(printf,3,4)));
+# 137 "rtapi/rtapi.h"
+# 1 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stdarg.h" 1 3 4
+# 31 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stdarg.h" 3 4
+#define _STDARG_H 
+#define _ANSI_STDARG_H_ 
+
+#undef __need___va_list
+# 50 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stdarg.h" 3 4
+#define va_start(v,l) __builtin_va_start(v,l)
+
+#define va_end(v) __builtin_va_end(v)
+#define va_arg(v,l) __builtin_va_arg(v,l)
+
+
+#define va_copy(d,s) __builtin_va_copy(d,s)
+
+#define __va_copy(d,s) __builtin_va_copy(d,s)
+# 109 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stdarg.h" 3 4
+#define _VA_LIST_ 
+
+
+#define _VA_LIST 
+
+
+
+
+
+#define _VA_LIST_T_H 
+
+
+#define __va_list__ 
+# 138 "rtapi/rtapi.h" 2
+    extern int rtapi_vsnprintf(char *buf, unsigned long size,
+ const char *fmt, va_list ap);
+# 154 "rtapi/rtapi.h"
+    extern void rtapi_print(const char *fmt, ...)
+     __attribute__((format(printf,1,2)));
+
+
+
+
+
+
+    typedef enum {
+ RTAPI_MSG_NONE = 0,
+ RTAPI_MSG_ERR,
+ RTAPI_MSG_WARN,
+ RTAPI_MSG_INFO,
+ RTAPI_MSG_DBG,
+ RTAPI_MSG_ALL
+    } msg_level_t;
+
+    extern void rtapi_print_msg(msg_level_t level, const char *fmt, ...)
+     __attribute__((format(printf,2,3)));
+
+
+
+
+
+
+    extern int rtapi_set_msg_level(int level);
+
+    extern int rtapi_get_msg_level(void);
+# 192 "rtapi/rtapi.h"
+    typedef void(*rtapi_msg_handler_t)(msg_level_t level, const char *fmt, va_list ap);
+# 238 "rtapi/rtapi.h"
+    extern void rtapi_delay(long int nsec);
+    extern long int rtapi_delay_max(void);
+# 266 "rtapi/rtapi.h"
+    extern long long int rtapi_get_time(void);
+# 293 "rtapi/rtapi.h"
+    extern long long int rtapi_get_clocks(void);
+# 463 "rtapi/rtapi.h"
+    extern int rtapi_shmem_new(int key, int module_id,
+ unsigned long int size);
+
+
+
+
+
+
+    extern int rtapi_shmem_delete(int shmem_id, int module_id);
+
+
+
+
+
+    extern int rtapi_shmem_getptr(int shmem_id, void **ptr);
+# 552 "rtapi/rtapi.h"
+    extern int rtapi_fifo_new(int key, int module_id,
+ unsigned long int size, char mode);
+
+
+
+
+
+
+    extern int rtapi_fifo_delete(int fifo_id, int module_id);
+# 602 "rtapi/rtapi.h"
+    extern int rtapi_fifo_read(int fifo_id, char *buf,
+ unsigned long int size);
+# 622 "rtapi/rtapi.h"
+    extern int rtapi_fifo_write(int fifo_id, char *buf,
+ unsigned long int size);
+# 674 "rtapi/rtapi.h"
+    extern void rtapi_outb(unsigned char byte, unsigned int port);
+
+
+
+
+
+
+    extern unsigned char rtapi_inb(unsigned int port);
+# 710 "rtapi/rtapi.h"
+#define rtapi_request_region(base,size,name) ((void*)-1)
+#define rtapi_release_region(base,size) ((void)0)
+# 835 "rtapi/rtapi.h"
+extern long int simple_strtol(const char *nptr, char **endptr, int base);
+
+# 1 "/usr/include/spawn.h" 1 3 4
+# 20 "/usr/include/spawn.h" 3 4
+#define _SPAWN_H 1
+# 29 "/usr/include/spawn.h" 3 4
+
+# 29 "/usr/include/spawn.h" 3 4
+typedef struct
+{
+  short int __flags;
+  pid_t __pgrp;
+  sigset_t __sd;
+  sigset_t __ss;
+  struct sched_param __sp;
+  int __policy;
+  int __cgroup;
+  int __pad[15];
+} posix_spawnattr_t;
+
+
+
+
+typedef struct
+{
+  int __allocated;
+  int __used;
+  struct __spawn_action *__actions;
+  int __pad[16];
+} posix_spawn_file_actions_t;
+
+
+
+#define POSIX_SPAWN_RESETIDS 0x01
+#define POSIX_SPAWN_SETPGROUP 0x02
+#define POSIX_SPAWN_SETSIGDEF 0x04
+#define POSIX_SPAWN_SETSIGMASK 0x08
+#define POSIX_SPAWN_SETSCHEDPARAM 0x10
+#define POSIX_SPAWN_SETSCHEDULER 0x20
+
+#define POSIX_SPAWN_USEVFORK 0x40
+#define POSIX_SPAWN_SETSID 0x80
+#define POSIX_SPAWN_SETCGROUP 0x100
+
+
+
+extern "C" {
+
+
+
+
+
+
+extern int posix_spawn (pid_t *__restrict __pid,
+   const char *__restrict __path,
+   const posix_spawn_file_actions_t *__restrict
+   __file_actions,
+   const posix_spawnattr_t *__restrict __attrp,
+   char *const __argv[],
+   char *const __envp[])
+    __attribute__ ((__nonnull__ (2, 5)));
+
+
+
+
+
+extern int posix_spawnp (pid_t *__pid, const char *__file,
+    const posix_spawn_file_actions_t *__file_actions,
+    const posix_spawnattr_t *__attrp,
+    char *const __argv[], char *const __envp[])
+    __attribute__ ((__nonnull__ (2, 5)));
+
+
+
+extern int posix_spawnattr_init (posix_spawnattr_t *__attr)
+    noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+extern int posix_spawnattr_destroy (posix_spawnattr_t *__attr)
+    noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+
+extern int posix_spawnattr_getsigdefault (const posix_spawnattr_t *
+       __restrict __attr,
+       sigset_t *__restrict __sigdefault)
+     noexcept (true) __attribute__ ((__nonnull__ (1, 2)));
+
+
+extern int posix_spawnattr_setsigdefault (posix_spawnattr_t *__restrict __attr,
+       const sigset_t *__restrict
+       __sigdefault)
+     noexcept (true) __attribute__ ((__nonnull__ (1, 2)));
+
+
+extern int posix_spawnattr_getsigmask (const posix_spawnattr_t *__restrict
+           __attr,
+           sigset_t *__restrict __sigmask)
+    noexcept (true) __attribute__ ((__nonnull__ (1, 2)));
+
+
+extern int posix_spawnattr_setsigmask (posix_spawnattr_t *__restrict __attr,
+           const sigset_t *__restrict __sigmask)
+     noexcept (true) __attribute__ ((__nonnull__ (1, 2)));
+
+
+extern int posix_spawnattr_getflags (const posix_spawnattr_t *__restrict
+         __attr,
+         short int *__restrict __flags)
+     noexcept (true) __attribute__ ((__nonnull__ (1, 2)));
+
+
+extern int posix_spawnattr_setflags (posix_spawnattr_t *_attr,
+         short int __flags)
+     noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+extern int posix_spawnattr_getpgroup (const posix_spawnattr_t *__restrict
+          __attr, pid_t *__restrict __pgroup)
+     noexcept (true) __attribute__ ((__nonnull__ (1, 2)));
+
+
+extern int posix_spawnattr_setpgroup (posix_spawnattr_t *__attr,
+          pid_t __pgroup)
+     noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+extern int posix_spawnattr_getschedpolicy (const posix_spawnattr_t *
+        __restrict __attr,
+        int *__restrict __schedpolicy)
+     noexcept (true) __attribute__ ((__nonnull__ (1, 2)));
+
+
+extern int posix_spawnattr_setschedpolicy (posix_spawnattr_t *__attr,
+        int __schedpolicy)
+     noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+extern int posix_spawnattr_getschedparam (const posix_spawnattr_t *
+       __restrict __attr,
+       struct sched_param *__restrict
+       __schedparam)
+     noexcept (true) __attribute__ ((__nonnull__ (1, 2)));
+
+
+extern int posix_spawnattr_setschedparam (posix_spawnattr_t *__restrict __attr,
+       const struct sched_param *
+       __restrict __schedparam)
+     noexcept (true) __attribute__ ((__nonnull__ (1, 2)));
+
+
+extern int posix_spawn_file_actions_init (posix_spawn_file_actions_t *
+       __file_actions)
+     noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+extern int posix_spawn_file_actions_destroy (posix_spawn_file_actions_t *
+          __file_actions)
+     noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+
+extern int posix_spawn_file_actions_addopen (posix_spawn_file_actions_t *
+          __restrict __file_actions,
+          int __fd,
+          const char *__restrict __path,
+          int __oflag, mode_t __mode)
+     noexcept (true) __attribute__ ((__nonnull__ (1, 3)));
+
+
+
+extern int posix_spawn_file_actions_addclose (posix_spawn_file_actions_t *
+           __file_actions, int __fd)
+     noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+
+extern int posix_spawn_file_actions_adddup2 (posix_spawn_file_actions_t *
+          __file_actions,
+          int __fd, int __newfd)
+     noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+
+
+extern int posix_spawn_file_actions_addchdir_np (posix_spawn_file_actions_t *
+       __restrict __actions,
+       const char *__restrict __path)
+     noexcept (true) __attribute__ ((__nonnull__ (1, 2)));
+
+
+
+
+extern int posix_spawn_file_actions_addfchdir_np (posix_spawn_file_actions_t *,
+        int __fd)
+     noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+
+extern int
+posix_spawn_file_actions_addclosefrom_np (posix_spawn_file_actions_t *,
+       int __from)
+     noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+
+extern int
+posix_spawn_file_actions_addtcsetpgrp_np (posix_spawn_file_actions_t *,
+       int __tcfd)
+     noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+
+}
+
+# 1 "/usr/include/bits/spawn_ext.h" 1 3 4
+# 23 "/usr/include/bits/spawn_ext.h" 3 4
+extern "C" {
+
+
+
+
+extern int posix_spawnattr_getcgroup_np (const posix_spawnattr_t *
+      __restrict __attr,
+      int *__restrict __cgroup)
+     noexcept (true) __attribute__ ((__nonnull__ (1, 2)));
+
+
+extern int posix_spawnattr_setcgroup_np (posix_spawnattr_t *__attr,
+      int __cgroup)
+     noexcept (true) __attribute__ ((__nonnull__ (1)));
+# 45 "/usr/include/bits/spawn_ext.h" 3 4
+extern int pidfd_spawn (int *__restrict __pidfd,
+   const char *__restrict __path,
+   const posix_spawn_file_actions_t *__restrict __facts,
+   const posix_spawnattr_t *__restrict __attrp,
+   char *const __argv[],
+   char *const __envp[])
+    __attribute__ ((__nonnull__ (2, 5)));
+
+
+
+
+
+extern int pidfd_spawnp (int *__restrict __pidfd,
+    const char *__restrict __file,
+    const posix_spawn_file_actions_t *__restrict __facts,
+    const posix_spawnattr_t *__restrict __attrp,
+    char *const __argv[],
+    char *const __envp[])
+    __attribute__ ((__nonnull__ (1, 2, 5)));
+
+
+
+}
+# 237 "/usr/include/spawn.h" 2 3 4
+# 838 "rtapi/rtapi.h" 2
+
+
+# 839 "rtapi/rtapi.h"
+int rtapi_spawn_as_root(pid_t *pid, const char *path,
+    const posix_spawn_file_actions_t *file_actions,
+    const posix_spawnattr_t *attrp,
+    char *const argv[], char *const envp[]);
+
+int rtapi_spawnp_as_root(pid_t *pid, const char *path,
+    const posix_spawn_file_actions_t *file_actions,
+    const posix_spawnattr_t *attrp,
+    char *const argv[], char *const envp[]);
+
+
+extern int rtapi_is_kernelspace(void);
+extern int rtapi_is_realtime(void);
+
+int rtapi_open_as_root(const char *filename, int mode);
+
+}
+# 127 "hal/hal.h" 2
+extern "C" {
+
+
+
+
+
+
+# 1 "/usr/include/signal.h" 1 3 4
+# 23 "/usr/include/signal.h" 3 4
+#define _SIGNAL_H 
+
+
+
+
+# 27 "/usr/include/signal.h" 3 4
+extern "C" {
+
+
+# 1 "/usr/include/bits/signum-generic.h" 1 3 4
+# 20 "/usr/include/bits/signum-generic.h" 3 4
+#define _BITS_SIGNUM_GENERIC_H 1
+
+
+
+
+
+
+
+#define SIG_ERR ((__sighandler_t) -1)
+#define SIG_DFL ((__sighandler_t) 0)
+#define SIG_IGN ((__sighandler_t) 1)
+
+
+#define SIG_HOLD ((__sighandler_t) 2)
+# 48 "/usr/include/bits/signum-generic.h" 3 4
+#define SIGINT 2
+#define SIGILL 4
+#define SIGABRT 6
+#define SIGFPE 8
+#define SIGSEGV 11
+#define SIGTERM 15
+
+
+#define SIGHUP 1
+#define SIGQUIT 3
+#define SIGTRAP 5
+#define SIGKILL 9
+#define SIGPIPE 13
+#define SIGALRM 14
+
+
+#define SIGIO SIGPOLL
+#define SIGIOT SIGABRT
+#define SIGCLD SIGCHLD
+# 76 "/usr/include/bits/signum-generic.h" 3 4
+# 1 "/usr/include/bits/signum-arch.h" 1 3 4
+# 20 "/usr/include/bits/signum-arch.h" 3 4
+#define _BITS_SIGNUM_ARCH_H 1
+# 29 "/usr/include/bits/signum-arch.h" 3 4
+#define SIGSTKFLT 16
+#define SIGPWR 30
+
+
+#define SIGBUS 7
+#define SIGSYS 31
+
+
+#define SIGURG 23
+#define SIGSTOP 19
+#define SIGTSTP 20
+#define SIGCONT 18
+#define SIGCHLD 17
+#define SIGTTIN 21
+#define SIGTTOU 22
+#define SIGPOLL 29
+#define SIGXFSZ 25
+#define SIGXCPU 24
+#define SIGVTALRM 26
+#define SIGPROF 27
+#define SIGUSR1 10
+#define SIGUSR2 12
+
+
+
+#define SIGWINCH 28
+
+
+#define SIGIO SIGPOLL
+#define SIGIOT SIGABRT
+#define SIGCLD SIGCHLD
+
+#define __SIGRTMIN 32
+#define __SIGRTMAX 64
+# 77 "/usr/include/bits/signum-generic.h" 2 3 4
+
+
+#define _NSIG (__SIGRTMAX + 1)
+# 31 "/usr/include/signal.h" 2 3 4
+
+# 1 "/usr/include/bits/types/sig_atomic_t.h" 1 3 4
+
+#define __sig_atomic_t_defined 1
+
+
+
+
+
+typedef __sig_atomic_t sig_atomic_t;
+# 33 "/usr/include/signal.h" 2 3 4
+# 57 "/usr/include/signal.h" 3 4
+# 1 "/usr/include/bits/types/siginfo_t.h" 1 3 4
+
+#define __siginfo_t_defined 1
+
+# 1 "/usr/include/bits/wordsize.h" 1 3 4
+
+
+
+#define __WORDSIZE 64
+
+
+
+
+
+
+#define __WORDSIZE_TIME64_COMPAT32 1
+
+
+
+#define __SYSCALL_WORDSIZE 64
+# 5 "/usr/include/bits/types/siginfo_t.h" 2 3 4
+
+# 1 "/usr/include/bits/types/__sigval_t.h" 1 3 4
+# 20 "/usr/include/bits/types/__sigval_t.h" 3 4
+#define ____sigval_t_defined 
+
+
+
+union sigval
+{
+  int sival_int;
+  void *sival_ptr;
+};
+
+typedef union sigval __sigval_t;
+# 7 "/usr/include/bits/types/siginfo_t.h" 2 3 4
+
+#define __SI_MAX_SIZE 128
+
+#define __SI_PAD_SIZE ((__SI_MAX_SIZE / sizeof (int)) - 4)
+
+
+
+
+
+# 1 "/usr/include/bits/siginfo-arch.h" 1 3 4
+
+
+#define _BITS_SIGINFO_ARCH_H 1
+# 17 "/usr/include/bits/types/siginfo_t.h" 2 3 4
+
+#define __SI_ALIGNMENT 
+
+
+#define __SI_BAND_TYPE long int
+
+
+#define __SI_CLOCK_T __clock_t
+
+
+#define __SI_ERRNO_THEN_CODE 1
+
+
+#define __SI_HAVE_SIGSYS 1
+
+
+#define __SI_SIGFAULT_ADDL 
+
+
+typedef struct
+  {
+    int si_signo;
+
+    int si_errno;
+
+    int si_code;
+
+
+
+
+
+    int __pad0;
+
+
+    union
+      {
+ int _pad[((128 / sizeof (int)) - 4)];
+
+
+ struct
+   {
+     __pid_t si_pid;
+     __uid_t si_uid;
+   } _kill;
+
+
+ struct
+   {
+     int si_tid;
+     int si_overrun;
+     __sigval_t si_sigval;
+   } _timer;
+
+
+ struct
+   {
+     __pid_t si_pid;
+     __uid_t si_uid;
+     __sigval_t si_sigval;
+   } _rt;
+
+
+ struct
+   {
+     __pid_t si_pid;
+     __uid_t si_uid;
+     int si_status;
+     __clock_t si_utime;
+     __clock_t si_stime;
+   } _sigchld;
+
+
+ struct
+   {
+     void *si_addr;
+    
+     short int si_addr_lsb;
+     union
+       {
+
+  struct
+    {
+      void *_lower;
+      void *_upper;
+    } _addr_bnd;
+
+  __uint32_t _pkey;
+       } _bounds;
+   } _sigfault;
+
+
+ struct
+   {
+     long int si_band;
+     int si_fd;
+   } _sigpoll;
+
+
+
+ struct
+   {
+     void *_call_addr;
+     int _syscall;
+     unsigned int _arch;
+   } _sigsys;
+
+      } _sifields;
+  } siginfo_t ;
+
+
+
+#define si_pid _sifields._kill.si_pid
+#define si_uid _sifields._kill.si_uid
+#define si_timerid _sifields._timer.si_tid
+#define si_overrun _sifields._timer.si_overrun
+#define si_status _sifields._sigchld.si_status
+#define si_utime _sifields._sigchld.si_utime
+#define si_stime _sifields._sigchld.si_stime
+#define si_value _sifields._rt.si_sigval
+#define si_int _sifields._rt.si_sigval.sival_int
+#define si_ptr _sifields._rt.si_sigval.sival_ptr
+#define si_addr _sifields._sigfault.si_addr
+#define si_addr_lsb _sifields._sigfault.si_addr_lsb
+#define si_lower _sifields._sigfault._bounds._addr_bnd._lower
+#define si_upper _sifields._sigfault._bounds._addr_bnd._upper
+#define si_pkey _sifields._sigfault._bounds._pkey
+#define si_band _sifields._sigpoll.si_band
+#define si_fd _sifields._sigpoll.si_fd
+
+#define si_call_addr _sifields._sigsys._call_addr
+#define si_syscall _sifields._sigsys._syscall
+#define si_arch _sifields._sigsys._arch
+# 58 "/usr/include/signal.h" 2 3 4
+# 1 "/usr/include/bits/siginfo-consts.h" 1 3 4
+# 20 "/usr/include/bits/siginfo-consts.h" 3 4
+#define _BITS_SIGINFO_CONSTS_H 1
+# 30 "/usr/include/bits/siginfo-consts.h" 3 4
+#define __SI_ASYNCIO_AFTER_SIGIO 1
+
+
+
+
+enum
+{
+  SI_ASYNCNL = -60,
+  SI_DETHREAD = -7,
+
+  SI_TKILL,
+  SI_SIGIO,
+
+  SI_ASYNCIO,
+  SI_MESGQ,
+  SI_TIMER,
+
+
+
+
+
+  SI_QUEUE,
+  SI_USER,
+  SI_KERNEL = 0x80
+
+#define SI_ASYNCNL SI_ASYNCNL
+#define SI_DETHREAD SI_DETHREAD
+#define SI_TKILL SI_TKILL
+#define SI_SIGIO SI_SIGIO
+#define SI_ASYNCIO SI_ASYNCIO
+#define SI_MESGQ SI_MESGQ
+#define SI_TIMER SI_TIMER
+#define SI_ASYNCIO SI_ASYNCIO
+#define SI_QUEUE SI_QUEUE
+#define SI_USER SI_USER
+#define SI_KERNEL SI_KERNEL
+};
+
+
+
+
+enum
+{
+  ILL_ILLOPC = 1,
+#define ILL_ILLOPC ILL_ILLOPC
+  ILL_ILLOPN,
+#define ILL_ILLOPN ILL_ILLOPN
+  ILL_ILLADR,
+#define ILL_ILLADR ILL_ILLADR
+  ILL_ILLTRP,
+#define ILL_ILLTRP ILL_ILLTRP
+  ILL_PRVOPC,
+#define ILL_PRVOPC ILL_PRVOPC
+  ILL_PRVREG,
+#define ILL_PRVREG ILL_PRVREG
+  ILL_COPROC,
+#define ILL_COPROC ILL_COPROC
+  ILL_BADSTK,
+#define ILL_BADSTK ILL_BADSTK
+  ILL_BADIADDR
+#define ILL_BADIADDR ILL_BADIADDR
+};
+
+
+enum
+{
+  FPE_INTDIV = 1,
+#define FPE_INTDIV FPE_INTDIV
+  FPE_INTOVF,
+#define FPE_INTOVF FPE_INTOVF
+  FPE_FLTDIV,
+#define FPE_FLTDIV FPE_FLTDIV
+  FPE_FLTOVF,
+#define FPE_FLTOVF FPE_FLTOVF
+  FPE_FLTUND,
+#define FPE_FLTUND FPE_FLTUND
+  FPE_FLTRES,
+#define FPE_FLTRES FPE_FLTRES
+  FPE_FLTINV,
+#define FPE_FLTINV FPE_FLTINV
+  FPE_FLTSUB,
+#define FPE_FLTSUB FPE_FLTSUB
+  FPE_FLTUNK = 14,
+#define FPE_FLTUNK FPE_FLTUNK
+  FPE_CONDTRAP
+#define FPE_CONDTRAP FPE_CONDTRAP
+};
+
+
+enum
+{
+  SEGV_MAPERR = 1,
+#define SEGV_MAPERR SEGV_MAPERR
+  SEGV_ACCERR,
+#define SEGV_ACCERR SEGV_ACCERR
+  SEGV_BNDERR,
+#define SEGV_BNDERR SEGV_BNDERR
+  SEGV_PKUERR,
+#define SEGV_PKUERR SEGV_PKUERR
+  SEGV_ACCADI,
+#define SEGV_ACCADI SEGV_ACCADI
+  SEGV_ADIDERR,
+#define SEGV_ADIDERR SEGV_ADIDERR
+  SEGV_ADIPERR,
+#define SEGV_ADIPERR SEGV_ADIPERR
+  SEGV_MTEAERR,
+#define SEGV_MTEAERR SEGV_MTEAERR
+  SEGV_MTESERR,
+#define SEGV_MTESERR SEGV_MTESERR
+  SEGV_CPERR
+#define SEGV_CPERR SEGV_CPERR
+};
+
+
+enum
+{
+  BUS_ADRALN = 1,
+#define BUS_ADRALN BUS_ADRALN
+  BUS_ADRERR,
+#define BUS_ADRERR BUS_ADRERR
+  BUS_OBJERR,
+#define BUS_OBJERR BUS_OBJERR
+  BUS_MCEERR_AR,
+#define BUS_MCEERR_AR BUS_MCEERR_AR
+  BUS_MCEERR_AO
+#define BUS_MCEERR_AO BUS_MCEERR_AO
+};
+
+
+
+
+enum
+{
+  TRAP_BRKPT = 1,
+#define TRAP_BRKPT TRAP_BRKPT
+  TRAP_TRACE,
+#define TRAP_TRACE TRAP_TRACE
+  TRAP_BRANCH,
+#define TRAP_BRANCH TRAP_BRANCH
+  TRAP_HWBKPT,
+#define TRAP_HWBKPT TRAP_HWBKPT
+  TRAP_UNK
+#define TRAP_UNK TRAP_UNK
+};
+
+
+
+
+enum
+{
+  CLD_EXITED = 1,
+#define CLD_EXITED CLD_EXITED
+  CLD_KILLED,
+#define CLD_KILLED CLD_KILLED
+  CLD_DUMPED,
+#define CLD_DUMPED CLD_DUMPED
+  CLD_TRAPPED,
+#define CLD_TRAPPED CLD_TRAPPED
+  CLD_STOPPED,
+#define CLD_STOPPED CLD_STOPPED
+  CLD_CONTINUED
+#define CLD_CONTINUED CLD_CONTINUED
+};
+
+
+enum
+{
+  POLL_IN = 1,
+#define POLL_IN POLL_IN
+  POLL_OUT,
+#define POLL_OUT POLL_OUT
+  POLL_MSG,
+#define POLL_MSG POLL_MSG
+  POLL_ERR,
+#define POLL_ERR POLL_ERR
+  POLL_PRI,
+#define POLL_PRI POLL_PRI
+  POLL_HUP
+#define POLL_HUP POLL_HUP
+};
+
+
+
+
+
+# 1 "/usr/include/bits/siginfo-consts-arch.h" 1 3 4
+
+
+#define _BITS_SIGINFO_CONSTS_ARCH_H 1
+# 216 "/usr/include/bits/siginfo-consts.h" 2 3 4
+# 59 "/usr/include/signal.h" 2 3 4
+
+
+
+# 1 "/usr/include/bits/types/sigval_t.h" 1 3 4
+
+#define __sigval_t_defined 
+# 16 "/usr/include/bits/types/sigval_t.h" 3 4
+typedef __sigval_t sigval_t;
+# 63 "/usr/include/signal.h" 2 3 4
+
+
+
+# 1 "/usr/include/bits/types/sigevent_t.h" 1 3 4
+
+#define __sigevent_t_defined 1
+
+# 1 "/usr/include/bits/wordsize.h" 1 3 4
+
+
+
+#define __WORDSIZE 64
+
+
+
+
+
+
+#define __WORDSIZE_TIME64_COMPAT32 1
+
+
+
+#define __SYSCALL_WORDSIZE 64
+# 5 "/usr/include/bits/types/sigevent_t.h" 2 3 4
+
+
+
+#define __SIGEV_MAX_SIZE 64
+
+#define __SIGEV_PAD_SIZE ((__SIGEV_MAX_SIZE / sizeof (int)) - 4)
+# 22 "/usr/include/bits/types/sigevent_t.h" 3 4
+typedef struct sigevent
+  {
+    __sigval_t sigev_value;
+    int sigev_signo;
+    int sigev_notify;
+
+    union
+      {
+ int _pad[((64 / sizeof (int)) - 4)];
+
+
+
+ __pid_t _tid;
+
+ struct
+   {
+     void (*_function) (__sigval_t);
+     pthread_attr_t *_attribute;
+   } _sigev_thread;
+      } _sigev_un;
+  } sigevent_t;
+
+
+#define sigev_notify_function _sigev_un._sigev_thread._function
+#define sigev_notify_attributes _sigev_un._sigev_thread._attribute
+# 67 "/usr/include/signal.h" 2 3 4
+# 1 "/usr/include/bits/sigevent-consts.h" 1 3 4
+# 20 "/usr/include/bits/sigevent-consts.h" 3 4
+#define _BITS_SIGEVENT_CONSTS_H 1
+
+
+
+
+
+
+enum
+{
+  SIGEV_SIGNAL = 0,
+#define SIGEV_SIGNAL SIGEV_SIGNAL
+  SIGEV_NONE,
+#define SIGEV_NONE SIGEV_NONE
+  SIGEV_THREAD,
+#define SIGEV_THREAD SIGEV_THREAD
+
+  SIGEV_THREAD_ID = 4
+
+#define SIGEV_THREAD_ID SIGEV_THREAD_ID
+};
+# 68 "/usr/include/signal.h" 2 3 4
+
+
+
+
+typedef void (*__sighandler_t) (int);
+
+
+
+
+extern __sighandler_t __sysv_signal (int __sig, __sighandler_t __handler)
+     noexcept (true);
+
+extern __sighandler_t sysv_signal (int __sig, __sighandler_t __handler)
+     noexcept (true);
+
+
+
+
+
+
+extern __sighandler_t signal (int __sig, __sighandler_t __handler)
+     noexcept (true);
+# 112 "/usr/include/signal.h" 3 4
+extern int kill (__pid_t __pid, int __sig) noexcept (true);
+
+
+
+
+
+
+extern int killpg (__pid_t __pgrp, int __sig) noexcept (true);
+
+
+
+extern int raise (int __sig) noexcept (true);
+
+
+
+extern __sighandler_t ssignal (int __sig, __sighandler_t __handler)
+     noexcept (true);
+extern int gsignal (int __sig) noexcept (true);
+
+
+
+
+extern void psignal (int __sig, const char *__s);
+
+
+extern void psiginfo (const siginfo_t *__pinfo, const char *__s);
+# 151 "/usr/include/signal.h" 3 4
+extern int sigpause (int __sig) __asm__ ("__xpg_sigpause")
+  __attribute__ ((__deprecated__ ("Use the sigsuspend function instead")));
+# 168 "/usr/include/signal.h" 3 4
+#define sigmask(sig) __glibc_macro_warning ("sigmask is deprecated") ((int)(1u << ((sig) - 1)))
+
+
+
+
+extern int sigblock (int __mask) noexcept (true) __attribute__ ((__deprecated__));
+
+
+extern int sigsetmask (int __mask) noexcept (true) __attribute__ ((__deprecated__));
+
+
+extern int siggetmask (void) noexcept (true) __attribute__ ((__deprecated__));
+
+
+
+
+#define NSIG _NSIG
+
+
+
+typedef __sighandler_t sighandler_t;
+
+
+
+
+typedef __sighandler_t sig_t;
+
+
+
+
+
+extern int sigemptyset (sigset_t *__set) noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+extern int sigfillset (sigset_t *__set) noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+extern int sigaddset (sigset_t *__set, int __signo) noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+extern int sigdelset (sigset_t *__set, int __signo) noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+extern int sigismember (const sigset_t *__set, int __signo)
+     noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+
+extern int sigisemptyset (const sigset_t *__set) noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+extern int sigandset (sigset_t *__set, const sigset_t *__left,
+        const sigset_t *__right) noexcept (true) __attribute__ ((__nonnull__ (1, 2, 3)));
+
+
+extern int sigorset (sigset_t *__set, const sigset_t *__left,
+       const sigset_t *__right) noexcept (true) __attribute__ ((__nonnull__ (1, 2, 3)));
+
+
+
+
+# 1 "/usr/include/bits/sigaction.h" 1 3 4
+# 20 "/usr/include/bits/sigaction.h" 3 4
+#define _BITS_SIGACTION_H 1
+
+
+
+
+
+
+struct sigaction
+  {
+
+
+    union
+      {
+
+ __sighandler_t sa_handler;
+
+ void (*sa_sigaction) (int, siginfo_t *, void *);
+      }
+    __sigaction_handler;
+#define sa_handler __sigaction_handler.sa_handler
+#define sa_sigaction __sigaction_handler.sa_sigaction
+
+
+
+
+
+    __sigset_t sa_mask;
+
+
+    int sa_flags;
+
+
+    void (*sa_restorer) (void);
+  };
+
+
+#define SA_NOCLDSTOP 1
+#define SA_NOCLDWAIT 2
+#define SA_SIGINFO 4
+
+
+#define SA_ONSTACK 0x08000000
+
+
+#define SA_RESTART 0x10000000
+#define SA_NODEFER 0x40000000
+
+#define SA_RESETHAND 0x80000000
+
+
+#define SA_INTERRUPT 0x20000000
+
+
+#define SA_NOMASK SA_NODEFER
+#define SA_ONESHOT SA_RESETHAND
+#define SA_STACK SA_ONSTACK
+
+
+
+#define SIG_BLOCK 0
+#define SIG_UNBLOCK 1
+#define SIG_SETMASK 2
+# 230 "/usr/include/signal.h" 2 3 4
+
+
+extern int sigprocmask (int __how, const sigset_t *__restrict __set,
+   sigset_t *__restrict __oset) noexcept (true);
+
+
+
+
+
+
+extern int sigsuspend (const sigset_t *__set) __attribute__ ((__nonnull__ (1)));
+
+
+extern int sigaction (int __sig, const struct sigaction *__restrict __act,
+        struct sigaction *__restrict __oact) noexcept (true);
+
+
+extern int sigpending (sigset_t *__set) noexcept (true) __attribute__ ((__nonnull__ (1)));
+
+
+
+
+
+
+
+extern int sigwait (const sigset_t *__restrict __set, int *__restrict __sig)
+     __attribute__ ((__nonnull__ (1, 2)));
+
+
+
+
+
+
+
+extern int sigwaitinfo (const sigset_t *__restrict __set,
+   siginfo_t *__restrict __info) __attribute__ ((__nonnull__ (1)));
+
+
+
+
+
+
+
+extern int sigtimedwait (const sigset_t *__restrict __set,
+    siginfo_t *__restrict __info,
+    const struct timespec *__restrict __timeout)
+     __attribute__ ((__nonnull__ (1)));
+# 292 "/usr/include/signal.h" 3 4
+extern int sigqueue (__pid_t __pid, int __sig, const union sigval __val)
+     noexcept (true);
+
+
+
+
+
+
+
+# 1 "/usr/include/bits/sigcontext.h" 1 3 4
+# 19 "/usr/include/bits/sigcontext.h" 3 4
+#define _BITS_SIGCONTEXT_H 1
+
+
+
+
+
+
+
+#define FP_XSTATE_MAGIC1 0x46505853U
+#define FP_XSTATE_MAGIC2 0x46505845U
+#define FP_XSTATE_MAGIC2_SIZE sizeof (FP_XSTATE_MAGIC2)
+
+struct _fpx_sw_bytes
+{
+  __uint32_t magic1;
+  __uint32_t extended_size;
+  __uint64_t xstate_bv;
+  __uint32_t xstate_size;
+  __uint32_t __glibc_reserved1[7];
+};
+
+struct _fpreg
+{
+  unsigned short significand[4];
+  unsigned short exponent;
+};
+
+struct _fpxreg
+{
+  unsigned short significand[4];
+  unsigned short exponent;
+  unsigned short __glibc_reserved1[3];
+};
+
+struct _xmmreg
+{
+  __uint32_t element[4];
+};
+# 123 "/usr/include/bits/sigcontext.h" 3 4
+struct _fpstate
+{
+
+  __uint16_t cwd;
+  __uint16_t swd;
+  __uint16_t ftw;
+  __uint16_t fop;
+  __uint64_t rip;
+  __uint64_t rdp;
+  __uint32_t mxcsr;
+  __uint32_t mxcr_mask;
+  struct _fpxreg _st[8];
+  struct _xmmreg _xmm[16];
+  __uint32_t __glibc_reserved1[24];
+};
+
+struct sigcontext
+{
+  __uint64_t r8;
+  __uint64_t r9;
+  __uint64_t r10;
+  __uint64_t r11;
+  __uint64_t r12;
+  __uint64_t r13;
+  __uint64_t r14;
+  __uint64_t r15;
+  __uint64_t rdi;
+  __uint64_t rsi;
+  __uint64_t rbp;
+  __uint64_t rbx;
+  __uint64_t rdx;
+  __uint64_t rax;
+  __uint64_t rcx;
+  __uint64_t rsp;
+  __uint64_t rip;
+  __uint64_t eflags;
+  unsigned short cs;
+  unsigned short gs;
+  unsigned short fs;
+  unsigned short __pad0;
+  __uint64_t err;
+  __uint64_t trapno;
+  __uint64_t oldmask;
+  __uint64_t cr2;
+  __extension__ union
+    {
+      struct _fpstate * fpstate;
+      __uint64_t __fpstate_word;
+    };
+  __uint64_t __reserved1 [8];
+};
+
+
+
+struct _xsave_hdr
+{
+  __uint64_t xstate_bv;
+  __uint64_t __glibc_reserved1[2];
+  __uint64_t __glibc_reserved2[5];
+};
+
+struct _ymmh_state
+{
+  __uint32_t ymmh_space[64];
+};
+
+struct _xstate
+{
+  struct _fpstate fpstate;
+  struct _xsave_hdr xstate_hdr;
+  struct _ymmh_state ymmh;
+};
+# 302 "/usr/include/signal.h" 2 3 4
+
+
+extern int sigreturn (struct sigcontext *__scp) noexcept (true);
+
+
+
+
+
+#define __need_size_t 
+# 1 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stddef.h" 1 3 4
+# 173 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stddef.h" 3 4
+#undef __need_ptrdiff_t
+# 252 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stddef.h" 3 4
+#undef __need_size_t
+# 364 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stddef.h" 3 4
+#undef __need_wchar_t
+# 414 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stddef.h" 3 4
+#undef NULL
+
+#define NULL __null
+# 425 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stddef.h" 3 4
+#undef __need_NULL
+
+
+
+
+#undef offsetof
+#define offsetof(TYPE,MEMBER) __builtin_offsetof (TYPE, MEMBER)
+# 312 "/usr/include/signal.h" 2 3 4
+
+# 1 "/usr/include/bits/types/stack_t.h" 1 3 4
+# 20 "/usr/include/bits/types/stack_t.h" 3 4
+#define __stack_t_defined 1
+
+#define __need_size_t 
+# 1 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stddef.h" 1 3 4
+# 173 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stddef.h" 3 4
+#undef __need_ptrdiff_t
+# 252 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stddef.h" 3 4
+#undef __need_size_t
+# 364 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stddef.h" 3 4
+#undef __need_wchar_t
+# 414 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stddef.h" 3 4
+#undef NULL
+
+#define NULL __null
+# 425 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stddef.h" 3 4
+#undef __need_NULL
+
+
+
+
+#undef offsetof
+#define offsetof(TYPE,MEMBER) __builtin_offsetof (TYPE, MEMBER)
+# 24 "/usr/include/bits/types/stack_t.h" 2 3 4
+
+
+typedef struct
+  {
+    void *ss_sp;
+    int ss_flags;
+    size_t ss_size;
+  } stack_t;
+# 314 "/usr/include/signal.h" 2 3 4
+
+
+# 1 "/usr/include/sys/ucontext.h" 1 3 4
+# 19 "/usr/include/sys/ucontext.h" 3 4
+#define _SYS_UCONTEXT_H 1
+# 29 "/usr/include/sys/ucontext.h" 3 4
+#define __ctx(fld) fld
+
+
+
+
+
+
+
+__extension__ typedef long long int greg_t;
+
+
+#define __NGREG 23
+
+#define NGREG __NGREG
+
+
+
+typedef greg_t gregset_t[23];
+
+
+
+enum
+{
+  REG_R8 = 0,
+#define REG_R8 REG_R8
+  REG_R9,
+#define REG_R9 REG_R9
+  REG_R10,
+#define REG_R10 REG_R10
+  REG_R11,
+#define REG_R11 REG_R11
+  REG_R12,
+#define REG_R12 REG_R12
+  REG_R13,
+#define REG_R13 REG_R13
+  REG_R14,
+#define REG_R14 REG_R14
+  REG_R15,
+#define REG_R15 REG_R15
+  REG_RDI,
+#define REG_RDI REG_RDI
+  REG_RSI,
+#define REG_RSI REG_RSI
+  REG_RBP,
+#define REG_RBP REG_RBP
+  REG_RBX,
+#define REG_RBX REG_RBX
+  REG_RDX,
+#define REG_RDX REG_RDX
+  REG_RAX,
+#define REG_RAX REG_RAX
+  REG_RCX,
+#define REG_RCX REG_RCX
+  REG_RSP,
+#define REG_RSP REG_RSP
+  REG_RIP,
+#define REG_RIP REG_RIP
+  REG_EFL,
+#define REG_EFL REG_EFL
+  REG_CSGSFS,
+#define REG_CSGSFS REG_CSGSFS
+  REG_ERR,
+#define REG_ERR REG_ERR
+  REG_TRAPNO,
+#define REG_TRAPNO REG_TRAPNO
+  REG_OLDMASK,
+#define REG_OLDMASK REG_OLDMASK
+  REG_CR2
+#define REG_CR2 REG_CR2
+};
+
+
+struct _libc_fpxreg
+{
+  unsigned short int significand[4];
+  unsigned short int exponent;
+  unsigned short int __glibc_reserved1[3];
+};
+
+struct _libc_xmmreg
+{
+  __uint32_t element[4];
+};
+
+struct _libc_fpstate
+{
+
+  __uint16_t cwd;
+  __uint16_t swd;
+  __uint16_t ftw;
+  __uint16_t fop;
+  __uint64_t rip;
+  __uint64_t rdp;
+  __uint32_t mxcsr;
+  __uint32_t mxcr_mask;
+  struct _libc_fpxreg _st[8];
+  struct _libc_xmmreg _xmm[16];
+  __uint32_t __glibc_reserved1[24];
+};
+
+
+typedef struct _libc_fpstate *fpregset_t;
+
+
+typedef struct
+  {
+    gregset_t gregs;
+
+    fpregset_t fpregs;
+    __extension__ unsigned long long __reserved1 [8];
+} mcontext_t;
+
+
+typedef struct ucontext_t
+  {
+    unsigned long int uc_flags;
+    struct ucontext_t *uc_link;
+    stack_t uc_stack;
+    mcontext_t uc_mcontext;
+    sigset_t uc_sigmask;
+    struct _libc_fpstate __fpregs_mem;
+    __extension__ unsigned long long int __ssp[4];
+  } ucontext_t;
+# 260 "/usr/include/sys/ucontext.h" 3 4
+#undef __ctx
+# 317 "/usr/include/signal.h" 2 3 4
+
+
+
+
+
+
+
+extern int siginterrupt (int __sig, int __interrupt) noexcept (true)
+  __attribute__ ((__deprecated__ ("Use sigaction with SA_RESTART instead")));
+
+# 1 "/usr/include/bits/sigstack.h" 1 3 4
+# 20 "/usr/include/bits/sigstack.h" 3 4
+#define _BITS_SIGSTACK_H 1
+
+
+
+
+
+
+#define MINSIGSTKSZ 2048
+
+
+#define SIGSTKSZ 8192
+# 328 "/usr/include/signal.h" 2 3 4
+# 1 "/usr/include/bits/sigstksz.h" 1 3 4
+# 27 "/usr/include/bits/sigstksz.h" 3 4
+#undef SIGSTKSZ
+#define SIGSTKSZ sysconf (_SC_SIGSTKSZ)
+
+
+#undef MINSIGSTKSZ
+#define MINSIGSTKSZ SIGSTKSZ
+# 329 "/usr/include/signal.h" 2 3 4
+# 1 "/usr/include/bits/ss_flags.h" 1 3 4
+# 20 "/usr/include/bits/ss_flags.h" 3 4
+#define _BITS_SS_FLAGS_H 1
+
+
+
+
+
+
+enum
+{
+  SS_ONSTACK = 1,
+#define SS_ONSTACK SS_ONSTACK
+  SS_DISABLE
+#define SS_DISABLE SS_DISABLE
+};
+# 330 "/usr/include/signal.h" 2 3 4
+
+
+
+extern int sigaltstack (const stack_t *__restrict __ss,
+   stack_t *__restrict __oss) noexcept (true);
+
+
+
+
+# 1 "/usr/include/bits/types/struct_sigstack.h" 1 3 4
+# 20 "/usr/include/bits/types/struct_sigstack.h" 3 4
+#define __sigstack_defined 1
+
+
+struct sigstack
+  {
+    void *ss_sp;
+    int ss_onstack;
+  };
+# 340 "/usr/include/signal.h" 2 3 4
+
+
+
+
+
+
+
+extern int sigstack (struct sigstack *__ss, struct sigstack *__oss)
+     noexcept (true) __attribute__ ((__deprecated__));
+
+
+
+
+
+
+extern int sighold (int __sig) noexcept (true)
+  __attribute__ ((__deprecated__ ("Use the sigprocmask function instead")));
+
+
+extern int sigrelse (int __sig) noexcept (true)
+  __attribute__ ((__deprecated__ ("Use the sigprocmask function instead")));
+
+
+extern int sigignore (int __sig) noexcept (true)
+  __attribute__ ((__deprecated__ ("Use the signal function instead")));
+
+
+extern __sighandler_t sigset (int __sig, __sighandler_t __disp) noexcept (true)
+  __attribute__ ((__deprecated__ ("Use the signal and sigprocmask functions instead")))
+                                                        ;
+
+
+
+
+
+
+# 1 "/usr/include/bits/sigthread.h" 1 3 4
+# 20 "/usr/include/bits/sigthread.h" 3 4
+#define _BITS_SIGTHREAD_H 1
+# 31 "/usr/include/bits/sigthread.h" 3 4
+extern int pthread_sigmask (int __how,
+       const __sigset_t *__restrict __newmask,
+       __sigset_t *__restrict __oldmask)noexcept (true);
+
+
+extern int pthread_kill (pthread_t __threadid, int __signo) noexcept (true);
+
+
+
+extern int pthread_sigqueue (pthread_t __threadid, int __signo,
+        const union sigval __value) noexcept (true);
+# 377 "/usr/include/signal.h" 2 3 4
+
+
+
+
+
+
+extern int __libc_current_sigrtmin (void) noexcept (true);
+
+extern int __libc_current_sigrtmax (void) noexcept (true);
+
+#define SIGRTMIN (__libc_current_sigrtmin ())
+#define SIGRTMAX (__libc_current_sigrtmax ())
+
+
+# 1 "/usr/include/bits/signal_ext.h" 1 3 4
+# 29 "/usr/include/bits/signal_ext.h" 3 4
+extern int tgkill (__pid_t __tgid, __pid_t __tid, int __signal);
+# 392 "/usr/include/signal.h" 2 3 4
+
+}
+# 135 "hal/hal.h" 2
+
+
+# 1 "rtapi/rtapi_errno.h" 1
+# 138 "hal/hal.h" 2
+
+#define HAL_NAME_LEN 47
+
+
+
+
+#define HAL_LOCK_NONE 0
+#define HAL_LOCK_LOAD 1
+#define HAL_LOCK_CONFIG 2
+#define HAL_LOCK_PARAMS 4
+#define HAL_LOCK_RUN 8
+
+
+#define HAL_LOCK_TUNE (HAL_LOCK_LOAD | HAL_LOCK_CONFIG)
+
+#define HAL_LOCK_ALL 255
+# 174 "hal/hal.h"
+
+# 174 "hal/hal.h"
+extern int hal_init(const char *name);
+# 193 "hal/hal.h"
+extern int hal_exit(int comp_id);
+# 212 "hal/hal.h"
+extern void *hal_malloc(long int size);
+
+
+
+
+
+extern int hal_ready(int comp_id);
+
+
+
+
+
+
+
+extern int hal_set_unready(int comp_id);
+
+
+
+
+
+extern int hal_unready(int comp_id);
+
+
+
+
+
+extern char* hal_comp_name(int comp_id);
+# 275 "hal/hal.h"
+typedef enum {
+    HAL_TYPE_UNSPECIFIED = -1,
+    HAL_TYPE_UNINITIALIZED = 0,
+    HAL_BIT = 1,
+    HAL_FLOAT = 2,
+    HAL_S32 = 3,
+    HAL_U32 = 4,
+    HAL_PORT = 5
+} hal_type_t;
+# 293 "hal/hal.h"
+typedef enum {
+    HAL_DIR_UNSPECIFIED = -1,
+    HAL_IN = 16,
+    HAL_OUT = 32,
+    HAL_IO = (HAL_IN | HAL_OUT),
+} hal_pin_dir_t;
+
+
+
+
+
+
+
+typedef enum {
+    HAL_RO = 64,
+    HAL_RW = HAL_RO | 128 ,
+} hal_param_dir_t;
+
+
+
+# 1 "rtapi/rtapi_bool.h" 1
+# 314 "hal/hal.h" 2
+# 1 "rtapi/rtapi_stdint.h" 1
+# 17 "rtapi/rtapi_stdint.h"
+#define RTAPI_STDINT_H 
+# 48 "rtapi/rtapi_stdint.h"
+# 1 "/usr/include/inttypes.h" 1 3 4
+# 23 "/usr/include/inttypes.h" 3 4
+#define _INTTYPES_H 1
+
+
+
+# 1 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stdint.h" 1 3 4
+
+
+
+#undef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS 
+#undef __STDC_CONSTANT_MACROS
+#define __STDC_CONSTANT_MACROS 
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+# 1 "/usr/include/stdint.h" 1 3 4
+# 23 "/usr/include/stdint.h" 3 4
+#define _STDINT_H 1
+
+#define __GLIBC_INTERNAL_STARTING_HEADER_IMPLEMENTATION 
+# 1 "/usr/include/bits/libc-header-start.h" 1 3 4
+# 31 "/usr/include/bits/libc-header-start.h" 3 4
+#undef __GLIBC_INTERNAL_STARTING_HEADER_IMPLEMENTATION
+
+
+
+
+
+#undef __GLIBC_USE_LIB_EXT2
+
+
+#define __GLIBC_USE_LIB_EXT2 1
+# 67 "/usr/include/bits/libc-header-start.h" 3 4
+#undef __GLIBC_USE_IEC_60559_BFP_EXT
+
+#define __GLIBC_USE_IEC_60559_BFP_EXT 1
+
+
+
+#undef __GLIBC_USE_IEC_60559_BFP_EXT_C23
+
+#define __GLIBC_USE_IEC_60559_BFP_EXT_C23 1
+
+
+
+#undef __GLIBC_USE_IEC_60559_EXT
+
+#define __GLIBC_USE_IEC_60559_EXT 1
+# 90 "/usr/include/bits/libc-header-start.h" 3 4
+#undef __GLIBC_USE_IEC_60559_FUNCS_EXT
+
+#define __GLIBC_USE_IEC_60559_FUNCS_EXT 1
+
+
+
+#undef __GLIBC_USE_IEC_60559_FUNCS_EXT_C23
+
+#define __GLIBC_USE_IEC_60559_FUNCS_EXT_C23 1
+
+
+
+
+
+
+#undef __GLIBC_USE_IEC_60559_TYPES_EXT
+
+#define __GLIBC_USE_IEC_60559_TYPES_EXT 1
+# 27 "/usr/include/stdint.h" 2 3 4
+
+
+# 1 "/usr/include/bits/wordsize.h" 1 3 4
+
+
+
+#define __WORDSIZE 64
+
+
+
+
+
+
+#define __WORDSIZE_TIME64_COMPAT32 1
+
+
+
+#define __SYSCALL_WORDSIZE 64
+# 30 "/usr/include/stdint.h" 2 3 4
+
+
+
+
+
+
+
+# 1 "/usr/include/bits/stdint-uintn.h" 1 3 4
+# 20 "/usr/include/bits/stdint-uintn.h" 3 4
+#define _BITS_STDINT_UINTN_H 1
+
+
+
+typedef __uint8_t uint8_t;
+typedef __uint16_t uint16_t;
+typedef __uint32_t uint32_t;
+typedef __uint64_t uint64_t;
+# 38 "/usr/include/stdint.h" 2 3 4
+
+
+
+# 1 "/usr/include/bits/stdint-least.h" 1 3 4
+# 20 "/usr/include/bits/stdint-least.h" 3 4
+#define _BITS_STDINT_LEAST_H 1
+
+
+
+
+typedef __int_least8_t int_least8_t;
+typedef __int_least16_t int_least16_t;
+typedef __int_least32_t int_least32_t;
+typedef __int_least64_t int_least64_t;
+
+
+typedef __uint_least8_t uint_least8_t;
+typedef __uint_least16_t uint_least16_t;
+typedef __uint_least32_t uint_least32_t;
+typedef __uint_least64_t uint_least64_t;
+# 42 "/usr/include/stdint.h" 2 3 4
+
+
+
+
+
+typedef signed char int_fast8_t;
+
+typedef long int int_fast16_t;
+typedef long int int_fast32_t;
+typedef long int int_fast64_t;
+# 60 "/usr/include/stdint.h" 3 4
+typedef unsigned char uint_fast8_t;
+
+typedef unsigned long int uint_fast16_t;
+typedef unsigned long int uint_fast32_t;
+typedef unsigned long int uint_fast64_t;
+# 79 "/usr/include/stdint.h" 3 4
+typedef unsigned long int uintptr_t;
+# 90 "/usr/include/stdint.h" 3 4
+typedef __intmax_t intmax_t;
+typedef __uintmax_t uintmax_t;
+
+
+
+#define __INT64_C(c) c ## L
+#define __UINT64_C(c) c ## UL
+# 105 "/usr/include/stdint.h" 3 4
+#define INT8_MIN (-128)
+#define INT16_MIN (-32767-1)
+#define INT32_MIN (-2147483647-1)
+#define INT64_MIN (-__INT64_C(9223372036854775807)-1)
+
+#define INT8_MAX (127)
+#define INT16_MAX (32767)
+#define INT32_MAX (2147483647)
+#define INT64_MAX (__INT64_C(9223372036854775807))
+
+
+#define UINT8_MAX (255)
+#define UINT16_MAX (65535)
+#define UINT32_MAX (4294967295U)
+#define UINT64_MAX (__UINT64_C(18446744073709551615))
+
+
+
+#define INT_LEAST8_MIN (-128)
+#define INT_LEAST16_MIN (-32767-1)
+#define INT_LEAST32_MIN (-2147483647-1)
+#define INT_LEAST64_MIN (-__INT64_C(9223372036854775807)-1)
+
+#define INT_LEAST8_MAX (127)
+#define INT_LEAST16_MAX (32767)
+#define INT_LEAST32_MAX (2147483647)
+#define INT_LEAST64_MAX (__INT64_C(9223372036854775807))
+
+
+#define UINT_LEAST8_MAX (255)
+#define UINT_LEAST16_MAX (65535)
+#define UINT_LEAST32_MAX (4294967295U)
+#define UINT_LEAST64_MAX (__UINT64_C(18446744073709551615))
+
+
+
+#define INT_FAST8_MIN (-128)
+
+#define INT_FAST16_MIN (-9223372036854775807L-1)
+#define INT_FAST32_MIN (-9223372036854775807L-1)
+
+
+
+
+#define INT_FAST64_MIN (-__INT64_C(9223372036854775807)-1)
+
+#define INT_FAST8_MAX (127)
+
+#define INT_FAST16_MAX (9223372036854775807L)
+#define INT_FAST32_MAX (9223372036854775807L)
+
+
+
+
+#define INT_FAST64_MAX (__INT64_C(9223372036854775807))
+
+
+#define UINT_FAST8_MAX (255)
+
+#define UINT_FAST16_MAX (18446744073709551615UL)
+#define UINT_FAST32_MAX (18446744073709551615UL)
+
+
+
+
+#define UINT_FAST64_MAX (__UINT64_C(18446744073709551615))
+
+
+
+
+#define INTPTR_MIN (-9223372036854775807L-1)
+#define INTPTR_MAX (9223372036854775807L)
+#define UINTPTR_MAX (18446744073709551615UL)
+# 186 "/usr/include/stdint.h" 3 4
+#define INTMAX_MIN (-__INT64_C(9223372036854775807)-1)
+
+#define INTMAX_MAX (__INT64_C(9223372036854775807))
+
+
+#define UINTMAX_MAX (__UINT64_C(18446744073709551615))
+
+
+
+
+
+
+#define PTRDIFF_MIN (-9223372036854775807L-1)
+#define PTRDIFF_MAX (9223372036854775807L)
+# 211 "/usr/include/stdint.h" 3 4
+#define SIG_ATOMIC_MIN (-2147483647-1)
+#define SIG_ATOMIC_MAX (2147483647)
+
+
+
+#define SIZE_MAX (18446744073709551615UL)
+# 233 "/usr/include/stdint.h" 3 4
+#define WINT_MIN (0u)
+#define WINT_MAX (4294967295u)
+
+
+#define INT8_C(c) c
+#define INT16_C(c) c
+#define INT32_C(c) c
+
+#define INT64_C(c) c ## L
+
+
+
+
+
+#define UINT8_C(c) c
+#define UINT16_C(c) c
+#define UINT32_C(c) c ## U
+
+#define UINT64_C(c) c ## UL
+
+
+
+
+
+
+#define INTMAX_C(c) c ## L
+#define UINTMAX_C(c) c ## UL
+
+
+
+
+
+
+
+#define INT8_WIDTH 8
+#define UINT8_WIDTH 8
+#define INT16_WIDTH 16
+#define UINT16_WIDTH 16
+#define INT32_WIDTH 32
+#define UINT32_WIDTH 32
+#define INT64_WIDTH 64
+#define UINT64_WIDTH 64
+
+#define INT_LEAST8_WIDTH 8
+#define UINT_LEAST8_WIDTH 8
+#define INT_LEAST16_WIDTH 16
+#define UINT_LEAST16_WIDTH 16
+#define INT_LEAST32_WIDTH 32
+#define UINT_LEAST32_WIDTH 32
+#define INT_LEAST64_WIDTH 64
+#define UINT_LEAST64_WIDTH 64
+
+#define INT_FAST8_WIDTH 8
+#define UINT_FAST8_WIDTH 8
+#define INT_FAST16_WIDTH __WORDSIZE
+#define UINT_FAST16_WIDTH __WORDSIZE
+#define INT_FAST32_WIDTH __WORDSIZE
+#define UINT_FAST32_WIDTH __WORDSIZE
+#define INT_FAST64_WIDTH 64
+#define UINT_FAST64_WIDTH 64
+
+#define INTPTR_WIDTH __WORDSIZE
+#define UINTPTR_WIDTH __WORDSIZE
+
+#define INTMAX_WIDTH 64
+#define UINTMAX_WIDTH 64
+
+#define PTRDIFF_WIDTH __WORDSIZE
+#define SIG_ATOMIC_WIDTH 32
+#define SIZE_WIDTH __WORDSIZE
+#define WCHAR_WIDTH 32
+#define WINT_WIDTH 32
+# 12 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stdint.h" 2 3 4
+#pragma GCC diagnostic pop
+
+
+
+#define _GCC_WRAP_STDINT_H 
+# 28 "/usr/include/inttypes.h" 2 3 4
+
+
+
+
+#define __gwchar_t wchar_t
+
+
+
+
+
+
+
+#define ____gwchar_t_defined 1
+
+
+
+#define __PRI64_PREFIX "l"
+#define __PRIPTR_PREFIX "l"
+# 54 "/usr/include/inttypes.h" 3 4
+#define PRId8 "d"
+#define PRId16 "d"
+#define PRId32 "d"
+#define PRId64 __PRI64_PREFIX "d"
+
+#define PRIdLEAST8 "d"
+#define PRIdLEAST16 "d"
+#define PRIdLEAST32 "d"
+#define PRIdLEAST64 __PRI64_PREFIX "d"
+
+#define PRIdFAST8 "d"
+#define PRIdFAST16 __PRIPTR_PREFIX "d"
+#define PRIdFAST32 __PRIPTR_PREFIX "d"
+#define PRIdFAST64 __PRI64_PREFIX "d"
+
+
+#define PRIi8 "i"
+#define PRIi16 "i"
+#define PRIi32 "i"
+#define PRIi64 __PRI64_PREFIX "i"
+
+#define PRIiLEAST8 "i"
+#define PRIiLEAST16 "i"
+#define PRIiLEAST32 "i"
+#define PRIiLEAST64 __PRI64_PREFIX "i"
+
+#define PRIiFAST8 "i"
+#define PRIiFAST16 __PRIPTR_PREFIX "i"
+#define PRIiFAST32 __PRIPTR_PREFIX "i"
+#define PRIiFAST64 __PRI64_PREFIX "i"
+
+
+#define PRIo8 "o"
+#define PRIo16 "o"
+#define PRIo32 "o"
+#define PRIo64 __PRI64_PREFIX "o"
+
+#define PRIoLEAST8 "o"
+#define PRIoLEAST16 "o"
+#define PRIoLEAST32 "o"
+#define PRIoLEAST64 __PRI64_PREFIX "o"
+
+#define PRIoFAST8 "o"
+#define PRIoFAST16 __PRIPTR_PREFIX "o"
+#define PRIoFAST32 __PRIPTR_PREFIX "o"
+#define PRIoFAST64 __PRI64_PREFIX "o"
+
+
+#define PRIu8 "u"
+#define PRIu16 "u"
+#define PRIu32 "u"
+#define PRIu64 __PRI64_PREFIX "u"
+
+#define PRIuLEAST8 "u"
+#define PRIuLEAST16 "u"
+#define PRIuLEAST32 "u"
+#define PRIuLEAST64 __PRI64_PREFIX "u"
+
+#define PRIuFAST8 "u"
+#define PRIuFAST16 __PRIPTR_PREFIX "u"
+#define PRIuFAST32 __PRIPTR_PREFIX "u"
+#define PRIuFAST64 __PRI64_PREFIX "u"
+
+
+#define PRIx8 "x"
+#define PRIx16 "x"
+#define PRIx32 "x"
+#define PRIx64 __PRI64_PREFIX "x"
+
+#define PRIxLEAST8 "x"
+#define PRIxLEAST16 "x"
+#define PRIxLEAST32 "x"
+#define PRIxLEAST64 __PRI64_PREFIX "x"
+
+#define PRIxFAST8 "x"
+#define PRIxFAST16 __PRIPTR_PREFIX "x"
+#define PRIxFAST32 __PRIPTR_PREFIX "x"
+#define PRIxFAST64 __PRI64_PREFIX "x"
+
+
+#define PRIX8 "X"
+#define PRIX16 "X"
+#define PRIX32 "X"
+#define PRIX64 __PRI64_PREFIX "X"
+
+#define PRIXLEAST8 "X"
+#define PRIXLEAST16 "X"
+#define PRIXLEAST32 "X"
+#define PRIXLEAST64 __PRI64_PREFIX "X"
+
+#define PRIXFAST8 "X"
+#define PRIXFAST16 __PRIPTR_PREFIX "X"
+#define PRIXFAST32 __PRIPTR_PREFIX "X"
+#define PRIXFAST64 __PRI64_PREFIX "X"
+
+
+
+#define PRIdMAX __PRI64_PREFIX "d"
+#define PRIiMAX __PRI64_PREFIX "i"
+#define PRIoMAX __PRI64_PREFIX "o"
+#define PRIuMAX __PRI64_PREFIX "u"
+#define PRIxMAX __PRI64_PREFIX "x"
+#define PRIXMAX __PRI64_PREFIX "X"
+
+
+
+#define PRIdPTR __PRIPTR_PREFIX "d"
+#define PRIiPTR __PRIPTR_PREFIX "i"
+#define PRIoPTR __PRIPTR_PREFIX "o"
+#define PRIuPTR __PRIPTR_PREFIX "u"
+#define PRIxPTR __PRIPTR_PREFIX "x"
+#define PRIXPTR __PRIPTR_PREFIX "X"
+
+
+
+#define PRIb8 "b"
+#define PRIb16 "b"
+#define PRIb32 "b"
+#define PRIb64 __PRI64_PREFIX "b"
+
+#define PRIbLEAST8 "b"
+#define PRIbLEAST16 "b"
+#define PRIbLEAST32 "b"
+#define PRIbLEAST64 __PRI64_PREFIX "b"
+
+#define PRIbFAST8 "b"
+#define PRIbFAST16 __PRIPTR_PREFIX "b"
+#define PRIbFAST32 __PRIPTR_PREFIX "b"
+#define PRIbFAST64 __PRI64_PREFIX "b"
+
+#define PRIbMAX __PRI64_PREFIX "b"
+#define PRIbPTR __PRIPTR_PREFIX "b"
+
+#define PRIB8 "B"
+#define PRIB16 "B"
+#define PRIB32 "B"
+#define PRIB64 __PRI64_PREFIX "B"
+
+#define PRIBLEAST8 "B"
+#define PRIBLEAST16 "B"
+#define PRIBLEAST32 "B"
+#define PRIBLEAST64 __PRI64_PREFIX "B"
+
+#define PRIBFAST8 "B"
+#define PRIBFAST16 __PRIPTR_PREFIX "B"
+#define PRIBFAST32 __PRIPTR_PREFIX "B"
+#define PRIBFAST64 __PRI64_PREFIX "B"
+
+#define PRIBMAX __PRI64_PREFIX "B"
+#define PRIBPTR __PRIPTR_PREFIX "B"
+
+
+
+
+
+
+#define SCNd8 "hhd"
+#define SCNd16 "hd"
+#define SCNd32 "d"
+#define SCNd64 __PRI64_PREFIX "d"
+
+#define SCNdLEAST8 "hhd"
+#define SCNdLEAST16 "hd"
+#define SCNdLEAST32 "d"
+#define SCNdLEAST64 __PRI64_PREFIX "d"
+
+#define SCNdFAST8 "hhd"
+#define SCNdFAST16 __PRIPTR_PREFIX "d"
+#define SCNdFAST32 __PRIPTR_PREFIX "d"
+#define SCNdFAST64 __PRI64_PREFIX "d"
+
+
+#define SCNi8 "hhi"
+#define SCNi16 "hi"
+#define SCNi32 "i"
+#define SCNi64 __PRI64_PREFIX "i"
+
+#define SCNiLEAST8 "hhi"
+#define SCNiLEAST16 "hi"
+#define SCNiLEAST32 "i"
+#define SCNiLEAST64 __PRI64_PREFIX "i"
+
+#define SCNiFAST8 "hhi"
+#define SCNiFAST16 __PRIPTR_PREFIX "i"
+#define SCNiFAST32 __PRIPTR_PREFIX "i"
+#define SCNiFAST64 __PRI64_PREFIX "i"
+
+
+#define SCNu8 "hhu"
+#define SCNu16 "hu"
+#define SCNu32 "u"
+#define SCNu64 __PRI64_PREFIX "u"
+
+#define SCNuLEAST8 "hhu"
+#define SCNuLEAST16 "hu"
+#define SCNuLEAST32 "u"
+#define SCNuLEAST64 __PRI64_PREFIX "u"
+
+#define SCNuFAST8 "hhu"
+#define SCNuFAST16 __PRIPTR_PREFIX "u"
+#define SCNuFAST32 __PRIPTR_PREFIX "u"
+#define SCNuFAST64 __PRI64_PREFIX "u"
+
+
+#define SCNo8 "hho"
+#define SCNo16 "ho"
+#define SCNo32 "o"
+#define SCNo64 __PRI64_PREFIX "o"
+
+#define SCNoLEAST8 "hho"
+#define SCNoLEAST16 "ho"
+#define SCNoLEAST32 "o"
+#define SCNoLEAST64 __PRI64_PREFIX "o"
+
+#define SCNoFAST8 "hho"
+#define SCNoFAST16 __PRIPTR_PREFIX "o"
+#define SCNoFAST32 __PRIPTR_PREFIX "o"
+#define SCNoFAST64 __PRI64_PREFIX "o"
+
+
+#define SCNx8 "hhx"
+#define SCNx16 "hx"
+#define SCNx32 "x"
+#define SCNx64 __PRI64_PREFIX "x"
+
+#define SCNxLEAST8 "hhx"
+#define SCNxLEAST16 "hx"
+#define SCNxLEAST32 "x"
+#define SCNxLEAST64 __PRI64_PREFIX "x"
+
+#define SCNxFAST8 "hhx"
+#define SCNxFAST16 __PRIPTR_PREFIX "x"
+#define SCNxFAST32 __PRIPTR_PREFIX "x"
+#define SCNxFAST64 __PRI64_PREFIX "x"
+
+
+
+#define SCNdMAX __PRI64_PREFIX "d"
+#define SCNiMAX __PRI64_PREFIX "i"
+#define SCNoMAX __PRI64_PREFIX "o"
+#define SCNuMAX __PRI64_PREFIX "u"
+#define SCNxMAX __PRI64_PREFIX "x"
+
+
+#define SCNdPTR __PRIPTR_PREFIX "d"
+#define SCNiPTR __PRIPTR_PREFIX "i"
+#define SCNoPTR __PRIPTR_PREFIX "o"
+#define SCNuPTR __PRIPTR_PREFIX "u"
+#define SCNxPTR __PRIPTR_PREFIX "x"
+
+
+
+
+#define SCNb8 "hhb"
+#define SCNb16 "hb"
+#define SCNb32 "b"
+#define SCNb64 __PRI64_PREFIX "b"
+
+#define SCNbLEAST8 "hhb"
+#define SCNbLEAST16 "hb"
+#define SCNbLEAST32 "b"
+#define SCNbLEAST64 __PRI64_PREFIX "b"
+
+#define SCNbFAST8 "hhb"
+#define SCNbFAST16 __PRIPTR_PREFIX "b"
+#define SCNbFAST32 __PRIPTR_PREFIX "b"
+#define SCNbFAST64 __PRI64_PREFIX "b"
+
+#define SCNbMAX __PRI64_PREFIX "b"
+#define SCNbPTR __PRIPTR_PREFIX "b"
+
+
+
+extern "C" {
+
+
+
+
+typedef struct
+  {
+    long int quot;
+    long int rem;
+  } imaxdiv_t;
+# 351 "/usr/include/inttypes.h" 3 4
+extern intmax_t imaxabs (intmax_t __n) noexcept (true) __attribute__ ((__const__));
+
+
+extern imaxdiv_t imaxdiv (intmax_t __numer, intmax_t __denom)
+      noexcept (true) __attribute__ ((__const__));
+
+
+extern intmax_t strtoimax (const char *__restrict __nptr,
+      char **__restrict __endptr, int __base) noexcept (true);
+
+
+extern uintmax_t strtoumax (const char *__restrict __nptr,
+       char ** __restrict __endptr, int __base) noexcept (true);
+
+
+extern intmax_t wcstoimax (const wchar_t *__restrict __nptr,
+      wchar_t **__restrict __endptr, int __base)
+     noexcept (true);
+
+
+extern uintmax_t wcstoumax (const wchar_t *__restrict __nptr,
+       wchar_t ** __restrict __endptr, int __base)
+     noexcept (true);
+
+
+
+
+
+extern intmax_t strtoimax (const char *__restrict __nptr, char **__restrict __endptr, int __base) noexcept (true) __asm__ ("" "__isoc23_strtoimax")
+
+                                         ;
+extern uintmax_t strtoumax (const char *__restrict __nptr, char **__restrict __endptr, int __base) noexcept (true) __asm__ ("" "__isoc23_strtoumax")
+
+                                          ;
+extern intmax_t wcstoimax (const wchar_t *__restrict __nptr, wchar_t **__restrict __endptr, int __base) noexcept (true) __asm__ ("" "__isoc23_wcstoimax")
+
+
+                       ;
+extern uintmax_t wcstoumax (const wchar_t *__restrict __nptr, wchar_t **__restrict __endptr, int __base) noexcept (true) __asm__ ("" "__isoc23_wcstoumax")
+
+
+                        ;
+# 415 "/usr/include/inttypes.h" 3 4
+}
+# 49 "rtapi/rtapi_stdint.h" 2
+
+
+# 50 "rtapi/rtapi_stdint.h"
+typedef int8_t rtapi_s8;
+typedef int16_t rtapi_s16;
+typedef int32_t rtapi_s32;
+typedef int64_t rtapi_s64;
+typedef intptr_t rtapi_intptr_t;
+typedef uint8_t rtapi_u8;
+typedef uint16_t rtapi_u16;
+typedef uint32_t rtapi_u32;
+typedef uint64_t rtapi_u64;
+typedef uintptr_t rtapi_uintptr_t;
+
+#define RTAPI_INT8_MAX INT8_MAX
+#define RTAPI_INT8_MIN INT8_MIN
+#define RTAPI_UINT8_MAX UINT8_MAX
+
+#define RTAPI_INT16_MAX INT16_MAX
+#define RTAPI_INT16_MIN INT16_MIN
+#define RTAPI_UINT16_MAX UINT16_MAX
+
+#define RTAPI_INT32_MAX INT32_MAX
+#define RTAPI_INT32_MIN INT32_MIN
+#define RTAPI_UINT32_MAX UINT32_MAX
+
+#define RTAPI_INT64_MAX INT64_MAX
+#define RTAPI_INT64_MIN INT64_MIN
+#define RTAPI_UINT64_MAX UINT64_MAX
+# 315 "hal/hal.h" 2
+typedef volatile bool hal_bit_t;
+typedef volatile rtapi_u32 hal_u32_t;
+typedef volatile rtapi_s32 hal_s32_t;
+typedef volatile int hal_port_t;
+typedef double real_t __attribute__((aligned(8)));
+typedef rtapi_u64 ireal_t __attribute__((aligned(8)));
+
+#define hal_float_t volatile real_t
+
+
+
+
+typedef union {
+    hal_bit_t b;
+    hal_s32_t s;
+    hal_u32_t u;
+    volatile real_t f;
+    hal_port_t p;
+} hal_data_u;
+
+typedef struct {
+    volatile unsigned int read;
+    volatile unsigned int write;
+    unsigned int size;
+    char buff[];
+} hal_port_shm_t;
+# 351 "hal/hal.h"
+extern int hal_set_lock(unsigned char lock_type);
+# 360 "hal/hal.h"
+extern unsigned char hal_get_lock(void);
+# 394 "hal/hal.h"
+extern int hal_pin_bit_new(const char *name, hal_pin_dir_t dir,
+    hal_bit_t ** data_ptr_addr, int comp_id);
+extern int hal_pin_float_new(const char *name, hal_pin_dir_t dir,
+    volatile real_t ** data_ptr_addr, int comp_id);
+extern int hal_pin_u32_new(const char *name, hal_pin_dir_t dir,
+    hal_u32_t ** data_ptr_addr, int comp_id);
+extern int hal_pin_s32_new(const char *name, hal_pin_dir_t dir,
+    hal_s32_t ** data_ptr_addr, int comp_id);
+extern int hal_pin_port_new(const char *name, hal_pin_dir_t dir,
+    hal_port_t ** data_ptr_addr, int comp_id);
+# 412 "hal/hal.h"
+extern int hal_pin_bit_newf(hal_pin_dir_t dir,
+    hal_bit_t ** data_ptr_addr, int comp_id, const char *fmt, ...)
+ __attribute__((format(printf,4,5)));
+extern int hal_pin_float_newf(hal_pin_dir_t dir,
+    volatile real_t ** data_ptr_addr, int comp_id, const char *fmt, ...)
+ __attribute__((format(printf,4,5)));
+extern int hal_pin_u32_newf(hal_pin_dir_t dir,
+    hal_u32_t ** data_ptr_addr, int comp_id, const char *fmt, ...)
+ __attribute__((format(printf,4,5)));
+extern int hal_pin_s32_newf(hal_pin_dir_t dir,
+    hal_s32_t ** data_ptr_addr, int comp_id, const char *fmt, ...)
+ __attribute__((format(printf,4,5)));
+extern int hal_pin_port_newf(hal_pin_dir_t dir,
+    hal_port_t** data_ptr_addr, int comp_id, const char *fmt, ...)
+ __attribute__((format(printf,4,5)));
+# 444 "hal/hal.h"
+extern int hal_pin_new(const char *name, hal_type_t type, hal_pin_dir_t dir,
+    void **data_ptr_addr, int comp_id);
+# 458 "hal/hal.h"
+extern int hal_pin_alias(const char *pin_name, const char *alias);
+# 482 "hal/hal.h"
+extern int hal_signal_new(const char *name, hal_type_t type);
+
+
+
+
+
+
+
+extern int hal_signal_delete(const char *name);
+# 503 "hal/hal.h"
+extern int hal_link(const char *pin_name, const char *sig_name);
+
+
+
+
+
+
+extern int hal_unlink(const char *pin_name);
+# 548 "hal/hal.h"
+extern int hal_param_bit_new(const char *name, hal_param_dir_t dir,
+    hal_bit_t * data_addr, int comp_id);
+extern int hal_param_float_new(const char *name, hal_param_dir_t dir,
+    volatile real_t * data_addr, int comp_id);
+extern int hal_param_u32_new(const char *name, hal_param_dir_t dir,
+    hal_u32_t * data_addr, int comp_id);
+extern int hal_param_s32_new(const char *name, hal_param_dir_t dir,
+    hal_s32_t * data_addr, int comp_id);
+
+
+extern int hal_param_bit_newf(hal_param_dir_t dir,
+    hal_bit_t * data_addr, int comp_id, const char *fmt, ...)
+ __attribute__((format(printf,4,5)));
+extern int hal_param_float_newf(hal_param_dir_t dir,
+    volatile real_t * data_addr, int comp_id, const char *fmt, ...)
+ __attribute__((format(printf,4,5)));
+extern int hal_param_u32_newf(hal_param_dir_t dir,
+    hal_u32_t * data_addr, int comp_id, const char *fmt, ...)
+ __attribute__((format(printf,4,5)));
+extern int hal_param_s32_newf(hal_param_dir_t dir,
+    hal_s32_t * data_addr, int comp_id, const char *fmt, ...)
+ __attribute__((format(printf,4,5)));
+# 591 "hal/hal.h"
+extern int hal_param_new(const char *name, hal_type_t type, hal_param_dir_t dir,
+    void *data_addr, int comp_id);
+# 608 "hal/hal.h"
+extern int hal_param_bit_set(const char *name, int value);
+extern int hal_param_float_set(const char *name, double value);
+extern int hal_param_u32_set(const char *name, unsigned long value);
+extern int hal_param_s32_set(const char *name, signed long value);
+
+
+
+
+
+
+extern int hal_param_alias(const char *pin_name, const char *alias);
+# 635 "hal/hal.h"
+extern int hal_param_set(const char *name, hal_type_t type, void *value_addr);
+# 649 "hal/hal.h"
+extern int hal_get_pin_value_by_name(
+    const char *name, hal_type_t *type, hal_data_u **data, bool *connected);
+# 660 "hal/hal.h"
+extern int hal_get_signal_value_by_name(
+    const char *name, hal_type_t *type, hal_data_u **data, bool *has_writers);
+# 670 "hal/hal.h"
+extern int hal_get_param_value_by_name(
+    const char *name, hal_type_t *type, hal_data_u **data);
+# 770 "hal/hal.h"
+extern int hal_add_funct_to_thread(const char *funct_name, const char *thread_name,
+    int position);
+# 782 "hal/hal.h"
+extern int hal_del_funct_from_thread(const char *funct_name, const char *thread_name);
+
+
+
+
+
+
+extern int hal_start_threads(void);
+
+
+
+
+
+
+
+extern int hal_stop_threads(void);
+
+
+
+
+
+
+typedef int(*constructor)(char *prefix, char *arg);
+
+
+
+extern int hal_set_constructor(int comp_id, constructor make);
+# 832 "hal/hal.h"
+extern bool hal_port_read(hal_port_t port, char* dest, unsigned count);
+# 842 "hal/hal.h"
+extern bool hal_port_peek(hal_port_t port, char* dest, unsigned count);
+# 853 "hal/hal.h"
+extern bool hal_port_peek_commit(hal_port_t port, unsigned count);
+# 863 "hal/hal.h"
+extern bool hal_port_write(hal_port_t port, const char* src, unsigned count);
+
+
+
+
+extern unsigned hal_port_readable(hal_port_t port);
+
+
+
+
+extern unsigned hal_port_writable(hal_port_t port);
+
+
+
+
+extern unsigned hal_port_buffer_size(hal_port_t port);
+
+
+
+
+
+extern void hal_port_clear(hal_port_t port);
+
+
+
+
+
+
+extern void hal_port_wait_readable(hal_port_t** port, unsigned count, sig_atomic_t* stop);
+
+
+
+
+extern void hal_port_wait_writable(hal_port_t** port, unsigned count, sig_atomic_t* stop);
+
+
+
+
+
+
+
+union hal_stream_data {
+    real_t f;
+    bool b;
+    int32_t s;
+    uint32_t u;
+};
+
+typedef struct {
+    int comp_id, shmem_id;
+    struct hal_stream_shm *fifo;
+} hal_stream_t;
+# 923 "hal/hal.h"
+#define HAL_STREAM_MAX_PINS (21)
+
+extern int hal_stream_create(hal_stream_t *stream, int comp, int key, int depth, const char *typestring);
+
+extern void hal_stream_destroy(hal_stream_t *stream);
+
+
+extern int hal_stream_attach(hal_stream_t *stream, int comp, int key, const char *typestring);
+
+extern int hal_stream_detach(hal_stream_t *stream);
+
+
+extern int hal_stream_element_count(hal_stream_t *stream);
+extern hal_type_t hal_stream_element_type(hal_stream_t *stream, int idx);
+
+
+extern int hal_stream_read(hal_stream_t *stream, union hal_stream_data *buf, unsigned *sampleno);
+extern bool hal_stream_readable(hal_stream_t *stream);
+extern int hal_stream_depth(hal_stream_t *stream);
+extern int hal_stream_maxdepth(hal_stream_t *stream);
+extern int hal_stream_num_underruns(hal_stream_t *stream);
+extern int hal_stream_num_overruns(hal_stream_t *stream);
+
+extern void hal_stream_wait_readable(hal_stream_t *stream, sig_atomic_t *stop);
+
+
+extern int hal_stream_write(hal_stream_t *stream, union hal_stream_data *buf);
+extern bool hal_stream_writable(hal_stream_t *stream);
+
+extern void hal_stream_wait_writable(hal_stream_t *stream, sig_atomic_t *stop);
+
+
+}
+# 25 "emc/sterp/sterp.cc" 2
+# 1 "rtapi/rtapi_mutex.h" 1
+
+#define RTAPI_MUTEX_H 
+# 29 "rtapi/rtapi_mutex.h"
+# 1 "rtapi/rtapi_bitops.h" 1
+# 17 "rtapi/rtapi_bitops.h"
+#define RTAPI_BITOPS_H 
+
+
+
+# 1 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/limits.h" 1 3 4
+# 22 "rtapi/rtapi_bitops.h" 2
+#define RTAPI_LONG_BIT (CHAR_BIT * sizeof(unsigned long))
+static __inline__ void set_bit(int nr, volatile void *addr) {
+    size_t loff = nr / (8 
+# 24 "rtapi/rtapi_bitops.h"
+                      * sizeof(unsigned long));
+    size_t boff = nr % (8 
+# 25 "rtapi/rtapi_bitops.h"
+                      * sizeof(unsigned long));
+    unsigned long *laddr = (unsigned long*)addr;
+    __sync_fetch_and_or(laddr + loff, 1lu << boff);
+}
+
+static __inline__ int test_bit(int nr, const volatile void *addr) {
+    size_t loff = nr / (8 
+# 31 "rtapi/rtapi_bitops.h"
+                      * sizeof(unsigned long));
+    size_t boff = nr % (8 
+# 32 "rtapi/rtapi_bitops.h"
+                      * sizeof(unsigned long));
+    unsigned long *laddr = (unsigned long*)addr;
+    return (laddr[loff] & (1lu << boff)) != 0;
+}
+
+static __inline__ void clear_bit(int nr, volatile void *addr) {
+    size_t loff = nr / (8 
+# 38 "rtapi/rtapi_bitops.h"
+                      * sizeof(unsigned long));
+    size_t boff = nr % (8 
+# 39 "rtapi/rtapi_bitops.h"
+                      * sizeof(unsigned long));
+    unsigned long *laddr = (unsigned long*)addr;
+    __sync_fetch_and_and(laddr + loff, ~(1lu << boff));
+}
+
+static __inline__ long test_and_set_bit(int nr, volatile void *addr) {
+    size_t loff = nr / (8 
+# 45 "rtapi/rtapi_bitops.h"
+                      * sizeof(unsigned long));
+    size_t boff = nr % (8 
+# 46 "rtapi/rtapi_bitops.h"
+                      * sizeof(unsigned long));
+    unsigned long *laddr = (unsigned long*)addr;
+    unsigned long oldval = __sync_fetch_and_or(laddr + loff, 1lu << boff);
+    return (oldval & (1lu << boff)) != 0;
+}
+
+static __inline__ long test_and_clear_bit(int nr, volatile void *addr) {
+    size_t loff = nr / (8 
+# 53 "rtapi/rtapi_bitops.h"
+                      * sizeof(unsigned long));
+    size_t boff = nr % (8 
+# 54 "rtapi/rtapi_bitops.h"
+                      * sizeof(unsigned long));
+    unsigned long *laddr = (unsigned long*)addr;
+    unsigned long oldval = __sync_fetch_and_and(laddr + loff, ~(1lu << boff));
+    return (oldval & (1lu << boff)) != 0;
+}
+# 30 "rtapi/rtapi_mutex.h" 2
+
+typedef unsigned long rtapi_mutex_t;
+# 47 "rtapi/rtapi_mutex.h"
+    static __inline__ void rtapi_mutex_give(unsigned long *mutex) {
+ test_and_clear_bit(0, mutex);
+    }
+# 59 "rtapi/rtapi_mutex.h"
+   static __inline__ int rtapi_mutex_try(unsigned long *mutex) {
+ return test_and_set_bit(0, mutex);
+    }
+
+
+
+
+
+
+    static __inline__ void rtapi_mutex_get(unsigned long *mutex) {
+ while (test_and_set_bit(0, mutex)) {
+
+
+
+     sched_yield();
+
+ }
+    }
+# 26 "emc/sterp/sterp.cc" 2
+
 # 1 "/home/smv/code/accelus/linuxcnc/src/emc/sterp/include/bytecode.hpp" 1
 
 #define smv_gpp_bytecode_hpp 
@@ -102364,333 +105209,7 @@ namespace std __attribute__ ((__visibility__ ("default")))
 # 1 "/usr/include/c++/15.1.1/cstdint" 1 3
 # 30 "/usr/include/c++/15.1.1/cstdint" 3
 #define _GLIBCXX_CSTDINT 1
-# 47 "/usr/include/c++/15.1.1/cstdint" 3
-# 1 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stdint.h" 1 3 4
-
-
-
-#undef __STDC_LIMIT_MACROS
-#define __STDC_LIMIT_MACROS 
-#undef __STDC_CONSTANT_MACROS
-#define __STDC_CONSTANT_MACROS 
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
-# 1 "/usr/include/stdint.h" 1 3 4
-# 23 "/usr/include/stdint.h" 3 4
-#define _STDINT_H 1
-
-#define __GLIBC_INTERNAL_STARTING_HEADER_IMPLEMENTATION 
-# 1 "/usr/include/bits/libc-header-start.h" 1 3 4
-# 31 "/usr/include/bits/libc-header-start.h" 3 4
-#undef __GLIBC_INTERNAL_STARTING_HEADER_IMPLEMENTATION
-
-
-
-
-
-#undef __GLIBC_USE_LIB_EXT2
-
-
-#define __GLIBC_USE_LIB_EXT2 1
-# 67 "/usr/include/bits/libc-header-start.h" 3 4
-#undef __GLIBC_USE_IEC_60559_BFP_EXT
-
-#define __GLIBC_USE_IEC_60559_BFP_EXT 1
-
-
-
-#undef __GLIBC_USE_IEC_60559_BFP_EXT_C23
-
-#define __GLIBC_USE_IEC_60559_BFP_EXT_C23 1
-
-
-
-#undef __GLIBC_USE_IEC_60559_EXT
-
-#define __GLIBC_USE_IEC_60559_EXT 1
-# 90 "/usr/include/bits/libc-header-start.h" 3 4
-#undef __GLIBC_USE_IEC_60559_FUNCS_EXT
-
-#define __GLIBC_USE_IEC_60559_FUNCS_EXT 1
-
-
-
-#undef __GLIBC_USE_IEC_60559_FUNCS_EXT_C23
-
-#define __GLIBC_USE_IEC_60559_FUNCS_EXT_C23 1
-
-
-
-
-
-
-#undef __GLIBC_USE_IEC_60559_TYPES_EXT
-
-#define __GLIBC_USE_IEC_60559_TYPES_EXT 1
-# 27 "/usr/include/stdint.h" 2 3 4
-
-
-# 1 "/usr/include/bits/wordsize.h" 1 3 4
-
-
-
-#define __WORDSIZE 64
-
-
-
-
-
-
-#define __WORDSIZE_TIME64_COMPAT32 1
-
-
-
-#define __SYSCALL_WORDSIZE 64
-# 30 "/usr/include/stdint.h" 2 3 4
-
-
-
-
-
-
-
-# 1 "/usr/include/bits/stdint-uintn.h" 1 3 4
-# 20 "/usr/include/bits/stdint-uintn.h" 3 4
-#define _BITS_STDINT_UINTN_H 1
-
-
-
-typedef __uint8_t uint8_t;
-typedef __uint16_t uint16_t;
-typedef __uint32_t uint32_t;
-typedef __uint64_t uint64_t;
-# 38 "/usr/include/stdint.h" 2 3 4
-
-
-
-# 1 "/usr/include/bits/stdint-least.h" 1 3 4
-# 20 "/usr/include/bits/stdint-least.h" 3 4
-#define _BITS_STDINT_LEAST_H 1
-
-
-
-
-typedef __int_least8_t int_least8_t;
-typedef __int_least16_t int_least16_t;
-typedef __int_least32_t int_least32_t;
-typedef __int_least64_t int_least64_t;
-
-
-typedef __uint_least8_t uint_least8_t;
-typedef __uint_least16_t uint_least16_t;
-typedef __uint_least32_t uint_least32_t;
-typedef __uint_least64_t uint_least64_t;
-# 42 "/usr/include/stdint.h" 2 3 4
-
-
-
-
-
-typedef signed char int_fast8_t;
-
-typedef long int int_fast16_t;
-typedef long int int_fast32_t;
-typedef long int int_fast64_t;
-# 60 "/usr/include/stdint.h" 3 4
-typedef unsigned char uint_fast8_t;
-
-typedef unsigned long int uint_fast16_t;
-typedef unsigned long int uint_fast32_t;
-typedef unsigned long int uint_fast64_t;
-# 79 "/usr/include/stdint.h" 3 4
-typedef unsigned long int uintptr_t;
-# 90 "/usr/include/stdint.h" 3 4
-typedef __intmax_t intmax_t;
-typedef __uintmax_t uintmax_t;
-
-
-
-#define __INT64_C(c) c ## L
-#define __UINT64_C(c) c ## UL
-# 105 "/usr/include/stdint.h" 3 4
-#define INT8_MIN (-128)
-#define INT16_MIN (-32767-1)
-#define INT32_MIN (-2147483647-1)
-#define INT64_MIN (-__INT64_C(9223372036854775807)-1)
-
-#define INT8_MAX (127)
-#define INT16_MAX (32767)
-#define INT32_MAX (2147483647)
-#define INT64_MAX (__INT64_C(9223372036854775807))
-
-
-#define UINT8_MAX (255)
-#define UINT16_MAX (65535)
-#define UINT32_MAX (4294967295U)
-#define UINT64_MAX (__UINT64_C(18446744073709551615))
-
-
-
-#define INT_LEAST8_MIN (-128)
-#define INT_LEAST16_MIN (-32767-1)
-#define INT_LEAST32_MIN (-2147483647-1)
-#define INT_LEAST64_MIN (-__INT64_C(9223372036854775807)-1)
-
-#define INT_LEAST8_MAX (127)
-#define INT_LEAST16_MAX (32767)
-#define INT_LEAST32_MAX (2147483647)
-#define INT_LEAST64_MAX (__INT64_C(9223372036854775807))
-
-
-#define UINT_LEAST8_MAX (255)
-#define UINT_LEAST16_MAX (65535)
-#define UINT_LEAST32_MAX (4294967295U)
-#define UINT_LEAST64_MAX (__UINT64_C(18446744073709551615))
-
-
-
-#define INT_FAST8_MIN (-128)
-
-#define INT_FAST16_MIN (-9223372036854775807L-1)
-#define INT_FAST32_MIN (-9223372036854775807L-1)
-
-
-
-
-#define INT_FAST64_MIN (-__INT64_C(9223372036854775807)-1)
-
-#define INT_FAST8_MAX (127)
-
-#define INT_FAST16_MAX (9223372036854775807L)
-#define INT_FAST32_MAX (9223372036854775807L)
-
-
-
-
-#define INT_FAST64_MAX (__INT64_C(9223372036854775807))
-
-
-#define UINT_FAST8_MAX (255)
-
-#define UINT_FAST16_MAX (18446744073709551615UL)
-#define UINT_FAST32_MAX (18446744073709551615UL)
-
-
-
-
-#define UINT_FAST64_MAX (__UINT64_C(18446744073709551615))
-
-
-
-
-#define INTPTR_MIN (-9223372036854775807L-1)
-#define INTPTR_MAX (9223372036854775807L)
-#define UINTPTR_MAX (18446744073709551615UL)
-# 186 "/usr/include/stdint.h" 3 4
-#define INTMAX_MIN (-__INT64_C(9223372036854775807)-1)
-
-#define INTMAX_MAX (__INT64_C(9223372036854775807))
-
-
-#define UINTMAX_MAX (__UINT64_C(18446744073709551615))
-
-
-
-
-
-
-#define PTRDIFF_MIN (-9223372036854775807L-1)
-#define PTRDIFF_MAX (9223372036854775807L)
-# 211 "/usr/include/stdint.h" 3 4
-#define SIG_ATOMIC_MIN (-2147483647-1)
-#define SIG_ATOMIC_MAX (2147483647)
-
-
-
-#define SIZE_MAX (18446744073709551615UL)
-# 233 "/usr/include/stdint.h" 3 4
-#define WINT_MIN (0u)
-#define WINT_MAX (4294967295u)
-
-
-#define INT8_C(c) c
-#define INT16_C(c) c
-#define INT32_C(c) c
-
-#define INT64_C(c) c ## L
-
-
-
-
-
-#define UINT8_C(c) c
-#define UINT16_C(c) c
-#define UINT32_C(c) c ## U
-
-#define UINT64_C(c) c ## UL
-
-
-
-
-
-
-#define INTMAX_C(c) c ## L
-#define UINTMAX_C(c) c ## UL
-
-
-
-
-
-
-
-#define INT8_WIDTH 8
-#define UINT8_WIDTH 8
-#define INT16_WIDTH 16
-#define UINT16_WIDTH 16
-#define INT32_WIDTH 32
-#define UINT32_WIDTH 32
-#define INT64_WIDTH 64
-#define UINT64_WIDTH 64
-
-#define INT_LEAST8_WIDTH 8
-#define UINT_LEAST8_WIDTH 8
-#define INT_LEAST16_WIDTH 16
-#define UINT_LEAST16_WIDTH 16
-#define INT_LEAST32_WIDTH 32
-#define UINT_LEAST32_WIDTH 32
-#define INT_LEAST64_WIDTH 64
-#define UINT_LEAST64_WIDTH 64
-
-#define INT_FAST8_WIDTH 8
-#define UINT_FAST8_WIDTH 8
-#define INT_FAST16_WIDTH __WORDSIZE
-#define UINT_FAST16_WIDTH __WORDSIZE
-#define INT_FAST32_WIDTH __WORDSIZE
-#define UINT_FAST32_WIDTH __WORDSIZE
-#define INT_FAST64_WIDTH 64
-#define UINT_FAST64_WIDTH 64
-
-#define INTPTR_WIDTH __WORDSIZE
-#define UINTPTR_WIDTH __WORDSIZE
-
-#define INTMAX_WIDTH 64
-#define UINTMAX_WIDTH 64
-
-#define PTRDIFF_WIDTH __WORDSIZE
-#define SIG_ATOMIC_WIDTH 32
-#define SIZE_WIDTH __WORDSIZE
-#define WCHAR_WIDTH 32
-#define WINT_WIDTH 32
-# 12 "/usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stdint.h" 2 3 4
-#pragma GCC diagnostic pop
-
-
-
-#define _GCC_WRAP_STDINT_H 
-# 48 "/usr/include/c++/15.1.1/cstdint" 2 3
-
-
+# 50 "/usr/include/c++/15.1.1/cstdint" 3
 namespace std
 {
 
@@ -144702,9 +147221,9 @@ private:
                                        const Vec3D &position);
   inline Vec2D getArcCenterOffsets(const gpp::Plane plane, f64 i, f64 j, f64 k);
 };
-# 25 "emc/sterp/sterp.cc" 2
+# 28 "emc/sterp/sterp.cc" 2
 # 1 "/home/smv/code/accelus/linuxcnc/src/emc/sterp/include/gpp.hpp" 1
-# 26 "emc/sterp/sterp.cc" 2
+# 29 "emc/sterp/sterp.cc" 2
 # 1 "/home/smv/code/accelus/linuxcnc/src/emc/sterp/include/machine.hpp" 1
 
 #define smv_gpp_machine_hpp 
@@ -148303,12 +150822,15 @@ private:
   void drawLineOnPlane(Canvas &canvas, Plane plane, Vec3D from, Vec3D to);
   void drawLinesOnPlanes(Vec3D from, Vec3D to);
 };
-# 27 "emc/sterp/sterp.cc" 2
+# 30 "emc/sterp/sterp.cc" 2
 
 extern "C" void force_antlr4_lexer_rtti() { (void)typeid(antlr4::Lexer); }
 
 gpp::Machine machine = gpp::Machine();
 std::string currentLine;
+
+
+int fetchHALParameter(const char *nameBuf, double *value);
 
 class Sterp : public InterpBase {
   friend class gpp::Machine;
@@ -148353,9 +150875,9 @@ public:
   void set_loop_on_main_m99(bool state);
   FILE *f;
   char filename[
-# 75 "emc/sterp/sterp.cc" 3 4
+# 81 "emc/sterp/sterp.cc" 3 4
                4096
-# 75 "emc/sterp/sterp.cc"
+# 81 "emc/sterp/sterp.cc"
                        ];
 };
 
@@ -148823,4 +151345,88 @@ void Sterp::set_loop_on_main_m99(bool state) {
 extern "C" InterpBase *makeInterp() {
   std::cout << "STERP: makeInterp() called\n";
   return new Sterp;
+}
+
+int fetchHALParameter(const char *nameBuf, double *value) {
+  static int comp_id;
+  int retval;
+  hal_type_t type = HAL_TYPE_UNINITIALIZED;
+  hal_data_u *ptr;
+  bool conn;
+  char hal_name[47];
+
+  if (!comp_id) {
+    char hal_comp[47];
+    snprintf(hal_comp, sizeof(hal_comp), "interp%d", getpid());
+    comp_id = hal_init(hal_comp);
+    if (comp_id < 0) {
+
+      return 0;
+    }
+
+    retval = hal_ready(comp_id);
+    if (retval != 0) {
+
+      return 0;
+    }
+  }
+
+  char *s;
+  int n = strlen(nameBuf);
+
+  if ((n > 6) && ((s = (char *)strchr(&nameBuf[5], ']')) != 
+# 577 "emc/sterp/sterp.cc" 3 4
+                                                           __null
+# 577 "emc/sterp/sterp.cc"
+                                                               )) {
+
+    int closeBracket = s - nameBuf;
+
+    strncpy(hal_name, &nameBuf[5], closeBracket);
+    hal_name[closeBracket - 5] = '\0';
+    if (nameBuf[closeBracket + 1]) {
+
+    std::cout << "HAL -> ERROR\n";
+    }
+
+    if (hal_get_pin_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
+      if (!conn)
+        printf("%s: no signal connected", hal_name);
+      goto assign;
+    }
+    if (hal_get_signal_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
+      if (!conn)
+        printf("%s: signal has no writer", hal_name);
+      goto assign;
+    }
+    if (hal_get_param_value_by_name(hal_name, &type, &ptr) == 0) {
+      goto assign;
+    }
+    std::cout << "HAL -> ERROR\n";
+
+
+  }
+  return INTERP_OK;
+
+
+
+assign:
+  switch (type) {
+  case HAL_BIT:
+    *value = (double)(ptr->b);
+    break;
+  case HAL_U32:
+    *value = (double)(ptr->u);
+    break;
+  case HAL_S32:
+    *value = (double)(ptr->s);
+    break;
+  case HAL_FLOAT:
+    *value = (double)(ptr->f);
+    break;
+  default:
+    return -1;
+  }
+  printf("%s: value=%f", hal_name, *value);
+  return INTERP_OK;
 }
