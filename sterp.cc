@@ -641,7 +641,6 @@ int setHALParameter(const char *nameBuf, double *value) {
     bool conn;
     char hal_name[HAL_NAME_LEN];
     
-    // Initialize HAL component if not already done
     if (!comp_id) {
         char hal_comp[HAL_NAME_LEN];
         snprintf(hal_comp, sizeof(hal_comp), "interp%d", getpid());
@@ -658,14 +657,12 @@ int setHALParameter(const char *nameBuf, double *value) {
         }
     }
 
-    // Parse the parameter name from the format #<hal[parameter_name]>
     char *s;
     int n = strlen(nameBuf);
 
     if ((n > 6) && ((s = (char *)strchr(&nameBuf[5], ']')) != NULL)) {
         int closeBracket = s - nameBuf;
 
-        // Extract the HAL name
         strncpy(hal_name, &nameBuf[5], closeBracket - 5);
         hal_name[closeBracket - 5] = '\0';
         
@@ -674,30 +671,21 @@ int setHALParameter(const char *nameBuf, double *value) {
             return INTERP_ERROR;
         }
 
-        // Try to set as a pin first
         if (hal_get_pin_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
-            // Found as pin - check if it's writable
-            // Note: We need to check if this is an input pin to determine writability
-            // For now, we'll attempt to set it and let HAL handle the error
             goto set_value;
         }
         
-        // Try to set as a signal
         if (hal_get_signal_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
-            // Found as signal - check if it has writers
             if (!conn) {
                 std::cout << "HAL -> WARNING: signal '" << hal_name << "' has no writer\n";
             }
             goto set_value;
         }
         
-        // Try to set as a parameter
         if (hal_get_param_value_by_name(hal_name, &type, &ptr) == 0) {
-            // Found as parameter
             goto set_value;
         }
         
-        // Not found anywhere
         std::cerr << "HAL -> ERROR: parameter/pin/signal '" << hal_name << "' not found\n";
         return INTERP_ERROR;
         
@@ -707,7 +695,6 @@ int setHALParameter(const char *nameBuf, double *value) {
     }
 
 set_value:
-    // Set the value based on type
     switch (type) {
     case HAL_BIT:
         ptr->b = (*value != 0.0) ? 1 : 0;

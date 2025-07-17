@@ -45,13 +45,18 @@ make test regression # regression tests
 
 ## Supported codes:
 
-- **Motion**: `G0`, `G1`, `G2`, `G3`
-- **Plane Select**: `G17`, `G18`, `G19`
-- **Units**: `G20` (inches), `G21` (millimeters)
-- **Positioning Modes**: `G90` (absolute), `G91` (relative)
-- **Coordinate Offset**: `G92`
-- **Spindle Control**: `M3`, `M4`, `M5`, `s<speed>`
-- **Feedrate**: `F<feedrate>`
+- **Motion**: G0, G1, G2, G3, G4
+- **Plane Select**: G17, G18, G19
+- **Units**: G20 (inches), G21 (millimeters)
+- **Positioning Modes**: G90 (absolute), G91 (relative)
+- **Coordinate Systems**: G10, G43, G54-G59, G92
+- **Feed Rate Modes**: G93, G94, G95
+- **Spindle Modes**: G96, G97
+- **Canned Cycles**: G80, G81, G82, G83, G84, G85, G86, G87, G88, G89
+- **Retract Modes**: G98, G99
+- **Spindle Control**: M3, M4, M5, s<speed>
+- **Program Control**: M0, M1, M2, M6, M98, M99, M100, M101+
+- **Feedrate**: F<feedrate>
 - More TODO...
 
 ## ANTLR4 Dependency
