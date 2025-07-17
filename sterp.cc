@@ -11,6 +11,7 @@
 #include "emc/rs274ngc/interp_base.hh"
 #include "modal_state.hh"
 #include <algorithm>
+#include <cstdlib>
 #include <ctype.h>
 #include <limits.h>
 #include <memory>
@@ -22,7 +23,7 @@
 #include <variant>
 
 #include "hal.h"
-#include "rtapi_mutex.h"
+#include "inifile.hh"
 
 #include "bytecode.hpp"
 #include "gpp.hpp"
@@ -37,6 +38,9 @@ std::string currentLine;
 int fetchHALParameter(const char *nameBuf, double *value);
 // inspired by doSetp/doSets (halrmt.c)
 int setHALParameter(const char *nameBuf, double *value);
+
+int fetchINIParameter(const char *nameBuf, double *value);
+// int setINIParameter(const char *nameBuf, double *value);
 
 void setLock();
 void releaseLock();
@@ -584,37 +588,24 @@ int fetchHALParameter(const char *nameBuf, double *value) {
     }
   }
 
-  char *s;
-  int n = strlen(nameBuf);
+  snprintf(hal_name, sizeof(hal_name), "%s", nameBuf);
 
-  if ((n > 6) && ((s = (char *)strchr(&nameBuf[5], ']')) != NULL)) {
-
-    int closeBracket = s - nameBuf;
-
-    strncpy(hal_name, &nameBuf[5], closeBracket);
-    hal_name[closeBracket - 5] = '\0';
-    if (nameBuf[closeBracket + 1]) {
-      // TODO SOME KIND OF ERROR HANDLING
-      std::cout << "HAL -> ERROR\n";
-    }
-
-    if (hal_get_pin_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
-      if (!conn)
-        printf("%s: no signal connected", hal_name);
-      goto assign;
-    }
-    if (hal_get_signal_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
-      if (!conn)
-        printf("%s: signal has no writer", hal_name);
-      goto assign;
-    }
-    if (hal_get_param_value_by_name(hal_name, &type, &ptr) == 0) {
-      goto assign;
-    }
-    std::cout << "HAL -> ERROR\n";
-    // TODO ERROR HERE
-    // akin to -> ERS("Named hal parameter #<%s> not found", nameBuf);
+  if (hal_get_pin_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
+    if (!conn)
+      printf("%s: no signal connected", hal_name);
+    goto assign;
   }
+  if (hal_get_signal_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
+    if (!conn)
+      printf("%s: signal has no writer", hal_name);
+    goto assign;
+  }
+  if (hal_get_param_value_by_name(hal_name, &type, &ptr) == 0) {
+    goto assign;
+  }
+  std::cout << "STERP: HAL -> ERROR\n";
+  // TODO ERROR HERE
+  // akin to -> ERS("Named hal parameter #<%s> not found", nameBuf);
   releaseLock();
   return INTERP_OK;
 
@@ -657,60 +648,41 @@ int setHALParameter(const char *nameBuf, double *value) {
     snprintf(hal_comp, sizeof(hal_comp), "interp%d", getpid());
     comp_id = hal_init(hal_comp);
     if (comp_id < 0) {
-      std::cerr << "HAL -> ERROR: Failed to initialize HAL component\n";
+      std::cerr << "STERP: HAL -> ERROR: Failed to initialize HAL component\n";
       releaseLock();
       return INTERP_ERROR;
     }
 
     retval = hal_ready(comp_id);
     if (retval != 0) {
-      std::cerr << "HAL -> ERROR: Failed to make HAL component ready\n";
+      std::cerr << "STERP: HAL -> ERROR: Failed to make HAL component ready\n";
       releaseLock();
       return INTERP_ERROR;
     }
   }
 
-  char *s;
-  int n = strlen(nameBuf);
+  snprintf(hal_name, sizeof(hal_name), "%s", nameBuf);
 
-  if ((n > 6) && ((s = (char *)strchr(&nameBuf[5], ']')) != NULL)) {
-    int closeBracket = s - nameBuf;
-
-    strncpy(hal_name, &nameBuf[5], closeBracket - 5);
-    hal_name[closeBracket - 5] = '\0';
-
-    if (nameBuf[closeBracket + 1]) {
-      std::cerr << "HAL -> ERROR: Invalid parameter format\n";
-      releaseLock();
-      return INTERP_ERROR;
-    }
-
-    if (hal_get_pin_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
-      goto set_value;
-    }
-
-    if (hal_get_signal_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
-      if (!conn) {
-        std::cout << "HAL -> WARNING: signal '" << hal_name
-                  << "' has no writer\n";
-      }
-      goto set_value;
-    }
-
-    if (hal_get_param_value_by_name(hal_name, &type, &ptr) == 0) {
-      goto set_value;
-    }
-
-    std::cerr << "HAL -> ERROR: parameter/pin/signal '" << hal_name
-              << "' not found\n";
-    releaseLock();
-    return INTERP_ERROR;
-
-  } else {
-    std::cerr << "HAL -> ERROR: Invalid parameter name format\n";
-    releaseLock();
-    return INTERP_ERROR;
+  if (hal_get_pin_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
+    goto set_value;
   }
+
+  if (hal_get_signal_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
+    if (!conn) {
+      std::cout << "STERP: HAL -> WARNING: signal '" << hal_name
+                << "' has no writer\n";
+    }
+    goto set_value;
+  }
+
+  if (hal_get_param_value_by_name(hal_name, &type, &ptr) == 0) {
+    goto set_value;
+  }
+
+  std::cerr << "STERP: HAL -> ERROR: parameter/pin/signal '" << hal_name
+            << "' not found\n";
+  releaseLock();
+  return INTERP_ERROR;
 
 set_value:
   switch (type) {
@@ -719,8 +691,8 @@ set_value:
     break;
   case HAL_U32:
     if (*value < 0) {
-      std::cerr
-          << "HAL -> ERROR: Cannot set negative value to unsigned parameter\n";
+      std::cerr << "STERP: HAL -> ERROR: Cannot set negative value to unsigned "
+                   "parameter\n";
       releaseLock();
       return INTERP_ERROR;
     }
@@ -733,12 +705,13 @@ set_value:
     ptr->f = (hal_float_t)*value;
     break;
   default:
-    std::cerr << "HAL -> ERROR: Unknown HAL type\n";
+    std::cerr << "STERP: HAL -> ERROR: Unknown HAL type\n";
     releaseLock();
     return INTERP_ERROR;
   }
 
-  std::cout << "HAL -> SET: " << hal_name << " = " << *value << std::endl;
+  std::cout << "STERP: HAL -> SET: " << hal_name << " = " << *value
+            << std::endl;
   releaseLock();
   return INTERP_OK;
 }
@@ -748,10 +721,51 @@ void setLock() {
   }
 
   if (hal_set_lock(HAL_LOCK_ALL) != 0)
-    std::cerr << "HAL -> ERROR: Failed to set HAL lock\n";
+    std::cerr << "STERP: HAL -> ERROR: Failed to set HAL lock\n";
 }
 
 void releaseLock() {
   if (hal_set_lock(HAL_LOCK_NONE) != 0)
-    std::cerr << "HAL -> ERROR: Failed to release HAL lock\n";
+    std::cerr << "STERP: HAL -> ERROR: Failed to release HAL lock\n";
+}
+
+int fetchINIParameter(const char *nameBuf, double *value) {
+  if (!nameBuf || !value)
+    return -1;
+
+  const char *iniFileName = getenv("INI_FILE_NAME");
+  if (!iniFileName) {
+    fprintf(stderr, "INI_FILE_NAME not set\n");
+    return -1;
+  }
+
+  const char *start = strchr(nameBuf, '[');
+  const char *end = strchr(nameBuf, ']');
+  if (!start || !end || end <= start) {
+    fprintf(stderr, "Malformed INI param: %s\n", nameBuf);
+    return -1;
+  }
+
+  std::string section(start + 1, end);
+  std::string key(end + 1);
+
+  std::transform(section.begin(), section.end(), section.begin(), ::toupper);
+  std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+
+  IniFile ini;
+  if (!ini.Open(iniFileName)) {
+    fprintf(stderr, "Failed to open INI file: %s\n", iniFileName);
+    return -1;
+  }
+
+  int ret = ini.Find(value, key.c_str(), section.c_str());
+  ini.Close();
+
+  if (ret != 0) {
+    fprintf(stderr, "Could not find [%s]%s in %s\n", section.c_str(),
+            key.c_str(), iniFileName);
+    return -1;
+  }
+
+  return INTERP_OK;
 }

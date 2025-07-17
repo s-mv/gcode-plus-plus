@@ -15,9 +15,11 @@
 #ifndef GPP_LOCAL
 extern int fetchHALParameter(const char *nameBuf, double *value);
 extern int setHALParameter(const char *nameBuf, double *value);
+extern int fetchINIParameter(const char *nameBuf, double *value);
 #else
-static int fetchHALParameter(const char *, double *value) { return value = -1; }
-static int setHALParameter(const char *, double *value) { return value = -1;};
+static int fetchHALParameter(const char *, double *value) { return *value = -1; }
+static int setHALParameter(const char *, double *value) { return *value = -1; };
+static int fetchINIParameter(const char *nameBuf, double *value) { return *value = -1; }
 #endif
 
 gpp::BytecodeEmitter::BytecodeEmitter(gpp::Machine &machine, std::string input)
@@ -348,12 +350,19 @@ antlrcpp::Any gpp::BytecodeEmitter::visitParameter_value(
   }
 
   f64 value = NAN;
-
-  if (address.compare(0, 6, "<_hal[") == 0 && address.back() == '>') {
-    address = address.substr(1, address.length() - 2);
-    int status = fetchHALParameter(address.c_str(), &value);
-    return value;
-  }
+    if (address.compare(0, 4, "ini(") == 0 && address.back() == ')') {
+      address = address.substr(4, address.length() - 5);
+      int status = fetchINIParameter(address.c_str(), &value);
+      return value;
+    }
+    
+    if (address.compare(0, 4, "hal(") == 0 && address.back() == ')') {
+      address = address.substr(4, address.length() - 5);
+      std::cout << "address is -> " << address << "\n";
+      int status = fetchHALParameter(address.c_str(), &value);
+      std::cout << value << " ssapdoa[do[]]\n";
+      return value;
+    }
 
   value = machine->getMemory(address);
 
@@ -372,8 +381,8 @@ antlrcpp::Any gpp::BytecodeEmitter::visitParameter_setting(
 
   f64 value = std::any_cast<f64>(visit(context->real_value()));
 
-  if (address.compare(0, 6, "<_hal[") == 0 && address.back() == '>') {
-    address = address.substr(1, address.length() - 2);
+  if (address.compare(0, 4, "hal(") == 0 && address.back() == ')') {
+    address = address.substr(4, address.length() - 5);
     int status = setHALParameter(address.c_str(), &value);
     return nullptr;
   }

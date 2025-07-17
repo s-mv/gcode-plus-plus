@@ -84,7 +84,7 @@ COMMENT
     ;
 
 NAMED_PARAMETER
-    : '#' '<' (LETTER | DIGIT | '_' | '.' | '[' | ']' | '-')+ '>'
+    : '#' LETTER+ '(' (LETTER | DIGIT | '[' | ']' | '_' | '.' | '-')+ ')'
     | '#' LETTER (LETTER | DIGIT | '_')*
     ;
 
