@@ -132,9 +132,6 @@ void gpp::Machine::reset() {
   handlers[Command::set_motion_control_mode] =
       std::bind(&Machine::set_motion_control_mode, this, std::placeholders::_1);
 
-  /* these are probably temporary */
-  handlers[Command::write_parameter_to_file] = std::bind(
-      &gpp::Machine::write_parameter_to_file, this, std::placeholders::_1);
   handlers[Command::write_parameters_to_file] = std::bind(
       &gpp::Machine::write_parameters_to_file, this, std::placeholders::_1);
 }
@@ -188,7 +185,6 @@ std::string gpp::Machine::getCurrentLine() {
 }
 
 SafeInstruction gpp::Machine::next() {
-
   while (emitter->bytecode.empty()) {
     if (!emitter->fetchInstructions())
       return Instruction{no_command};
@@ -594,20 +590,6 @@ void gpp::Machine::set_motion_control_mode(std::vector<f64> args) {
                     : (motionControlMode == exact_path ? "exact_path"
                                                        : "continuous"));
   std::cout << ")\n";
-}
-
-/* probably temporary */
-void gpp::Machine::write_parameter_to_file(std::vector<f64> args) {
-  std::cout << "write_parameter_to_file(" << args.at(0) << ")\n";
-  std::ofstream file(".data.txt");
-  if (!file) {
-    std::cerr << "Failed to open .data.txt for writing\n";
-    return;
-  }
-
-  file << "#" << args.at(0) << " = " << memory[args.at(0)] << "\n";
-
-  file.close();
 }
 
 void gpp::Machine::write_parameters_to_file(std::vector<f64> args) {

@@ -12,6 +12,14 @@
 #include "support/Any.h"
 #include "util.hpp"
 
+#ifndef GPP_LOCAL
+extern int fetchHALParameter(const char *nameBuf, double *value);
+extern int setHALParameter(const char *nameBuf, double *value);
+#else
+static int fetchHALParameter(const char *, double *value) { return value = -1; }
+static int setHALParameter(const char *, double *value) { return value = -1;};
+#endif
+
 gpp::BytecodeEmitter::BytecodeEmitter(gpp::Machine &machine, std::string input)
     : inputStream(input), machine(&machine), lexer(&inputStream),
       tokens(&lexer), parser(&tokens) {
@@ -90,8 +98,8 @@ bool gpp::BytecodeEmitter::fetchInstructions() {
           foundLoop = true;
 
           if (!currentFrame.loopCounterAddress.empty()) {
-            f64 value =
-                machine->getMemory(currentFrame.loopCounterAddress) + currentFrame.step;
+            f64 value = machine->getMemory(currentFrame.loopCounterAddress) +
+                        currentFrame.step;
             machine->setMemory(currentFrame.loopCounterAddress, value);
 
             if (value < currentFrame.end) {
@@ -339,7 +347,15 @@ antlrcpp::Any gpp::BytecodeEmitter::visitParameter_value(
     address = std::to_string((int)address_value);
   }
 
-  f64 value = machine->getMemory(address);
+  f64 value = NAN;
+
+  if (address.compare(0, 6, "<_hal[") == 0 && address.back() == '>') {
+    address = address.substr(1, address.length() - 2);
+    int status = fetchHALParameter(address.c_str(), &value);
+    return value;
+  }
+
+  value = machine->getMemory(address);
 
   return value;
 }
@@ -355,6 +371,12 @@ antlrcpp::Any gpp::BytecodeEmitter::visitParameter_setting(
   }
 
   f64 value = std::any_cast<f64>(visit(context->real_value()));
+
+  if (address.compare(0, 6, "<_hal[") == 0 && address.back() == '>') {
+    address = address.substr(1, address.length() - 2);
+    int status = setHALParameter(address.c_str(), &value);
+    return nullptr;
+  }
 
   machine->setMemory(address, value);
 

@@ -78,6 +78,8 @@ enum gpp::Command : u8 {
   write_parameter_to_file = 27,
   write_parameters_to_file = 28,
 
+  _get_hal_parameter = 29,
+
   no_command = 0,
 };
 

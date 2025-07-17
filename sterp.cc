@@ -35,6 +35,8 @@ std::string currentLine;
 
 // inspired by rs274ngc (interp_namedparams.cc)
 int fetchHALParameter(const char *nameBuf, double *value);
+// inspired by doSetp/doSets (halrmt.c)
+int setHALParameter(const char *nameBuf, double *value);
 
 class Sterp : public InterpBase {
   friend class gpp::Machine;
@@ -387,6 +389,10 @@ int Sterp::execute(const char *line) {
       break;
     }
 
+    case gpp::_get_hal_parameter: {
+      break;
+    }
+
     case gpp::no_command: {
       std::cout << "STERP: No Command! This shouldn't even be printed.\n";
       break;
@@ -582,7 +588,7 @@ int fetchHALParameter(const char *nameBuf, double *value) {
     hal_name[closeBracket - 5] = '\0';
     if (nameBuf[closeBracket + 1]) {
       // TODO SOME KIND OF ERROR HANDLING
-    std::cout << "HAL -> ERROR\n";
+      std::cout << "HAL -> ERROR\n";
     }
 
     if (hal_get_pin_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
@@ -625,4 +631,105 @@ assign:
   }
   printf("%s: value=%f", hal_name, *value);
   return INTERP_OK;
+}
+
+int setHALParameter(const char *nameBuf, double *value) {
+    static int comp_id;
+    int retval;
+    hal_type_t type = HAL_TYPE_UNINITIALIZED;
+    hal_data_u *ptr;
+    bool conn;
+    char hal_name[HAL_NAME_LEN];
+    
+    // Initialize HAL component if not already done
+    if (!comp_id) {
+        char hal_comp[HAL_NAME_LEN];
+        snprintf(hal_comp, sizeof(hal_comp), "interp%d", getpid());
+        comp_id = hal_init(hal_comp);
+        if (comp_id < 0) {
+            std::cerr << "HAL -> ERROR: Failed to initialize HAL component\n";
+            return INTERP_ERROR;
+        }
+
+        retval = hal_ready(comp_id);
+        if (retval != 0) {
+            std::cerr << "HAL -> ERROR: Failed to make HAL component ready\n";
+            return INTERP_ERROR;
+        }
+    }
+
+    // Parse the parameter name from the format #<hal[parameter_name]>
+    char *s;
+    int n = strlen(nameBuf);
+
+    if ((n > 6) && ((s = (char *)strchr(&nameBuf[5], ']')) != NULL)) {
+        int closeBracket = s - nameBuf;
+
+        // Extract the HAL name
+        strncpy(hal_name, &nameBuf[5], closeBracket - 5);
+        hal_name[closeBracket - 5] = '\0';
+        
+        if (nameBuf[closeBracket + 1]) {
+            std::cerr << "HAL -> ERROR: Invalid parameter format\n";
+            return INTERP_ERROR;
+        }
+
+        // Try to set as a pin first
+        if (hal_get_pin_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
+            // Found as pin - check if it's writable
+            // Note: We need to check if this is an input pin to determine writability
+            // For now, we'll attempt to set it and let HAL handle the error
+            goto set_value;
+        }
+        
+        // Try to set as a signal
+        if (hal_get_signal_value_by_name(hal_name, &type, &ptr, &conn) == 0) {
+            // Found as signal - check if it has writers
+            if (!conn) {
+                std::cout << "HAL -> WARNING: signal '" << hal_name << "' has no writer\n";
+            }
+            goto set_value;
+        }
+        
+        // Try to set as a parameter
+        if (hal_get_param_value_by_name(hal_name, &type, &ptr) == 0) {
+            // Found as parameter
+            goto set_value;
+        }
+        
+        // Not found anywhere
+        std::cerr << "HAL -> ERROR: parameter/pin/signal '" << hal_name << "' not found\n";
+        return INTERP_ERROR;
+        
+    } else {
+        std::cerr << "HAL -> ERROR: Invalid parameter name format\n";
+        return INTERP_ERROR;
+    }
+
+set_value:
+    // Set the value based on type
+    switch (type) {
+    case HAL_BIT:
+        ptr->b = (*value != 0.0) ? 1 : 0;
+        break;
+    case HAL_U32:
+        if (*value < 0) {
+            std::cerr << "HAL -> ERROR: Cannot set negative value to unsigned parameter\n";
+            return INTERP_ERROR;
+        }
+        ptr->u = (hal_u32_t)*value;
+        break;
+    case HAL_S32:
+        ptr->s = (hal_s32_t)*value;
+        break;
+    case HAL_FLOAT:
+        ptr->f = (hal_float_t)*value;
+        break;
+    default:
+        std::cerr << "HAL -> ERROR: Unknown HAL type\n";
+        return INTERP_ERROR;
+    }
+    
+    std::cout << "HAL -> SET: " << hal_name << " = " << *value << std::endl;
+    return INTERP_OK;
 }
