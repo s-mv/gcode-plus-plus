@@ -72,7 +72,6 @@ segment
     : mid_line_word
     | parameter_setting
     | comment
-    | m99
     ;
 
 mid_line_word

@@ -988,10 +988,11 @@ void gpp::Machine::handle_m(std::deque<gpp::VerboseInstruction> &list, f64 arg,
   }
   case 98: {
     u64 p = emitter->findParameter(words, 'p');
-    ExecutionFrame frame;
+
     emitter->executionStack.push({
         .block = emitter->subroutines.at(p)->block(),
         .linePointer = 0,
+        .subroutineAddress = (i64)p,
     });
     break;
   }

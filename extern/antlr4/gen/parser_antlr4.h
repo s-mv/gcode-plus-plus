@@ -351,7 +351,6 @@ public:
     Mid_line_wordContext *mid_line_word();
     Parameter_settingContext *parameter_setting();
     CommentContext *comment();
-    M99Context *m99();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

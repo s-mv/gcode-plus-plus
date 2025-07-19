@@ -1,9 +1,8 @@
 .cache
+.vscode
 
 build/*
-!build
 output/*
-!output
 
 compile_commands.json
 .data.txt

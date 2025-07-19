@@ -137,8 +137,13 @@ void gpp::Machine::reset() {
 }
 
 f64 gpp::Machine::getMemory(std::string address) {
-  if (address.empty())
-    return NAN; // TODO, error
+  if (address.empty()) {
+    emitter->bytecode.push_back(gpp::Error(
+        gpp::ErrorType::MEMORY_ERROR, "Parameter name cannot be empty.",
+        emitter->getLineFromSource(emitter->line), emitter->line,
+        emitter->column));
+    return NAN;
+  }
 
   if (parameterAddresses.find(address) == parameterAddresses.end())
     return NAN;
@@ -157,7 +162,11 @@ f64 gpp::Machine::getMemory(i64 address) {
 
 void gpp::Machine::setMemory(std::string address, f64 value) {
   if (address.empty()) {
-    return; // TODO, add an error
+    emitter->bytecode.push_back(gpp::Error(
+        gpp::ErrorType::MEMORY_ERROR, "Parameter name cannot be empty.",
+        emitter->getLineFromSource(emitter->line), emitter->line,
+        emitter->column));
+    return;
   }
 
   if (parameterAddresses.find(address) == parameterAddresses.end()) {

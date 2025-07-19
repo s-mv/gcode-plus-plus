@@ -5,6 +5,7 @@
 #include <string>
 
 #include "bytecode.hpp"
+#include "gpp.hpp"
 #include "machine.hpp"
 
 #include "lexer_antlr4.h"
@@ -17,10 +18,19 @@ extern int fetchHALParameter(const char *nameBuf, double *value);
 extern int setHALParameter(const char *nameBuf, double *value);
 extern int fetchINIParameter(const char *nameBuf, double *value);
 #else
-static int fetchHALParameter(const char *, double *value) { return *value = -1; }
+static int fetchHALParameter(const char *, double *value) {
+  return *value = -1;
+}
 static int setHALParameter(const char *, double *value) { return *value = -1; };
-static int fetchINIParameter(const char *nameBuf, double *value) { return *value = -1; }
+static int fetchINIParameter(const char *nameBuf, double *value) {
+  return *value = -1;
+}
 #endif
+
+// helpers
+bool isNumbered(const std::string &address);
+i64 parseNumbered(const std::string &address);
+bool isLocalNamed(const std::string &address);
 
 gpp::BytecodeEmitter::BytecodeEmitter(gpp::Machine &machine, std::string input)
     : inputStream(input), machine(&machine), lexer(&inputStream),
@@ -163,8 +173,8 @@ bool gpp::BytecodeEmitter::fetchInstructions() {
 antlrcpp::Any gpp::BytecodeEmitter::visitSubroutine(
     parser_antlr4::SubroutineContext *context) {
   if (subroutineEncountered) {
-    int line = context->getStart()->getLine();
-    int column = context->getStart()->getCharPositionInLine();
+    line = context->getStart()->getLine();
+    column = context->getStart()->getCharPositionInLine();
 
     bytecode.push_back(gpp::Error(ErrorType::PARSE_ERROR,
                                   "Nested subroutines aren't allowed!",
@@ -341,6 +351,9 @@ antlrcpp::Any gpp::BytecodeEmitter::visitReal_number(
 
 antlrcpp::Any gpp::BytecodeEmitter::visitParameter_value(
     parser_antlr4::Parameter_valueContext *context) {
+  line = context->getStart()->getLine();
+  column = context->getStart()->getCharPositionInLine();
+
   std::string address;
   if (context->NAMED_PARAMETER()) {
     address = context->NAMED_PARAMETER()->getText().substr(1);
@@ -350,19 +363,28 @@ antlrcpp::Any gpp::BytecodeEmitter::visitParameter_value(
   }
 
   f64 value = NAN;
-    if (address.compare(0, 4, "ini(") == 0 && address.back() == ')') {
-      address = address.substr(4, address.length() - 5);
-      int status = fetchINIParameter(address.c_str(), &value);
-      return value;
+
+  if (isLocalNamed(address)) {
+    if (executionStack.top().subroutineAddress == -1) {
+      bytecode.push_back(
+          gpp::Error(gpp::ErrorType::MEMORY_ERROR,
+                     "Tried to access local memory in global scope!",
+                     getLineFromSource(line), line, column));
+      return NAN;
     }
-    
-    if (address.compare(0, 4, "hal(") == 0 && address.back() == ')') {
-      address = address.substr(4, address.length() - 5);
-      std::cout << "address is -> " << address << "\n";
-      int status = fetchHALParameter(address.c_str(), &value);
-      std::cout << value << " ssapdoa[do[]]\n";
-      return value;
-    }
+  }
+
+  if (address.compare(0, 4, "ini(") == 0 && address.back() == ')') {
+    address = address.substr(4, address.length() - 5);
+    int status = fetchINIParameter(address.c_str(), &value);
+    return value;
+  }
+
+  if (address.compare(0, 4, "hal(") == 0 && address.back() == ')') {
+    address = address.substr(4, address.length() - 5);
+    int status = fetchHALParameter(address.c_str(), &value);
+    return value;
+  }
 
   value = machine->getMemory(address);
 
@@ -371,6 +393,9 @@ antlrcpp::Any gpp::BytecodeEmitter::visitParameter_value(
 
 antlrcpp::Any gpp::BytecodeEmitter::visitParameter_setting(
     parser_antlr4::Parameter_settingContext *context) {
+  line = context->getStart()->getLine();
+  column = context->getStart()->getCharPositionInLine();
+
   std::string address;
   if (context->NAMED_PARAMETER()) {
     address = context->NAMED_PARAMETER()->getText().substr(1);
@@ -380,6 +405,16 @@ antlrcpp::Any gpp::BytecodeEmitter::visitParameter_setting(
   }
 
   f64 value = std::any_cast<f64>(visit(context->real_value()));
+
+  if (isLocalNamed(address)) {
+    if (executionStack.top().subroutineAddress == -1) {
+      bytecode.push_back(
+          gpp::Error(gpp::ErrorType::MEMORY_ERROR,
+                     "Tried to modify local memory in global scope!",
+                     getLineFromSource(line), line, column));
+      return nullptr;
+    }
+  }
 
   if (address.compare(0, 4, "hal(") == 0 && address.back() == ')') {
     address = address.substr(4, address.length() - 5);
@@ -448,4 +483,25 @@ bool gpp::BytecodeEmitter::containsUnconditionalM99(
     }
   }
   return false;
+}
+
+bool isNumbered(const std::string &address) {
+  if (address.size() < 3)
+    return false;
+  if (address.front() != '<' || address.back() != '>')
+    return false;
+
+  for (size_t i = 1; i < address.size() - 1; ++i) {
+    if (!std::isdigit(address[i]))
+      return false;
+  }
+  return true;
+}
+
+i64 parseNumbered(const std::string &address) {
+  return std::stoll(address.substr(1, address.length() - 2));
+}
+
+bool isLocalNamed(const std::string &address) {
+  return !address.empty() && !isNumbered(address) && address.at(0) != '_';
 }

@@ -108,6 +108,7 @@ struct gpp::Vec3D {
   f64 dot(const Vec3D &rhs);
   Vec3D cross(const Vec3D &rhs);
 };
+
 std::ostream &operator<<(std::ostream &os, const gpp::Vec3D &v);
 
 struct gpp::Vec2D {

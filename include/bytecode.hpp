@@ -62,6 +62,7 @@ bool compareVerboseInstructions(const gpp::VerboseInstruction &a,
 struct gpp::ExecutionFrame {
   parser_antlr4::BlockContext *block;
   i64 linePointer;
+  i64 subroutineAddress = -1;
   parser_antlr4::ExpressionContext *whileLoopCondition = nullptr;
   std::string loopCounterAddress = "";
   f64 start;
@@ -105,6 +106,8 @@ private:
   bool breakEncountered = false;
   bool continueEncountered = false;
   bool subroutineEncountered = false;
+
+  i64 currentSubroutine = -1;
 
   int line = 0;
   int column = 0;
