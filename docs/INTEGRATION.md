@@ -35,3 +35,15 @@ We're almost done.
 cd ..
 ./scripts/rip-environment linuxcnc
 ```
+
+## Using HAL and INI parameters
+
+In order to use HAL/INI parameters the syntax is:
+```
+#hal(...)
+```
+and
+```
+#ini(...)
+```
+

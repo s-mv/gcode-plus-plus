@@ -372,6 +372,8 @@ antlrcpp::Any gpp::BytecodeEmitter::visitParameter_value(
                      getLineFromSource(line), line, column));
       return NAN;
     }
+
+    address = std::to_string(executionStack.top().subroutineAddress) + address;
   }
 
   if (address.compare(0, 4, "ini(") == 0 && address.back() == ')') {
@@ -414,6 +416,8 @@ antlrcpp::Any gpp::BytecodeEmitter::visitParameter_setting(
                      getLineFromSource(line), line, column));
       return nullptr;
     }
+
+    address = std::to_string(executionStack.top().subroutineAddress) + address;
   }
 
   if (address.compare(0, 4, "hal(") == 0 && address.back() == ')') {
