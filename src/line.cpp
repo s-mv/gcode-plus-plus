@@ -98,6 +98,7 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
 
         return nullptr;
       }
+
       seenModalGroups.insert(group);
     }
   }
@@ -105,6 +106,8 @@ gpp::BytecodeEmitter::visitLine(parser_antlr4::LineContext *context) {
   bool noCode = true;
 
   for (const Word &word : words) {
+    std::cout << "word " << word.word << " with arg " << word.arg << "\n";
+
     VerboseInstruction verboseInstruction = {
         .word = word.word,
         .arg = word.arg,

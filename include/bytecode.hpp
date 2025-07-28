@@ -59,6 +59,15 @@ struct gpp::VerboseInstruction {
 bool compareVerboseInstructions(const gpp::VerboseInstruction &a,
                                 const gpp::VerboseInstruction &b);
 
+struct ParsedImport {
+  std::string fileContents;
+  std::unique_ptr<antlr4::ANTLRInputStream> inputStream;
+  std::unique_ptr<lexer_antlr4> lexer;
+  std::unique_ptr<antlr4::CommonTokenStream> tokens;
+  std::unique_ptr<parser_antlr4> parser;
+  parser_antlr4::BlockContext* block = nullptr;
+};
+
 struct gpp::ExecutionFrame {
   parser_antlr4::BlockContext *block;
   i64 linePointer;
@@ -100,6 +109,7 @@ private:
   parser_antlr4 parser;
 
   std::stack<gpp::ExecutionFrame> executionStack;
+  std::unordered_map<std::string, std::shared_ptr<ParsedImport>> importedFiles;
   std::unordered_map<u64, parser_antlr4::SubroutineContext *> subroutines;
 
   std::unordered_map<std::string, f64> parameterAddresses;
@@ -114,6 +124,8 @@ private:
 
 private:
   antlrcpp::Any visitBlock(parser_antlr4::BlockContext *context) override;
+  antlrcpp::Any visitImport_statement(
+      parser_antlr4::Import_statementContext *context) override;
   antlrcpp::Any
   visitIf_statement(parser_antlr4::If_statementContext *context) override;
   antlrcpp::Any

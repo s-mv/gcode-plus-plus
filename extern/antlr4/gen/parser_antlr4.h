@@ -14,28 +14,30 @@ public:
   enum {
     IF = 1, THEN = 2, DO = 3, WHILE = 4, FOR = 5, FROM = 6, TO = 7, ELSE = 8, 
     END = 9, ENDIF = 10, ENDWHILE = 11, ENDFOR = 12, BREAK = 13, CONTINUE = 14, 
-    SUBROUTINE = 15, M99 = 16, PERCENT = 17, DIGIT = 18, LETTER = 19, DOLLAR = 20, 
-    PLUS = 21, MINUS = 22, DOT = 23, LEFT_BRACKET = 24, RIGHT_BRACKET = 25, 
-    POWER = 26, SLASH = 27, MODULO = 28, TIMES = 29, LOGICAL_AND = 30, EXCLUSIVE_OR = 31, 
-    NON_EXCLUSIVE_OR = 32, EQ = 33, NE = 34, LT = 35, LE = 36, GT = 37, 
-    GE = 38, ABSOLUTE_VALUE = 39, ARC_COSINE = 40, ARC_SINE = 41, COSINE = 42, 
-    E_RAISED_TO = 43, FIX_DOWN = 44, FIX_UP = 45, NATURAL_LOG_OF = 46, ROUND_OPERATION = 47, 
-    SINE = 48, SQUARE_ROOT = 49, TANGENT = 50, ARC_TANGENT = 51, PARAMETER_SIGN = 52, 
-    EQUAL_SIGN = 53, COMMENT = 54, NAMED_PARAMETER = 55, EOL = 56, WS = 57
+    IMPORT = 15, FILENAME = 16, SUBROUTINE = 17, M99 = 18, PERCENT = 19, 
+    DIGIT = 20, LETTER = 21, DOLLAR = 22, PLUS = 23, MINUS = 24, DOT = 25, 
+    LEFT_BRACKET = 26, RIGHT_BRACKET = 27, POWER = 28, SLASH = 29, MODULO = 30, 
+    TIMES = 31, LOGICAL_AND = 32, EXCLUSIVE_OR = 33, NON_EXCLUSIVE_OR = 34, 
+    EQ = 35, NE = 36, LT = 37, LE = 38, GT = 39, GE = 40, ABSOLUTE_VALUE = 41, 
+    ARC_COSINE = 42, ARC_SINE = 43, COSINE = 44, E_RAISED_TO = 45, FIX_DOWN = 46, 
+    FIX_UP = 47, NATURAL_LOG_OF = 48, ROUND_OPERATION = 49, SINE = 50, SQUARE_ROOT = 51, 
+    TANGENT = 52, ARC_TANGENT = 53, PARAMETER_SIGN = 54, EQUAL_SIGN = 55, 
+    COMMENT = 56, NAMED_PARAMETER = 57, EOL = 58, WS = 59
   };
 
   enum {
     RuleBlock = 0, RuleStatement = 1, RuleSubroutine = 2, RuleM99 = 3, RuleLine = 4, 
-    RuleIf_statement = 5, RuleWhile_statement = 6, RuleDo_while_statement = 7, 
-    RuleFor_statement = 8, RuleBreak_statement = 9, RuleContinue_statement = 10, 
-    RuleBlock_delete = 11, RuleLine_number = 12, RuleSegment = 13, RuleMid_line_word = 14, 
-    RuleMid_line_letter = 15, RuleReal_value = 16, RuleReal_number = 17, 
-    RuleExpression = 18, RuleLogical_or_expression = 19, RuleLogical_xor_expression = 20, 
-    RuleLogical_and_expression = 21, RuleEquality_expression = 22, RuleRelational_expression = 23, 
-    RuleAdditive_expression = 24, RuleMultiplicative_expression = 25, RulePower_expression = 26, 
-    RuleUnary_expression = 27, RulePrimary = 28, RuleUnary_combo = 29, RuleOrdinary_unary_combo = 30, 
-    RuleOrdinary_unary_operation = 31, RuleArc_tangent_combo = 32, RuleParameter_setting = 33, 
-    RuleParameter_value = 34, RuleComment = 35
+    RuleImport_statement = 5, RuleIf_statement = 6, RuleWhile_statement = 7, 
+    RuleDo_while_statement = 8, RuleFor_statement = 9, RuleBreak_statement = 10, 
+    RuleContinue_statement = 11, RuleBlock_delete = 12, RuleLine_number = 13, 
+    RuleSegment = 14, RuleMid_line_word = 15, RuleMid_line_letter = 16, 
+    RuleReal_value = 17, RuleReal_number = 18, RuleExpression = 19, RuleLogical_or_expression = 20, 
+    RuleLogical_xor_expression = 21, RuleLogical_and_expression = 22, RuleEquality_expression = 23, 
+    RuleRelational_expression = 24, RuleAdditive_expression = 25, RuleMultiplicative_expression = 26, 
+    RulePower_expression = 27, RuleUnary_expression = 28, RulePrimary = 29, 
+    RuleUnary_combo = 30, RuleOrdinary_unary_combo = 31, RuleOrdinary_unary_operation = 32, 
+    RuleArc_tangent_combo = 33, RuleParameter_setting = 34, RuleParameter_value = 35, 
+    RuleComment = 36
   };
 
   explicit parser_antlr4(antlr4::TokenStream *input);
@@ -60,6 +62,7 @@ public:
   class SubroutineContext;
   class M99Context;
   class LineContext;
+  class Import_statementContext;
   class If_statementContext;
   class While_statementContext;
   class Do_while_statementContext;
@@ -117,6 +120,7 @@ public:
     StatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     LineContext *line();
+    Import_statementContext *import_statement();
     If_statementContext *if_statement();
     While_statementContext *while_statement();
     Do_while_statementContext *do_while_statement();
@@ -188,6 +192,24 @@ public:
   };
 
   LineContext* line();
+
+  class  Import_statementContext : public antlr4::ParserRuleContext {
+  public:
+    Import_statementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *IMPORT();
+    antlr4::tree::TerminalNode *FILENAME();
+    std::vector<antlr4::tree::TerminalNode *> EOL();
+    antlr4::tree::TerminalNode* EOL(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Import_statementContext* import_statement();
 
   class  If_statementContext : public antlr4::ParserRuleContext {
   public:

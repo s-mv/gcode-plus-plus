@@ -29,6 +29,9 @@ public:
   virtual void enterLine(parser_antlr4::LineContext *ctx) = 0;
   virtual void exitLine(parser_antlr4::LineContext *ctx) = 0;
 
+  virtual void enterImport_statement(parser_antlr4::Import_statementContext *ctx) = 0;
+  virtual void exitImport_statement(parser_antlr4::Import_statementContext *ctx) = 0;
+
   virtual void enterIf_statement(parser_antlr4::If_statementContext *ctx) = 0;
   virtual void exitIf_statement(parser_antlr4::If_statementContext *ctx) = 0;
 

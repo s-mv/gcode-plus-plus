@@ -2,7 +2,9 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>
+#include <filesystem>
 #include <string>
+#include <unordered_map>
 
 #include "bytecode.hpp"
 #include "gpp.hpp"
@@ -168,6 +170,48 @@ bool gpp::BytecodeEmitter::fetchInstructions() {
   }
 
   return true;
+}
+
+antlrcpp::Any gpp::BytecodeEmitter::visitImport_statement(
+    parser_antlr4::Import_statementContext *context) {
+
+  std::string raw = context->FILENAME()->getText();
+  std::string pathStr = raw.substr(1, raw.length() - 2); // remove quotes
+
+  std::filesystem::path canonicalPath = std::filesystem::canonical(pathStr);
+  std::string canonicalStr = canonicalPath.string();
+
+  if (importedFiles.count(canonicalStr)) {
+    bytecode.push_back(gpp::Error(ErrorType::GENERAL_ERROR,
+                                  "Circular import detected!",
+                                  getLineFromSource(line), line, column));
+    return nullptr;
+  }
+
+  // Read file contents
+  std::ifstream file(canonicalStr);
+  if (!file) {
+    throw std::runtime_error("Could not open import file: " + canonicalStr);
+  }
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+
+  auto parsed = std::make_shared<ParsedImport>();
+  parsed->fileContents = buffer.str();
+
+  parsed->inputStream =
+      std::make_unique<antlr4::ANTLRInputStream>(parsed->fileContents);
+  parsed->lexer = std::make_unique<lexer_antlr4>(parsed->inputStream.get());
+  parsed->tokens =
+      std::make_unique<antlr4::CommonTokenStream>(parsed->lexer.get());
+  parsed->parser = std::make_unique<parser_antlr4>(parsed->tokens.get());
+  parsed->block = parsed->parser->block();
+
+  importedFiles.insert({canonicalStr, parsed});
+
+  executionStack.push({.block = parsed->block, .linePointer = 0});
+
+  return nullptr;
 }
 
 antlrcpp::Any gpp::BytecodeEmitter::visitSubroutine(
@@ -490,12 +534,10 @@ bool gpp::BytecodeEmitter::containsUnconditionalM99(
 }
 
 bool isNumbered(const std::string &address) {
-  if (address.size() < 3)
-    return false;
-  if (address.front() != '<' || address.back() != '>')
+  if (address.size() < 1)
     return false;
 
-  for (size_t i = 1; i < address.size() - 1; ++i) {
+  for (size_t i = 0; i < address.size(); ++i) {
     if (!std::isdigit(address[i]))
       return false;
   }

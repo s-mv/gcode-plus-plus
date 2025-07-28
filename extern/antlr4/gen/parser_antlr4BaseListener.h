@@ -31,6 +31,9 @@ public:
   virtual void enterLine(parser_antlr4::LineContext * /*ctx*/) override { }
   virtual void exitLine(parser_antlr4::LineContext * /*ctx*/) override { }
 
+  virtual void enterImport_statement(parser_antlr4::Import_statementContext * /*ctx*/) override { }
+  virtual void exitImport_statement(parser_antlr4::Import_statementContext * /*ctx*/) override { }
+
   virtual void enterIf_statement(parser_antlr4::If_statementContext * /*ctx*/) override { }
   virtual void exitIf_statement(parser_antlr4::If_statementContext * /*ctx*/) override { }
 

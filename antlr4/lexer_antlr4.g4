@@ -21,6 +21,11 @@ ENDFOR : E N D F O R ;
 BREAK : B R E A K ;
 CONTINUE : C O N T I N U E ;
 
+IMPORT : I M P O R T ;
+FILENAME
+    : '"' (~["\r\n])* '"'
+    ;
+
 SUBROUTINE: O;
 M99: M '0'* '9' '9' (DOT '0'+)?;
 

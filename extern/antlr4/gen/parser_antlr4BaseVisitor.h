@@ -35,6 +35,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitImport_statement(parser_antlr4::Import_statementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitIf_statement(parser_antlr4::If_statementContext *ctx) override {
     return visitChildren(ctx);
   }

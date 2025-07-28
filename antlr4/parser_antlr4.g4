@@ -14,6 +14,7 @@ block
 
 statement
     : line
+    | import_statement
     | if_statement
     | while_statement
     | do_while_statement
@@ -34,6 +35,10 @@ line
     ;
 
 // >>> extended grammar
+
+import_statement
+    : IMPORT FILENAME EOL+
+    ;
 
 if_statement
     : IF expression EOL* block
@@ -190,3 +195,4 @@ parameter_value
 comment
     : COMMENT
     ;
+
