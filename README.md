@@ -11,6 +11,7 @@ The output of the interpreter may be used to drive 3-axis machines.
 
 ## Documentation
 - Architecture - [docs/ARCHITECTURE.md](/docs/ARCHITECTURE.md)
+- Language Features - [docs/FEATURES.md](/docs/FEATURES.md)
 - Integration into LinuxCNC - [/docs/INTEGRATION.md](/docs/INTEGRATION.md)
 
 ## Build and Install
