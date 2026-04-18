@@ -1,7 +1,7 @@
 # g-code++ - an extension of g-code (might rename later)
 
 A lightweight G-code interpreter written in C++ inspired by the
-[NIST rs274ngc interpreter](https://github.com/QGCoder/rs274ngc).
+[NIST rs274ngc interpreter](https://github.com/QGCoder/rs274ngc). 
 
 The output of the interpreter may be used to drive 3-axis machines.
 
@@ -13,6 +13,7 @@ The output of the interpreter may be used to drive 3-axis machines.
 - Architecture - [docs/ARCHITECTURE.md](/docs/ARCHITECTURE.md)
 - Language Features - [docs/FEATURES.md](/docs/FEATURES.md)
 - Integration into LinuxCNC - [/docs/INTEGRATION.md](/docs/INTEGRATION.md)
+- **LinuxCNC fork**: [https://github.com/s-mv/linuxcnc/tree/s-mv/sterp](https://github.com/s-mv/linuxcnc/tree/s-mv/sterp)
 
 ## Build and Install
 
